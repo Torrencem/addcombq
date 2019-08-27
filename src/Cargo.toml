@@ -1,0 +1,14 @@
+[package]
+name = "pf_addcomb"
+version = "0.1.0"
+authors = ["Matt Torrence <gh-Torrencem>"]
+edition = "2018"
+
+[lib]
+name = "pf_addcomb"
+crate-type = ["dylib"]
+
+[dependencies.cpython]
+version = "0.3.0"
+default-features = false
+features = ["python27-sys"]
