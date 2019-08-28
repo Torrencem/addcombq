@@ -8,6 +8,12 @@ edition = "2018"
 name = "pf_addcomb"
 crate-type = ["dylib"]
 
+[dependencies]
+itertools = "0.8.0"
+
+[dev-dependencies]
+rand = "0.6.5"
+
 [dependencies.cpython]
 version = "0.3.0"
 default-features = false
