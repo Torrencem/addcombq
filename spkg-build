@@ -4,8 +4,13 @@ if hash ~/.cargo/bin/cargo 2> /dev/null;
 then
 	~/.cargo/bin/cargo build --release
 else
-	echo "Cargo (and so Rust) is not installed. Pre-build binaries are not available, so install Rust (step-by-step guide here: https://doc.rust-lang.org/cargo/getting-started/installation.html)"
-	exit 1
+	echo "Cargo (and so Rust) is not installed. Attempting to install rust..."
+	
+	curl https://sh.rustup.rs -sSf | sh
+	
+	echo "Rust installed. Now building..."
+
+	~/.cargo/bin/cargo build --release
 fi
 
 mkdir -p build

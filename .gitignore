@@ -4,3 +4,4 @@ src/build
 src/addcomb.egg-info
 src/dist
 pf_*.tar.gz
+pf_*.spkg
