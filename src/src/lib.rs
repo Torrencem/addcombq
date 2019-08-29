@@ -21,7 +21,6 @@ macro_rules! add_bindings_to_mod {
 }
 
 py_module_initializer!(addcomb, initaddcomb, PyInit_addcomb, |py, m| {
-
     use public::*;
     
     add_bindings_to_mod!(py, m, nu, a_, m, h);

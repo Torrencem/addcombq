@@ -44,10 +44,18 @@ py_class!(pub class InterruptableBinding |py| {
         locals.set_item(py, "args", args)?;
         locals.set_item(py, "verbose", verbose)?;
 
+        // Fix stdout in jupyter notebooks (https://stackoverflow.com/questions/45200375/stdout-redirect-from-jupyter-notebook-is-landing-in-the-terminal)
+        let sys = py.import("sys")?;
+        let old_stdout = sys.get(py, "stdout")?;
+        locals.set_item(py, "old_stdout", old_stdout)?;
+        locals.set_item(py, "__import__", py.eval("__import__", None, None)?)?;
+
         // Create our signalling python function
         // in __globals__
         py.run(r#"
 def signalling_f():
+    sys = __import__("sys")
+    sys.stdout = old_stdout
     q.put(f(*args, verbose=verbose))
     event.set()
         "#, Some(&locals), None)?;
@@ -92,16 +100,38 @@ fn into_pyiter<'p>(py: &'p Python, x: &PyObject) -> PyResult<PyIterator<'p>> {
     Ok(PyIterator::from_object(*py, as_iter)?)
 }
 
+// Run the code from capture_c_out.py to setup
+// the capturing functionality
+fn setup_capt_c_out(py: Python) -> PyResult<PyObject> {
+    py.run(r#"
+def handle_stream(stream):
+    if stream:
+        print stream,
+        "#, None, None)?;
+
+    py.run(include_str!("capture_c_out.py"), None, None)?;
+
+    py.eval("capture_c_stdout(handle_stream)", None, None)
+}
+
 macro_rules! py_binding {
     ($bound_name:ident, $fs_version:expr, $ex_version:expr, $($ex_args:ident),+) => {
         pub fn $bound_name(py: Python, n: PyObject, $($ex_args : u32),+ , verbose: bool) -> PyResult<u32> {
+            // Setup c_out capturing
+            let capt_c_out = setup_capt_c_out(py)?;
+            capt_c_out.call_method(py, "next", NoArgs, None)?;
             let numb = into_pyint(py, &n);
             if let Ok(n) = numb {
                 let n: u32 = n.value(py).try_into().unwrap(); // Will panic here if negative
                 if n <= 63 {
-                    Ok($fs_version(n, $($ex_args),+, verbose))
+                    let val = $fs_version(n, $($ex_args),+, verbose);
+                    // Stop c_out capturing
+                    capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+                    Ok(val)
                 } else {
-                    Ok($ex_version(&[n], $($ex_args),+, verbose))
+                    let val = $ex_version(&[n], $($ex_args),+, verbose);
+                    capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+                    Ok(val)
                 }
             } else {
                 let list = into_pyiter(&py, &n)?; // Will return here if something awful is given
@@ -111,7 +141,9 @@ macro_rules! py_binding {
                     let val = numb.value(py).try_into().unwrap();
                     tmp.push(val);
                 }
-                Ok($ex_version(tmp.as_slice(), $($ex_args),+, verbose))
+                let val = $ex_version(tmp.as_slice(), $($ex_args),+, verbose);
+                capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+                Ok(val)
             }
         }
     };
