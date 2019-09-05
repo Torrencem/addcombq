@@ -11,17 +11,17 @@ use crate::comb::chapter_g;
 
 use crate::comb::exacts;
 
-use cpython::{Python, PyResult, PyObject, PyInt, PyDict, PyTuple, PyIterator, ObjectProtocol, NoArgs};
+use cpython::{Python, PyResult, PyObject, PyInt, PyDict, PyTuple, PyIterator, ObjectProtocol, NoArgs, ToPyObject};
 
-py_class!(pub class InterruptableBinding |py| {
-    data wrapped: PyObject;
-    def __new__(_cls, func: PyObject) -> PyResult<InterruptableBinding> {
-        InterruptableBinding::create_instance(py, func)
-    }
-    // I'd really like to have *args,
-    // but it looks like this isn't supported in
-    // macros yet? Or buggy
-    def __call__(&self, arga: Option<PyObject> = None, argb: Option<PyObject> = None,
+pub fn wrap_binding(py: Python, ob: PyObject, s: &str) -> PyResult<PyObject> {
+    let type_fn = py.eval("type", None, None)?;
+    let obj_t = py.eval("(object,)", None, None)?;
+
+    let name = "InterruptableBinding".into_py_object(py);
+
+    let d = PyDict::new(py);
+    d.set_item(py, "_wrapped", ob)?;
+    d.set_item(py, "__call__", py_fn!(py, __call__(slf: PyObject, arga: Option<PyObject> = None, argb: Option<PyObject> = None,
                         argc: Option<PyObject> = None, argd: Option<PyObject> = None,
                         arge: Option<PyObject> = None, argf: Option<PyObject> = None, verbose: bool = false) -> PyResult<PyObject> {
         let mut all_args: Vec<PyObject> = vec![];
@@ -37,10 +37,12 @@ py_class!(pub class InterruptableBinding |py| {
         let event = mpr.call(py, "Event", NoArgs, None)?;
         let q = mpr.call(py, "Queue", NoArgs, None)?;
 
+        let wrapped = slf.getattr(py, "_wrapped")?;
+
         let locals = PyDict::new(py);
         locals.set_item(py, "event", &event)?;
         locals.set_item(py, "q", &q)?;
-        locals.set_item(py, "f", self.wrapped(py))?;
+        locals.set_item(py, "f", wrapped)?;
         locals.set_item(py, "args", args)?;
         locals.set_item(py, "verbose", verbose)?;
 
@@ -54,8 +56,6 @@ py_class!(pub class InterruptableBinding |py| {
         // in __globals__
         py.run(r#"
 def signalling_f():
-    sys = __import__("sys")
-    sys.stdout = old_stdout
     q.put(f(*args, verbose=verbose))
     event.set()
         "#, Some(&locals), None)?;
@@ -77,11 +77,27 @@ def signalling_f():
 
         let res = q.call_method(py, "get", NoArgs, None)?;
         Ok(res)
-    }
-});
+    }))?;
+    d.set_item(py, "__doc__", s.into_py_object(py))?;
 
-pub fn wrap_binding(py: Python, ob: PyObject) -> PyResult<InterruptableBinding> {
-    InterruptableBinding::create_instance(py, ob)
+    let class = type_fn.call(py, (name, obj_t, d), None)?;
+
+    let inst = class.call(py, NoArgs, None)?;
+
+    // Bind __call__ to the instance correctly
+    let types = py.import("types")?;
+    let mt = types.get(py, "MethodType")?;
+    let cll = inst.getattr(py, "__call__")?;
+
+    let bound_func = mt.call(py, (cll, &inst, &class), None)?;
+
+    // Assign the bound func to the module (important!) and class
+    class.setattr(py, "__call__", &bound_func)?;
+    inst.setattr(py, "__call__", bound_func)?;
+
+    
+
+    Ok(inst)
 }
 
 fn into_pyint(py: Python, x: &PyObject) -> PyResult<PyInt> {

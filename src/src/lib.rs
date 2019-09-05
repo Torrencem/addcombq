@@ -13,9 +13,10 @@ mod public;
 
 macro_rules! add_bindings_to_mod {
     ($py:ident, $pymod:ident, $fn_name:ident, $fn_var_name:ident, $($ex_args:ident),+) => {
+        let docstring = include_str!(concat!("../doc/compiled/", stringify!($fn_name), ".md"));
         let $fn_var_name = py_fn!($py, $fn_name(n: PyObject, $($ex_args : u32),+ , verbose: bool = false));
         $pymod.add($py, concat!("_", stringify!($fn_name)), &$fn_var_name)?;
-        let $fn_var_name = wrap_binding($py, $fn_var_name)?;
+        let $fn_var_name = wrap_binding($py, $fn_var_name, docstring)?;
         $pymod.add($py, stringify!($fn_name), &$fn_var_name)?;
     };
 }

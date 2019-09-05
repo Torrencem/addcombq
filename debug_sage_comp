@@ -12,4 +12,4 @@ tar -C /home/matt/Documents/School/ICERM/sage/build/pkgs/pf_addcomb -zxvf ./pf_a
 
 sage --fix-pkg-checksums
 
-sage -p pf_addcomb
+sage -p pf_addcomb-0.1.spkg

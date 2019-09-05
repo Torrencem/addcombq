@@ -1,5 +1,14 @@
 cd src
 echo building...
+
+echo building doc
+
+cd doc
+python3 build.py
+cd ..
+
+echo building program
+
 if hash ~/.cargo/bin/cargo 2> /dev/null;
 then
 	~/.cargo/bin/cargo build --release
