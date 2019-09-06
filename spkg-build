@@ -24,4 +24,14 @@ fi
 
 mkdir -p build
 
-cp ./target/release/libpf_addcomb.so ./build/_addcomb.so
+# MacOS
+if hash ./target/release/libpf_addcomb.dylib 2> /dev/null;
+then
+	cp ./target/release/libpf_addcomb.dylib ./build/_addcomb.so
+fi
+
+# Linux
+if hash ./target/release/libpf_addcomb.so 2> /dev/null;
+then
+	cp ./target/release/libpf_addcomb.so ./build/_addcomb.so
+fi
