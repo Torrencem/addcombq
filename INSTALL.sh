@@ -20,9 +20,13 @@ then
     exit 1
 fi
 
-SAGE=$(readlink -f $SAGE_MAIN)
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+	SAGE=$(readlink -f $SAGE_MAIN)
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+	SAGE=$(./mac_utils/greadlink.sh $SAGE_MAIN)
+fi
 
-SAGE_DIR=$(dirname $SAGE)
+SAGE_DIR="$(dirname "$SAGE")"
 
 echo Installing to sage installed in directory $SAGE_DIR
 read -p "Do you want to continue?" yn
