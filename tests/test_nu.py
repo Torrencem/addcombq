@@ -28,7 +28,7 @@ class TestNu(unittest.TestCase):
         # Based on Proposition A.2
 
         self.assertEqual(nu(30, 3, 0), 1)
-        self.assertEqual(nu((50,10), 2, 0), 1)
+        self.assertEqual(nu((50, 10), 2, 0), 1)
         self.assertEqual(nu(30, 2, 1), 2)
         self.assertEqual(nu((10, 2), 4, 1), 4)
         self.assertEqual(nu((5, 5), 1, 10), 1)

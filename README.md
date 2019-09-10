@@ -10,6 +10,7 @@ Are We Release Yet? Important goals towards release:
 - [x] Make all functions support intervals being passed instead of h's
 - [ ] Clean up the code from interval argument conversions. In particular, find the TODO, and get rid of the .unwrap()s in valid code paths and replaces with try!'s and Results
 - [ ] Add contributing / writing more functions guideline for codebase
+- [ ] Make code styles more consistent
 - [x] Add License
 - [ ] Fix placeholder SPKG.txt
 - [ ] Add documentation for non-exposed rust functions (`exact_set` and `fast_set`)
