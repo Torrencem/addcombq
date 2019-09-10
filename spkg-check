@@ -1,0 +1,5 @@
+echo "running tests..."
+
+cd tests
+
+sage-python23 test_*.py -v

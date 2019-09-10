@@ -3,6 +3,7 @@ src/target
 src/build
 src/addcomb.egg-info
 src/dist
-pf_*.tar.gz
-pf_*.spkg
+addcomb*.tar.gz
+addcomb*.spkg
 src/doc/compiled
+.vscode

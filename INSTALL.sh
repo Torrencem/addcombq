@@ -46,6 +46,11 @@ tar -C $SAGE_DIR/build/pkgs/addcombq -zxvf ./addcombq-$(ver).tar.gz
 
 sage --package fix-checksum
 
-sage -p addcombq-0.1
+if [ "$1" == "test" ];
+then
+    sage -p -c addcombq-0.1
+else
+    sage -p addcombq-0.1
+fi
 
 echo "Done installing to sage"
