@@ -1,4 +1,4 @@
-# pf\_addcomb
+# addcombq
 
 This is a Sage package (.spkg) for fast Additive Combinatorics functions in Sage.
 
