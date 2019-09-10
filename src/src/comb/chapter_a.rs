@@ -28,7 +28,7 @@ pub fn nu(n: u32, m: u32, h: u32, verbose: bool) -> u32 {
     curr_greatest
 }
 
-pub fn nu_interval(n: u32, m: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn nu_interval(n: u32, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mut greatest_set = empty_set();
     let mut curr_greatest = 0;
     for a in each_set_exact(n, m) {
@@ -66,7 +66,7 @@ pub fn nu_signed(n: u32, m: u32, h: u32, verbose: bool) -> u32 {
     curr_greatest
 }
 
-pub fn nu_signed_interval(n: u32, m: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn nu_signed_interval(n: u32, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mut greatest_set = empty_set();
     let mut curr_greatest = 0;
     for a in each_set_exact(n, m) {
@@ -104,7 +104,7 @@ pub fn nu_restricted(n: u32, m: u32, h: u32, verbose: bool) -> u32 {
     curr_greatest
 }
 
-pub fn nu_restricted_interval(n: u32, m: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn nu_restricted_interval(n: u32, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mut greatest_set = empty_set();
     let mut curr_greatest = 0;
     for a in each_set_exact(n, m) {
@@ -142,7 +142,7 @@ pub fn nu_signed_restricted(n: u32, m: u32, h: u32, verbose: bool) -> u32 {
     curr_greatest
 }
 
-pub fn nu_signed_restricted_interval(n: u32, m: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn nu_signed_restricted_interval(n: u32, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mut greatest_set = empty_set();
     let mut curr_greatest = 0;
     for a in each_set_exact(n, m) {
@@ -159,21 +159,4 @@ pub fn nu_signed_restricted_interval(n: u32, m: u32, ia: u32, ib: u32, verbose: 
     info!(verbose, "Set with greatest sumset: {}", greatest_set);
     info!(verbose, "(sumsets to:) {}", greatest_set.hfoldintervalrestrictedsignedsumset((ia, ib), n));
     curr_greatest
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    // Page 111
-    #[test]
-    pub fn test_nu_interval() {
-        for n in [6, 10, 17].iter() {
-            for m in 3..5 {
-                for s in 1..3 {
-                    assert!(nu_interval(*n, m, 0, s, false) == nu(*n, m + 1, s, false));
-                }
-            }
-        }
-    }
 }

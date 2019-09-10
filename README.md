@@ -7,6 +7,8 @@ To install into your local sage, make sure the sage installation is in PATH as "
 Are We Release Yet? Important goals towards release:
 
 - [x] Port all code from the old WASM codebase
+- [x] Make all functions support intervals being passed instead of h's
+- [ ] Clean up the code from interval argument conversions. In particular, find the TODO, and get rid of the .unwrap()s in valid code paths and replaces with try!'s and Results
 - [ ] Add contributing / writing more functions guideline for codebase
 - [x] Add License
 - [ ] Fix placeholder SPKG.txt

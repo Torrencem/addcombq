@@ -33,16 +33,12 @@ class TestNu(unittest.TestCase):
         self.assertEqual(nu((10, 2), 4, 1), 4)
         self.assertEqual(nu((5, 5), 1, 10), 1)
 
-    def test_nu_signed_values(self):
-        # Based on part of the table in Problem A.18
-        pass
-
-
     def test_nu_signed_edge_cases(self):
         # Edge cases
         # Based on Proposition A.12
 
         self.assertEqual(nu(3, 2, 0), 1)
         self.assertEqual(nu((4,10), 3, 0), 1)
+
 if __name__ == "__main__":
     unittest.main()

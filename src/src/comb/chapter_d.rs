@@ -23,7 +23,7 @@ pub fn rho(n: u32, m: u32, h: u32, verbose: bool) -> u32 {
     curr_smallest
 }
 
-pub fn rho_interval(n: u32, m: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn rho_interval(n: u32, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mut smallest_set = empty_set();
     let mut curr_smallest = n;
     for a in each_set_exact(n, m) {
@@ -54,7 +54,7 @@ pub fn rho_signed(n: u32, m: u32, h: u32, verbose: bool) -> u32 {
 }
 
 
-pub fn rho_signed_interval(n: u32, m: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn rho_signed_interval(n: u32, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mut smallest_set = empty_set();
     let mut curr_smallest = n;
     for a in each_set_exact(n, m) {
@@ -84,7 +84,7 @@ pub fn rho_restricted(n: u32, m: u32, h: u32, verbose: bool) -> u32 {
     curr_smallest
 }
 
-pub fn rho_restricted_interval(n: u32, m: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn rho_restricted_interval(n: u32, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mut smallest_set = empty_set();
     let mut curr_smallest = n;
     for a in each_set_exact(n, m) {
@@ -114,7 +114,7 @@ pub fn rho_signed_restricted(n: u32, m: u32, h: u32, verbose: bool) -> u32 {
     curr_smallest
 }
 
-pub fn rho_signed_restricted_interval(n: u32, m: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn rho_signed_restricted_interval(n: u32, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mut smallest_set = empty_set();
     let mut curr_smallest = n;
     for a in each_set_exact(n, m) {

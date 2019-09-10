@@ -17,15 +17,15 @@ pub fn phi(n: u32, h: u32, verbose: bool) -> u32 {
     if h == 1 {
         return n;
     }
-    let res = _phi_interval(n, 0, h, verbose);
+    let res = _phi_interval(n, (0, h), verbose);
     res + 1
 }
 
-pub fn phi_interval(n: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
-    _phi_interval(n, ia, ib, verbose)
+pub fn phi_interval(n: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
+    _phi_interval(n, (ia, ib), verbose)
 }
 
-fn _phi_interval(n: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+fn _phi_interval(n: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mut lower_bound = 1;
     // Proposition B.10
     if (ia, ib).0 == 0 {
@@ -63,7 +63,7 @@ pub fn phi_signed(n: u32, h: u32, verbose: bool) -> u32 {
     unreachable!();
 }
 
-pub fn phi_signed_interval(n: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn phi_signed_interval(n: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     for m in 1u32.. {
         for a in each_set_exact(n, m) {
             if a.hfoldintervalsignedsumset((ia, ib), n).isfull(n) {
@@ -94,7 +94,7 @@ pub fn phi_restricted(n: u32, h: u32, verbose: bool) -> u32 {
     unreachable!();
 }
 
-pub fn phi_restricted_interval(n: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn phi_restricted_interval(n: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mut lower_bound = 1u32;
     // Proposition B.73
     if (ia, ib) == (0, 2) {
@@ -124,7 +124,7 @@ pub fn phi_signed_restricted(n: u32, h: u32, verbose: bool) -> u32 {
     unreachable!();
 }
 
-pub fn phi_signed_restricted_interval(n: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn phi_signed_restricted_interval(n: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     for m in 1u32.. {
         for a in each_set_exact(n, m) {
             if a.hfoldintervalrestrictedsignedsumset((ia, ib), n).isfull(n) {
@@ -134,30 +134,4 @@ pub fn phi_signed_restricted_interval(n: u32, ia: u32, ib: u32, verbose: bool) -
         }
     }
     unreachable!();
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    // From table on page 129
-    #[test]
-    pub fn test_phi_interval() {
-        assert_eq!(phi_interval(17, 0, 2, false), 5);
-        assert_eq!(phi_interval(18, 0, 2, false), 6);
-        assert_eq!(phi_interval(9, 0, 3, false),  3);
-        assert_eq!(phi_interval(8, 0, 3, false),  2);
-        assert_eq!(phi_interval(26, 0, 4, false), 3);
-        assert_eq!(phi_interval(49, 0, 4, false), 4);
-    }
-
-    // From table on page 147
-    #[test]
-    pub fn test_phi_restricted_interval() {
-        assert_eq!(phi_restricted_interval(10, 0, 2, false), 4);
-        assert_eq!(phi_restricted_interval(3, 0, 2, false), 2);
-        assert_eq!(phi_restricted_interval(5, 0, 3, false), 3);
-        assert_eq!(phi_restricted_interval(8, 0, 4, false), 3);
-        assert_eq!(phi_restricted_interval(9, 0, 4, false), 4);
-    }
 }

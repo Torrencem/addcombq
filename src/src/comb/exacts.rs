@@ -30,7 +30,7 @@ pub fn nu_exact(gname: &[u32], m: u32, h: u32, verbose: bool) -> u32 {
     curr_greatest
 }
 
-pub fn nu_interval_exact(gname: &[u32], m: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn nu_interval_exact(gname: &[u32], m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     let mut greatest_set = empty_set();
     let mut curr_greatest = 0;
@@ -70,7 +70,7 @@ pub fn nu_signed_exact(gname: &[u32], m: u32, h: u32, verbose: bool) -> u32 {
     curr_greatest
 }
 
-pub fn nu_signed_interval_exact(gname: &[u32], m: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn nu_signed_interval_exact(gname: &[u32], m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     let mut greatest_set = empty_set();
     let mut curr_greatest = 0;
@@ -110,7 +110,7 @@ pub fn nu_restricted_exact(gname: &[u32], m: u32, h: u32, verbose: bool) -> u32 
     curr_greatest
 }
 
-pub fn nu_restricted_interval_exact(gname: &[u32], m: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn nu_restricted_interval_exact(gname: &[u32], m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     let mut greatest_set = empty_set();
     let mut curr_greatest = 0;
@@ -150,7 +150,7 @@ pub fn nu_signed_restricted_exact(gname: &[u32], m: u32, h: u32, verbose: bool) 
     curr_greatest
 }
 
-pub fn nu_signed_restricted_interval_exact(gname: &[u32], m: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn nu_signed_restricted_interval_exact(gname: &[u32], m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     let mut greatest_set = empty_set();
     let mut curr_greatest = 0;
@@ -179,15 +179,15 @@ pub fn phi_exact(gname: &[u32], h: u32, verbose: bool) -> u32 {
     if h == 1 {
         return gsize(&mod_v);
     }
-    let res = _phi_interval(gname, 0, h, verbose);
+    let res = _phi_interval(gname, (0, h), verbose);
     res + 1
 }
 
-pub fn phi_interval_exact(gname: &[u32], ia: u32, ib: u32, verbose: bool) -> u32 {
-    _phi_interval(gname, ia, ib, verbose)
+pub fn phi_interval_exact(gname: &[u32], (ia, ib): (u32, u32), verbose: bool) -> u32 {
+    _phi_interval(gname, (ia, ib), verbose)
 }
 
-fn _phi_interval(gname: &[u32], ia: u32, ib: u32, verbose: bool) -> u32 {
+fn _phi_interval(gname: &[u32], (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     let lower_bound = 1;
     // Proposition B.10
@@ -227,7 +227,7 @@ pub fn phi_signed_exact(gname: &[u32], h: u32, verbose: bool) -> u32 {
     unreachable!();
 }
 
-pub fn phi_signed_interval_exact(gname: &[u32], ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn phi_signed_interval_exact(gname: &[u32], (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     for m in 1u32.. {
         for a in each_set_exact(m, &mod_v) {
@@ -260,7 +260,7 @@ pub fn phi_restricted_exact(gname: &[u32], h: u32, verbose: bool) -> u32 {
     unreachable!();
 }
 
-pub fn phi_restricted_interval_exact(gname: &[u32], ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn phi_restricted_interval_exact(gname: &[u32], (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     let lower_bound = 1u32;
     // Proposition B.73
@@ -292,7 +292,7 @@ pub fn phi_signed_restricted_exact(gname: &[u32], h: u32, verbose: bool) -> u32 
     unreachable!();
 }
 
-pub fn phi_signed_restricted_interval_exact(gname: &[u32], ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn phi_signed_restricted_interval_exact(gname: &[u32], (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     for m in 1u32.. {
         for a in each_set_exact(m, &mod_v) {
@@ -521,7 +521,7 @@ pub fn rho_exact(gname: &[u32], m: u32, h: u32, verbose: bool) -> u32 {
     curr_smallest
 }
 
-pub fn rho_interval_exact(gname: &[u32], m: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn rho_interval_exact(gname: &[u32], m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     let mut smallest_set = empty_set();
     let mut curr_smallest = gsize(&mod_v);
@@ -554,7 +554,7 @@ pub fn rho_signed_exact(gname: &[u32], m: u32, h: u32, verbose: bool) -> u32 {
 }
 
 
-pub fn rho_signed_interval_exact(gname: &[u32], m: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn rho_signed_interval_exact(gname: &[u32], m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     let mut smallest_set = empty_set();
     let mut curr_smallest = gsize(&mod_v);
@@ -586,7 +586,7 @@ pub fn rho_restricted_exact(gname: &[u32], m: u32, h: u32, verbose: bool) -> u32
     curr_smallest
 }
 
-pub fn rho_restricted_interval_exact(gname: &[u32], m: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn rho_restricted_interval_exact(gname: &[u32], m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     let mut smallest_set = empty_set();
     let mut curr_smallest = gsize(&mod_v);
@@ -618,7 +618,7 @@ pub fn rho_signed_restricted_exact(gname: &[u32], m: u32, h: u32, verbose: bool)
     curr_smallest
 }
 
-pub fn rho_signed_restricted_interval_exact(gname: &[u32], m: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn rho_signed_restricted_interval_exact(gname: &[u32], m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     let mut smallest_set = empty_set();
     let mut curr_smallest = gsize(&mod_v);
@@ -653,7 +653,7 @@ pub fn chi_exact(gname: &[u32], h: u32, verbose: bool) -> u32 {
         unreachable!();
 }
 
-pub fn chi_interval_exact(gname: &[u32], ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn chi_interval_exact(gname: &[u32], (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     for m in 1.. {
         let mut found = false;
@@ -691,7 +691,7 @@ pub fn chi_signed_exact(gname: &[u32], h: u32, verbose: bool) -> u32 {
     unreachable!();
 }
 
-pub fn chi_signed_interval_exact(gname: &[u32], ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn chi_signed_interval_exact(gname: &[u32], (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     for m in 1.. {
         let mut found = false;
@@ -729,7 +729,7 @@ pub fn chi_restricted_exact(gname: &[u32], h: u32, verbose: bool) -> u32 {
     unreachable!();
 }
 
-pub fn chi_restricted_interval_exact(gname: &[u32], ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn chi_restricted_interval_exact(gname: &[u32], (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     for m in 1.. {
         let mut found = false;
@@ -767,7 +767,7 @@ pub fn chi_signed_restricted_exact(gname: &[u32], h: u32, verbose: bool) -> u32 
     unreachable!();
 }
 
-pub fn chi_signed_restricted_interval_exact(gname: &[u32], ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn chi_signed_restricted_interval_exact(gname: &[u32], (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     for m in 1.. {
         let mut found = false;
@@ -805,7 +805,7 @@ pub fn tau_exact(gname: &[u32], h: u32, verbose: bool) -> u32 {
     unreachable!();
 }
 
-pub fn tau_interval_exact(gname: &[u32], ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn tau_interval_exact(gname: &[u32], (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     for m in (1..=gsize(&mod_v)).rev() {
         let mut found = false;
@@ -863,7 +863,7 @@ pub fn tau_restricted_exact(gname: &[u32], h: u32, verbose: bool) -> u32 {
     unreachable!();
 }
 
-pub fn tau_restricted_interval_exact(gname: &[u32], ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn tau_restricted_interval_exact(gname: &[u32], (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     for m in (1..=gsize(&mod_v)).rev() {
         let mut found = false;
@@ -901,7 +901,7 @@ pub fn tau_signed_exact(gname: &[u32], h: u32, verbose: bool) -> u32 {
     unreachable!();
 }
 
-pub fn tau_signed_interval_exact(gname: &[u32], ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn tau_signed_interval_exact(gname: &[u32], (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     for m in (1..gsize(&mod_v)).rev() {
         let mut found = false;
@@ -939,7 +939,7 @@ pub fn tau_signed_restricted_exact(gname: &[u32], h: u32, verbose: bool) -> u32 
     unreachable!();
 }
 
-pub fn tau_signed_restricted_interval_exact(gname: &[u32], ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn tau_signed_restricted_interval_exact(gname: &[u32], (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mod_v = gname.to_vec();
     for m in (1..=gsize(&mod_v)).rev() {
         let mut found = false;

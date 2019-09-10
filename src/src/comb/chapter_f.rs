@@ -26,7 +26,7 @@ pub fn tau(n: u32, h: u32, verbose: bool) -> u32 {
     unreachable!();
 }
 
-pub fn tau_interval(n: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn tau_interval(n: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     for m in (1..=n).rev() {
         let mut found = false;
         for a in each_set_exact_no_zero(n, m) {
@@ -82,7 +82,7 @@ pub fn tau_restricted(n: u32, h: u32, verbose: bool) -> u32 {
     unreachable!();
 }
 
-pub fn tau_restricted_interval(n: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn tau_restricted_interval(n: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     for m in (1..=n).rev() {
         let mut found = false;
         for a in each_set_exact(n, m) {
@@ -118,7 +118,7 @@ pub fn tau_signed(n: u32, h: u32, verbose: bool) -> u32 {
     unreachable!();
 }
 
-pub fn tau_signed_interval(n: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn tau_signed_interval(n: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     for m in (1..n).rev() {
         let mut found = false;
         for a in each_set_exact_no_zero(n, m) {
@@ -154,7 +154,7 @@ pub fn tau_signed_restricted(n: u32, h: u32, verbose: bool) -> u32 {
     unreachable!();
 }
 
-pub fn tau_signed_restricted_interval(n: u32, ia: u32, ib: u32, verbose: bool) -> u32 {
+pub fn tau_signed_restricted_interval(n: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     for m in (1..=n).rev() {
         let mut found = false;
         for a in each_set_exact(n, m) {
