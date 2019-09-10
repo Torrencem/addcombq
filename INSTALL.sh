@@ -36,16 +36,16 @@ case $yn in
     * ) echo "Installing...";;
 esac
 
-rm $SAGE_DIR/upstream/pf_addcomb-$(ver).tar.gz
-cp ./pf_addcomb-$(ver).tar.gz $SAGE_DIR/upstream/pf_addcomb-$(ver).tar.gz
+rm $SAGE_DIR/upstream/addcombq-$(ver).tar.gz
+cp ./addcombq-$(ver).tar.gz $SAGE_DIR/upstream/addcombq-$(ver).tar.gz
 
-rm -r $SAGE_DIR/build/pkgs/pf_addcomb
+rm -r $SAGE_DIR/build/pkgs/addcombq
 
-mkdir $SAGE_DIR/build/pkgs/pf_addcomb
-tar -C $SAGE_DIR/build/pkgs/pf_addcomb -zxvf ./pf_addcomb-$(ver).tar.gz
+mkdir $SAGE_DIR/build/pkgs/addcombq
+tar -C $SAGE_DIR/build/pkgs/addcombq -zxvf ./addcombq-$(ver).tar.gz
 
 sage --package fix-checksum
 
-sage -p pf_addcomb-0.1
+sage -p addcombq-0.1
 
 echo "Done installing to sage"

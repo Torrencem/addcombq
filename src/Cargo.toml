@@ -1,11 +1,11 @@
 [package]
-name = "pf_addcomb"
+name = "addcombq"
 version = "0.1.0"
 authors = ["Matt Torrence <gh-Torrencem>"]
 edition = "2018"
 
 [lib]
-name = "pf_addcomb"
+name = "addcombq"
 crate-type = ["dylib"]
 
 [dependencies]

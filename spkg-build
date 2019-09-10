@@ -27,13 +27,13 @@ echo building program
 mkdir -p build
 
 # MacOS
-if hash ./target/release/libpf_addcomb.dylib 2> /dev/null;
+if hash ./target/release/libaddcombq.dylib 2> /dev/null;
 then
-	cp ./target/release/libpf_addcomb.dylib ./build/_addcomb.so
+	cp ./target/release/libaddcombq.dylib ./build/_addcomb.so
 fi
 
 # Linux
-if hash ./target/release/libpf_addcomb.so 2> /dev/null;
+if hash ./target/release/libaddcombq.so 2> /dev/null;
 then
-	cp ./target/release/libpf_addcomb.so ./build/_addcomb.so
+	cp ./target/release/libaddcombq.so ./build/_addcomb.so
 fi
