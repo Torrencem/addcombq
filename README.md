@@ -9,6 +9,7 @@ Are We Release Yet? Important goals towards release:
 - [x] Port all code from the old WASM codebase
 - [ ] Add contributing / writing more functions guideline for codebase
 - [ ] Add License
+- [ ] Fix placeholder SPKG.txt
 - [ ] Add documentation for non-exposed rust functions (`exact_set` and `fast_set`)
 - [ ] Finish writing specific documentation for each b_function, possibly with the help of contributors
 - [ ] Setup a structure for a test suite `spkg-check` written in sage, which should run tests against most tables and some bounds in the book.
