@@ -22,4 +22,4 @@ Are We Release Yet? Important goals towards release:
 - [ ] Be able to compile the current documentation into web format using BeautifulSoup and Markdown packages for python
 - [ ] Fix the weird internet behavior from spkg-build on Mac (looks unlikely unfortunately)
 - [ ] (optional) Improve error messages for "reasonable" failures in wrapper functions (such as invalid argument types)
-- [ ] Make work on sage with Python3. The CPython package in Rust must be given a different feature flag. Also, might want to use `sage-python23` instead of `python` in installation / tests
+- [ ] Make work on sage with Python3. The CPython package in Rust must be given a different feature flag.
