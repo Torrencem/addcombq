@@ -8,7 +8,8 @@ Are We Release Yet? Important goals towards release:
 
 - [x] Port all code from the old WASM codebase
 - [x] Make all functions support intervals being passed instead of h's
-- [ ] Clean up the code from interval argument conversions. In particular, find the TODO, and get rid of the .unwrap()s in valid code paths and replaces with try!'s and Results
+- [x] Clean up the code from interval argument conversions. In particular, find the TODO, and get rid of the .unwrap()s in valid code paths and replaces with try!'s and Results
+- [ ] Add some tests for error cases
 - [ ] Add contributing / writing more functions guideline for codebase
 - [ ] Make code styles more consistent
 - [x] Add License

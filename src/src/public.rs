@@ -13,7 +13,8 @@ use std::any::Any;
 
 use crate::comb::exacts;
 
-use cpython::{Python, PyResult, PyObject, PyInt, PyDict, PyTuple, PyIterator, ObjectProtocol, NoArgs, ToPyObject, PythonObject};
+use cpython::{Python, PyResult, PyObject, PyInt, PyDict, PyTuple, PyIterator, ObjectProtocol, NoArgs, ToPyObject, PythonObject, PyErr};
+use cpython::exc;
 
 pub fn wrap_binding(py: Python, ob: PyObject, s: &str) -> PyResult<PyObject> {
     let type_fn = py.eval("type", None, None)?;
@@ -161,23 +162,28 @@ impl Into<(u32, u32)> for ArgEither {
     }
 }
 
-fn format_arg<T: Any>(py: &Python, arg: &T) -> ArgEither {
+fn format_arg<T: Any>(py: &Python, arg: &T) -> PyResult<ArgEither> {
     let value_arg = arg as &dyn Any;
     match value_arg.downcast_ref::<PyObject>() {
         Some(pobj) => {
             let asint = into_pyint(*py, pobj);
             if let Ok(x) = asint {
-                ArgEither::Val(x.value(*py) as u32)
+                Ok(ArgEither::Val(x.value(*py) as u32))
             } else {
-                let mut piter = into_pyiter(py, pobj).unwrap();
-                // TODO Change this function to return a Result instead of this monstrocity:
-                let a: PyInt = into_pyint(*py, &piter.next().unwrap().unwrap()).unwrap();
-                let b: PyInt = into_pyint(*py, &piter.next().unwrap().unwrap()).unwrap();
-                ArgEither::Tpl(a.value(*py) as u32, b.value(*py) as u32)
+                let err_message = "expected h argument to be either integer h value or iterable interval [i.e. (0, 3)]";
+                let type_err = || Err(PyErr::new::<exc::TypeError, _>(*py, err_message));
+                let piter = into_pyiter(py, pobj);
+                if let Ok(mut piter) = piter {
+                    let a: PyInt = into_pyint(*py, &piter.next().unwrap_or_else(type_err)?)?;
+                    let b: PyInt = into_pyint(*py, &piter.next().unwrap_or_else(type_err)?)?;
+                    Ok(ArgEither::Tpl(a.value(*py) as u32, b.value(*py) as u32))
+                } else {
+                    Err(PyErr::new::<exc::TypeError, _>(*py, err_message).into())
+                }
             }
         },
         None => {
-            ArgEither::Val(*value_arg.downcast_ref::<u32>().unwrap())
+            Ok(ArgEither::Val(*value_arg.downcast_ref::<u32>().unwrap()))
         }
     }
 }
@@ -210,9 +216,9 @@ macro_rules! py_binding {
                     let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
                     let val: u32;
                     if !icall {
-                        val = $fs_version(n, $(format_arg(&py, &$ex_args).into()),+, verbose);
+                        val = $fs_version(n, $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                     } else {
-                        val = $fs_int_version(n, $(format_arg(&py, &$ex_args).into()),+, verbose);
+                        val = $fs_int_version(n, $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                     }
                     // Stop c_out capturing
                     capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
@@ -221,9 +227,9 @@ macro_rules! py_binding {
                     let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
                     let val: u32;
                     if !icall {
-                        val = $ex_version(&[n], $(format_arg(&py, &$ex_args).into()),+, verbose);
+                        val = $ex_version(&[n], $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                     } else {
-                        val = $ex_int_version(&[n], $(format_arg(&py, &$ex_args).into()),+, verbose);
+                        val = $ex_int_version(&[n], $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                     }
                     capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
                     Ok(val)
@@ -239,9 +245,9 @@ macro_rules! py_binding {
                 let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
                 let val: u32;
                 if !icall {
-                    val = $ex_version(tmp.as_slice(), $(format_arg(&py, &$ex_args).into()),+, verbose);
+                    val = $ex_version(tmp.as_slice(), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                 } else {
-                    val = $ex_int_version(tmp.as_slice(), $(format_arg(&py, &$ex_args).into()),+, verbose);
+                    val = $ex_int_version(tmp.as_slice(), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                 }
                 capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
                 Ok(val)
