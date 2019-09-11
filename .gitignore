@@ -7,3 +7,5 @@ addcomb*.tar.gz
 addcomb*.spkg
 src/doc/compiled
 .vscode
+tests/*.pyc
+tests/__pycache__
