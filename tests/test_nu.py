@@ -6,7 +6,7 @@ from common import from_table
 
 class TestNu(unittest.TestCase):
 
-    def test_nu_values(self):
+    def test_values(self):
         # Based on part of the table in Problem A.5
         correct_table = {
             11: 2, 12: 3,
@@ -24,32 +24,6 @@ class TestNu(unittest.TestCase):
 
         self.assertDictEqual(correct_table, table)
 
-    def test_nu_edge_cases(self):
-        from_table(self.assertEqual, {
-            nu: {
-                # Based on Proposition A.2
-                (30, 3, 0): 1,
-                ((50, 10), 2, 0): 1,
-                (30, 2, 1): 2,
-                ((10, 2), 4, 1): 4,
-                ((5, 5), 1, 10): 1
-            }
-        })
-
-    def test_nu_signed_edge_cases(self):
-        from_table(self.assertEqual, {
-            nu_signed: {
-                # Based on Proposition A.12
-                (3, 2, 0): 1,
-                ((4, 10), 3, 0): 1,
-                # Interval
-                (6, 5, (0, 1)): 6,
-                # Proposition A.19
-                (10, 1, (0, 2)): 5
-            }
-        })
-    
-    def test_nu_restricted_values(self):
         # From Problem A.31
         from_table(self.assertEqual, {
             nu_restricted: {
@@ -58,9 +32,26 @@ class TestNu(unittest.TestCase):
                 (17, 6, 4): 14
             }
         })
-
-    def test_nu_restricted_edge_cases(self):
+    
+    def test_edge_cases(self):
         from_table(self.assertEqual, {
+            nu: {
+                # Based on Proposition A.2
+                (30, 3, 0): 1,
+                ((50, 10), 2, 0): 1,
+                (30, 2, 1): 2,
+                ((10, 2), 4, 1): 4,
+                ((5, 5), 1, 10): 1
+            },
+            nu_signed: {
+                # Based on Proposition A.12
+                (3, 2, 0): 1,
+                ((4, 10), 3, 0): 1,
+                # Interval
+                (6, 5, (0, 1)): 6,
+                # Proposition A.19
+                (10, 1, (0, 2)): 5
+            },
             nu_restricted: {
                 # Proposition A.26
                 (10, 3, 0): 1,
@@ -68,6 +59,16 @@ class TestNu(unittest.TestCase):
                 ((2, 4), 4, 3): 4,
                 (15, 3, 5): 0,
                 ((5, 10), 2, 4): 0,
+            },
+            nu_signed_restricted: {
+                # Proposition A.39
+                (10, 3, 0): 1,
+                ((4, 6), 2, 0): 1,
+                (7, 5, 1): 7,
+                # Interval
+                # Proposition A.46
+                (10, 2, (0, 0)): 1,
+                ((4, 6), 2, (0, 0)): 1
             }
         })
 
