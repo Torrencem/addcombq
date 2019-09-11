@@ -1,5 +1,5 @@
-use std::cmp;
 use itertools::max;
+use std::cmp;
 
 pub mod chapter_a;
 pub mod chapter_b;
@@ -28,18 +28,18 @@ pub fn c(h: u32, m: u32) -> u32 {
     if h == 0 {
         return 0;
     }
-    (1..=cmp::min(m, h-1)+1).map(|i| {
-        choose(m, i) * choose(h - 1, i - 1) * 2u32.pow(i)
-    }).sum()
+    (1..=cmp::min(m, h - 1) + 1)
+        .map(|i| choose(m, i) * choose(h - 1, i - 1) * 2u32.pow(i))
+        .sum()
 }
 
 pub fn a(h: u32, m: u32) -> u32 {
     if h == 0 || m == 0 {
         return 1;
     }
-    (0..=cmp::min(m, h)+1).map(|i| {
-        choose(m, i) * choose(h, i) * 2u32.pow(i)
-    }).sum()
+    (0..=cmp::min(m, h) + 1)
+        .map(|i| choose(m, i) * choose(h, i) * 2u32.pow(i))
+        .sum()
 }
 
 #[inline]
@@ -109,7 +109,8 @@ pub fn v(g: u32, n: u32, h: u32) -> u32 {
         } else {
             (((d - 1 - gcd(*d, g)) / h) + 1) * (n / d)
         }
-    })).unwrap()
+    }))
+    .unwrap()
 }
 
 pub fn is_invariant(v: &Vec<u32>) -> bool {

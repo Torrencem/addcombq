@@ -1,5 +1,5 @@
-use std::cmp;
 use crate::fastset::*;
+use std::cmp;
 
 macro_rules! info {
     ($verb_cond:ident, $( $arg:tt )+) => {
@@ -30,7 +30,7 @@ pub fn mu(n: u32, k: u32, l: u32, verbose: bool) -> u32 {
             return m - 1;
         }
     }
-    return n -1;
+    return n - 1;
 }
 
 pub fn mu_signed(n: u32, k: u32, l: u32, verbose: bool) -> u32 {
@@ -45,7 +45,12 @@ pub fn mu_signed(n: u32, k: u32, l: u32, verbose: bool) -> u32 {
             k_a.intersect(&l_a);
             if k_a.isempty() {
                 info!(verbose, "For m={}, found {}, which is sum-free", m, a);
-                info!(verbose, "(kA = {}, lA = {})", a.hfoldsignedsumset(k, n), l_a);
+                info!(
+                    verbose,
+                    "(kA = {}, lA = {})",
+                    a.hfoldsignedsumset(k, n),
+                    l_a
+                );
                 found = true;
                 break;
             }
@@ -65,8 +70,8 @@ pub fn mu_restricted(n: u32, k: u32, l: u32, verbose: bool) -> u32 {
         return n;
     }
     let mut lower_bound = 1;
-    if l == 1 && (n == k*(k*k - 1)) {
-        lower_bound = cmp::max(n/(k + 1) + k - 1, k*k);
+    if l == 1 && (n == k * (k * k - 1)) {
+        lower_bound = cmp::max(n / (k + 1) + k - 1, k * k);
         info!(verbose, "Using lower bound: {}", lower_bound);
     }
     for m in lower_bound..n {
@@ -77,7 +82,12 @@ pub fn mu_restricted(n: u32, k: u32, l: u32, verbose: bool) -> u32 {
             k_a.intersect(&l_a);
             if k_a.isempty() {
                 info!(verbose, "For m={}, found {}, which is sum-free", m, a);
-                info!(verbose, "(kA = {}, lA = {})", a.hfoldrestrictedsumset(k, n), l_a);
+                info!(
+                    verbose,
+                    "(kA = {}, lA = {})",
+                    a.hfoldrestrictedsumset(k, n),
+                    l_a
+                );
                 found = true;
                 break;
             }
@@ -104,7 +114,12 @@ pub fn mu_signed_restricted(n: u32, k: u32, l: u32, verbose: bool) -> u32 {
             k_a.intersect(&l_a);
             if k_a.isempty() {
                 info!(verbose, "For m={}, found {}, which is sum-free", m, a);
-                info!(verbose, "(kA = {}, lA = {})", a.hfoldrestrictedsignedsumset(k, n), l_a);
+                info!(
+                    verbose,
+                    "(kA = {}, lA = {})",
+                    a.hfoldrestrictedsignedsumset(k, n),
+                    l_a
+                );
                 found = true;
                 break;
             }

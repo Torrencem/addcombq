@@ -1,5 +1,5 @@
-use std::u64::MAX;
 use std::fmt;
+use std::u64::MAX;
 
 #[inline]
 fn bit_scan_low(val: u64) -> u32 {
@@ -25,11 +25,13 @@ pub fn cycle_rev(scontents: u64, i: u32, m: u32) -> u64 {
 
 #[derive(Copy, Clone)]
 pub struct FastSet {
-    pub contents: u64
+    pub contents: u64,
 }
 
 pub fn singleton(i: u32) -> FastSet {
-    return FastSet { contents: (1u64 << i) };
+    return FastSet {
+        contents: (1u64 << i),
+    };
 }
 
 pub fn empty_set() -> FastSet {
@@ -38,7 +40,7 @@ pub fn empty_set() -> FastSet {
 
 impl FastSet {
     #[inline]
-    pub fn access(&self, i: u32) -> bool{
+    pub fn access(&self, i: u32) -> bool {
         // assert!(i < 64);
         return self.contents & (1u64 << i) > 0;
     }
@@ -133,11 +135,13 @@ impl Iterator for EachSetExact {
         let first_moveable = 64 - can_be_moved_left.leading_zeros();
         if first_moveable == 0 {
             self.doneflag = true;
-            return Some(FastSet { contents: self.state });
+            return Some(FastSet {
+                contents: self.state,
+            });
         }
         let update_region = !((1 << (first_moveable - 1)) - 1) & !self.setmask;
         let to_fill_left = (self.state & update_region).count_ones() - 1;
-        
+
         let old = self.state;
         // Clear the updated region
         self.state &= !update_region;
@@ -156,11 +160,15 @@ pub fn each_set_exact(max_size: u32, set_size: u32) -> EachSetExact {
     assert!(max_size >= set_size);
     let naivestate = (1u64 << (set_size)) - 1;
     let setmask = !((1u64 << (max_size)) - 1);
-    return EachSetExact {state: naivestate, setmask: setmask, doneflag: false}
+    return EachSetExact {
+        state: naivestate,
+        setmask: setmask,
+        doneflag: false,
+    };
 }
 
 pub struct EachSetExactZero {
-    esetiter: EachSetExact
+    esetiter: EachSetExact,
 }
 
 impl Iterator for EachSetExactZero {
@@ -175,11 +183,13 @@ impl Iterator for EachSetExactZero {
 }
 
 pub fn each_set_exact_zero(max_size: u32, set_size: u32) -> EachSetExactZero {
-    return EachSetExactZero { esetiter: each_set_exact(max_size - 1, set_size - 1) }
+    return EachSetExactZero {
+        esetiter: each_set_exact(max_size - 1, set_size - 1),
+    };
 }
 
 pub struct EachSetExactNoZero {
-    esetiter: EachSetExact
+    esetiter: EachSetExact,
 }
 
 impl Iterator for EachSetExactNoZero {
@@ -193,12 +203,18 @@ impl Iterator for EachSetExactNoZero {
 }
 
 pub fn each_set_exact_no_zero(max_size: u32, set_size: u32) -> EachSetExactNoZero {
-    return EachSetExactNoZero { esetiter: each_set_exact(max_size - 1, set_size) }
+    return EachSetExactNoZero {
+        esetiter: each_set_exact(max_size - 1, set_size),
+    };
 }
 
 impl fmt::Debug for FastSet {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "FastSet {:?}", (0..64).filter(|n| self.access(*n)).collect::<Vec<u32>>())
+        write!(
+            f,
+            "FastSet {:?}",
+            (0..64).filter(|n| self.access(*n)).collect::<Vec<u32>>()
+        )
     }
 }
 

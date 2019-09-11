@@ -50,13 +50,13 @@ pub fn tau_restricted(n: u32, h: u32, verbose: bool) -> u32 {
         if h == 1 {
             return n - 1;
         }
-        if (3 <= h) && (h <= n/2 - 2) {
+        if (3 <= h) && (h <= n / 2 - 2) {
             return n / 2;
         }
-        if h == n/2 - 1 {
+        if h == n / 2 - 1 {
             return n / 2 + 1;
         }
-        if (n/2 <= h) && (h <= n - 2) {
+        if (n / 2 <= h) && (h <= n - 2) {
             return h + 1;
         }
         // h = n - 1 (guaranteed)
@@ -88,7 +88,11 @@ pub fn tau_restricted_interval(n: u32, (ia, ib): (u32, u32), verbose: bool) -> u
         for a in each_set_exact(n, m) {
             if !a.hfoldintervalrestrictedsumset((ia, ib), n).access(0) {
                 info!(verbose, "Found {}, which gives a zero-free sumset", a);
-                info!(verbose, "(gives:) {}", a.hfoldintervalrestrictedsumset((ia, ib), n));
+                info!(
+                    verbose,
+                    "(gives:) {}",
+                    a.hfoldintervalrestrictedsumset((ia, ib), n)
+                );
                 found = true;
                 break;
             }
@@ -124,7 +128,11 @@ pub fn tau_signed_interval(n: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
         for a in each_set_exact_no_zero(n, m) {
             if !a.hfoldintervalsignedsumset((ia, ib), n).access(0) {
                 info!(verbose, "Found {}, which gives a zero-free sumset", a);
-                info!(verbose, "(gives:) {}", a.hfoldintervalsignedsumset((ia, ib), n));
+                info!(
+                    verbose,
+                    "(gives:) {}",
+                    a.hfoldintervalsignedsumset((ia, ib), n)
+                );
                 found = true;
                 break;
             }
@@ -160,7 +168,11 @@ pub fn tau_signed_restricted_interval(n: u32, (ia, ib): (u32, u32), verbose: boo
         for a in each_set_exact(n, m) {
             if !a.hfoldintervalrestrictedsignedsumset((ia, ib), n).access(0) {
                 info!(verbose, "Found {}, which gives a zero-free sumset", a);
-                info!(verbose, "(gives:) {}", a.hfoldintervalrestrictedsignedsumset((ia, ib), n));
+                info!(
+                    verbose,
+                    "(gives:) {}",
+                    a.hfoldintervalrestrictedsignedsumset((ia, ib), n)
+                );
                 found = true;
                 break;
             }
@@ -180,9 +192,7 @@ mod tests {
     #[test]
     fn test_tau_restricted() {
         let correct_table: Vec<u32> = vec![1, 2, 2, 3, 4, 4, 4, 5, 6, 6, 6, 6, 6, 7, 8, 8, 8, 9];
-        let actual_table: Vec<u32> = (1..=18).map(|n| {
-            tau_restricted(n, 3, false)
-        }).collect();
+        let actual_table: Vec<u32> = (1..=18).map(|n| tau_restricted(n, 3, false)).collect();
         assert_eq!(correct_table, actual_table);
     }
 }

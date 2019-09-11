@@ -1,5 +1,5 @@
-use crate::fastset::*;
 use crate::comb::*;
+use crate::fastset::*;
 
 macro_rules! info {
     ($verb_cond:ident, $( $arg:tt )+) => {
@@ -125,7 +125,7 @@ pub fn sigma_restricted_interval(n: u32, s: u32, verbose: bool) -> u32 {
 
 pub fn sigma_signed_restricted(n: u32, h: u32, verbose: bool) -> u32 {
     for m in (1..n).rev() {
-        let expected = choose(m, h)*(2u32).pow(h);
+        let expected = choose(m, h) * (2u32).pow(h);
         let mut found = false;
         for a in each_set_exact_zero(n, m) {
             if a.hfoldrestrictedsignedsumset(h, n).size() == expected {
@@ -144,7 +144,9 @@ pub fn sigma_signed_restricted(n: u32, h: u32, verbose: bool) -> u32 {
 
 pub fn sigma_signed_restricted_interval(n: u32, s: u32, verbose: bool) -> u32 {
     for m in (1..n).rev() {
-        let expected = (0..=cmp::min(s, m)).map(|h| choose(m, h)*(2u32).pow(h)).sum();
+        let expected = (0..=cmp::min(s, m))
+            .map(|h| choose(m, h) * (2u32).pow(h))
+            .sum();
         let mut found = false;
         for a in each_set_exact_zero(n, m) {
             if a.hfoldintervalrestrictedsumset((0, s), n).size() == expected {

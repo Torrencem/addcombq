@@ -1,4 +1,3 @@
-
 use std::convert::TryInto;
 
 use crate::comb::chapter_a;
@@ -13,8 +12,11 @@ use std::any::Any;
 
 use crate::comb::exacts;
 
-use cpython::{Python, PyResult, PyObject, PyInt, PyDict, PyTuple, PyIterator, ObjectProtocol, NoArgs, ToPyObject, PythonObject, PyErr};
 use cpython::exc;
+use cpython::{
+    NoArgs, ObjectProtocol, PyDict, PyErr, PyInt, PyIterator, PyObject, PyResult, PyTuple, Python,
+    PythonObject, ToPyObject,
+};
 
 pub fn wrap_binding(py: Python, ob: PyObject, s: &str) -> PyResult<PyObject> {
     let type_fn = py.eval("type", None, None)?;
@@ -101,8 +103,6 @@ def signalling_f():
     class.setattr(py, "__call__", &bound_func)?;
     inst.setattr(py, "__call__", bound_func)?;
 
-    
-
     Ok(inst)
 }
 
@@ -125,11 +125,15 @@ fn into_pyiter<'p>(py: &'p Python, x: &PyObject) -> PyResult<PyIterator<'p>> {
 // Run the code from capture_c_out.py to setup
 // the capturing functionality
 fn setup_capt_c_out(py: Python) -> PyResult<PyObject> {
-    py.run(r#"
+    py.run(
+        r#"
 def handle_stream(stream):
     if stream:
         print stream,
-        "#, None, None)?;
+        "#,
+        None,
+        None,
+    )?;
 
     py.run(include_str!("capture_c_out.py"), None, None)?;
 
@@ -142,7 +146,7 @@ fn is_int<P: ToPyObject>(py: Python, x: &P) -> bool {
 
 enum ArgEither {
     Val(u32),
-    Tpl(u32, u32)
+    Tpl(u32, u32),
 }
 
 impl Into<u32> for ArgEither {
@@ -184,10 +188,8 @@ fn format_arg<T: Any>(py: &Python, arg: &T) -> PyResult<ArgEither> {
                     Err(PyErr::new::<exc::TypeError, _>(*py, err_message).into())
                 }
             }
-        },
-        None => {
-            Ok(ArgEither::Val(*value_arg.downcast_ref::<u32>().unwrap()))
         }
+        None => Ok(ArgEither::Val(*value_arg.downcast_ref::<u32>().unwrap())),
     }
 }
 
@@ -296,38 +298,231 @@ macro_rules! py_binding_mu {
     };
 }
 
+py_binding!(
+    nu,
+    chapter_a::nu,
+    exacts::nu_exact,
+    chapter_a::nu_interval,
+    exacts::nu_interval_exact,
+    m | u32,
+    h | PyObject
+);
+py_binding!(
+    nu_signed,
+    chapter_a::nu_signed,
+    exacts::nu_signed_exact,
+    chapter_a::nu_signed_interval,
+    exacts::nu_signed_interval_exact,
+    m | u32,
+    h | PyObject
+);
+py_binding!(
+    nu_restricted,
+    chapter_a::nu_restricted,
+    exacts::nu_restricted_exact,
+    chapter_a::nu_restricted_interval,
+    exacts::nu_restricted_interval_exact,
+    m | u32,
+    h | PyObject
+);
+py_binding!(
+    nu_signed_restricted,
+    chapter_a::nu_signed_restricted,
+    exacts::nu_signed_restricted_exact,
+    chapter_a::nu_signed_restricted_interval,
+    exacts::nu_signed_restricted_interval_exact,
+    m | u32,
+    h | PyObject
+);
 
-py_binding!(nu,                             chapter_a::nu,                            exacts::nu_exact,                            chapter_a::nu_interval,              exacts::nu_interval_exact,            m|u32, h|PyObject);
-py_binding!(nu_signed,                      chapter_a::nu_signed,                     exacts::nu_signed_exact,                     chapter_a::nu_signed_interval,       exacts::nu_signed_interval_exact,     m|u32, h|PyObject);
-py_binding!(nu_restricted,                  chapter_a::nu_restricted,                 exacts::nu_restricted_exact,                 chapter_a::nu_restricted_interval,   exacts::nu_restricted_interval_exact, m|u32, h|PyObject);
-py_binding!(nu_signed_restricted,           chapter_a::nu_signed_restricted,          exacts::nu_signed_restricted_exact,          chapter_a::nu_signed_restricted_interval, exacts::nu_signed_restricted_interval_exact, m|u32, h|PyObject);
+py_binding!(
+    phi,
+    chapter_b::phi,
+    exacts::phi_exact,
+    chapter_b::phi_interval,
+    exacts::phi_interval_exact,
+    h | PyObject
+);
+py_binding!(
+    phi_signed,
+    chapter_b::phi_signed,
+    exacts::phi_signed_exact,
+    chapter_b::phi_signed_interval,
+    exacts::phi_signed_interval_exact,
+    h | PyObject
+);
+py_binding!(
+    phi_restricted,
+    chapter_b::phi_restricted,
+    exacts::phi_restricted_exact,
+    chapter_b::phi_restricted_interval,
+    exacts::phi_restricted_interval_exact,
+    h | PyObject
+);
+py_binding!(
+    phi_signed_restricted,
+    chapter_b::phi_signed_restricted,
+    exacts::phi_signed_restricted_exact,
+    chapter_b::phi_signed_restricted_interval,
+    exacts::phi_signed_restricted_interval_exact,
+    h | PyObject
+);
 
-py_binding!(phi,                             chapter_b::phi,                            exacts::phi_exact,                            chapter_b::phi_interval,              exacts::phi_interval_exact,            h|PyObject);
-py_binding!(phi_signed,                      chapter_b::phi_signed,                     exacts::phi_signed_exact,                     chapter_b::phi_signed_interval,       exacts::phi_signed_interval_exact,     h|PyObject);
-py_binding!(phi_restricted,                  chapter_b::phi_restricted,                 exacts::phi_restricted_exact,                 chapter_b::phi_restricted_interval,   exacts::phi_restricted_interval_exact, h|PyObject);
-py_binding!(phi_signed_restricted,           chapter_b::phi_signed_restricted,          exacts::phi_signed_restricted_exact,          chapter_b::phi_signed_restricted_interval, exacts::phi_signed_restricted_interval_exact, h|PyObject);
+py_binding!(
+    sigma,
+    chapter_c::sigma,
+    exacts::sigma_exact,
+    chapter_c::sigma_interval,
+    exacts::sigma_interval_exact,
+    h | PyObject
+);
+py_binding!(
+    sigma_signed,
+    chapter_c::sigma_signed,
+    exacts::sigma_signed_exact,
+    chapter_c::sigma_signed_interval,
+    exacts::sigma_signed_interval_exact,
+    h | PyObject
+);
+py_binding!(
+    sigma_restricted,
+    chapter_c::sigma_restricted,
+    exacts::sigma_restricted_exact,
+    chapter_c::sigma_restricted_interval,
+    exacts::sigma_restricted_interval_exact,
+    h | PyObject
+);
+py_binding!(
+    sigma_signed_restricted,
+    chapter_c::sigma_signed_restricted,
+    exacts::sigma_signed_restricted_exact,
+    chapter_c::sigma_signed_restricted_interval,
+    exacts::sigma_signed_restricted_interval_exact,
+    h | PyObject
+);
 
-py_binding!(sigma,                             chapter_c::sigma,                            exacts::sigma_exact,                            chapter_c::sigma_interval,              exacts::sigma_interval_exact,            h|PyObject);
-py_binding!(sigma_signed,                      chapter_c::sigma_signed,                     exacts::sigma_signed_exact,                     chapter_c::sigma_signed_interval,       exacts::sigma_signed_interval_exact,     h|PyObject);
-py_binding!(sigma_restricted,                  chapter_c::sigma_restricted,                 exacts::sigma_restricted_exact,                 chapter_c::sigma_restricted_interval,   exacts::sigma_restricted_interval_exact, h|PyObject);
-py_binding!(sigma_signed_restricted,           chapter_c::sigma_signed_restricted,          exacts::sigma_signed_restricted_exact,          chapter_c::sigma_signed_restricted_interval, exacts::sigma_signed_restricted_interval_exact, h|PyObject);
+py_binding!(
+    rho,
+    chapter_d::rho,
+    exacts::rho_exact,
+    chapter_d::rho_interval,
+    exacts::rho_interval_exact,
+    m | u32,
+    h | PyObject
+);
+py_binding!(
+    rho_signed,
+    chapter_d::rho_signed,
+    exacts::rho_signed_exact,
+    chapter_d::rho_signed_interval,
+    exacts::rho_signed_interval_exact,
+    m | u32,
+    h | PyObject
+);
+py_binding!(
+    rho_restricted,
+    chapter_d::rho_restricted,
+    exacts::rho_restricted_exact,
+    chapter_d::rho_restricted_interval,
+    exacts::rho_restricted_interval_exact,
+    m | u32,
+    h | PyObject
+);
+py_binding!(
+    rho_signed_restricted,
+    chapter_d::rho_signed_restricted,
+    exacts::rho_signed_restricted_exact,
+    chapter_d::rho_signed_restricted_interval,
+    exacts::rho_signed_restricted_interval_exact,
+    m | u32,
+    h | PyObject
+);
 
-py_binding!(rho,                             chapter_d::rho,                            exacts::rho_exact,                            chapter_d::rho_interval,              exacts::rho_interval_exact,            m|u32, h|PyObject);
-py_binding!(rho_signed,                      chapter_d::rho_signed,                     exacts::rho_signed_exact,                     chapter_d::rho_signed_interval,       exacts::rho_signed_interval_exact,     m|u32, h|PyObject);
-py_binding!(rho_restricted,                  chapter_d::rho_restricted,                 exacts::rho_restricted_exact,                 chapter_d::rho_restricted_interval,   exacts::rho_restricted_interval_exact, m|u32, h|PyObject);
-py_binding!(rho_signed_restricted,           chapter_d::rho_signed_restricted,          exacts::rho_signed_restricted_exact,          chapter_d::rho_signed_restricted_interval, exacts::rho_signed_restricted_interval_exact, m|u32, h|PyObject);
+py_binding!(
+    chi,
+    chapter_e::chi,
+    exacts::chi_exact,
+    chapter_e::chi_interval,
+    exacts::chi_interval_exact,
+    h | PyObject
+);
+py_binding!(
+    chi_signed,
+    chapter_e::chi_signed,
+    exacts::chi_signed_exact,
+    chapter_e::chi_signed_interval,
+    exacts::chi_signed_interval_exact,
+    h | PyObject
+);
+py_binding!(
+    chi_restricted,
+    chapter_e::chi_restricted,
+    exacts::chi_restricted_exact,
+    chapter_e::chi_restricted_interval,
+    exacts::chi_restricted_interval_exact,
+    h | PyObject
+);
+py_binding!(
+    chi_signed_restricted,
+    chapter_e::chi_signed_restricted,
+    exacts::chi_signed_restricted_exact,
+    chapter_e::chi_signed_restricted_interval,
+    exacts::chi_signed_restricted_interval_exact,
+    h | PyObject
+);
 
-py_binding!(chi,                             chapter_e::chi,                            exacts::chi_exact,                            chapter_e::chi_interval,              exacts::chi_interval_exact,            h|PyObject);
-py_binding!(chi_signed,                      chapter_e::chi_signed,                     exacts::chi_signed_exact,                     chapter_e::chi_signed_interval,       exacts::chi_signed_interval_exact,     h|PyObject);
-py_binding!(chi_restricted,                  chapter_e::chi_restricted,                 exacts::chi_restricted_exact,                 chapter_e::chi_restricted_interval,   exacts::chi_restricted_interval_exact, h|PyObject);
-py_binding!(chi_signed_restricted,           chapter_e::chi_signed_restricted,          exacts::chi_signed_restricted_exact,          chapter_e::chi_signed_restricted_interval, exacts::chi_signed_restricted_interval_exact, h|PyObject);
+py_binding!(
+    tau,
+    chapter_f::tau,
+    exacts::tau_exact,
+    chapter_f::tau_interval,
+    exacts::tau_interval_exact,
+    h | PyObject
+);
+py_binding!(
+    tau_signed,
+    chapter_f::tau_signed,
+    exacts::tau_signed_exact,
+    chapter_f::tau_signed_interval,
+    exacts::tau_signed_interval_exact,
+    h | PyObject
+);
+py_binding!(
+    tau_restricted,
+    chapter_f::tau_restricted,
+    exacts::tau_restricted_exact,
+    chapter_f::tau_restricted_interval,
+    exacts::tau_restricted_interval_exact,
+    h | PyObject
+);
+py_binding!(
+    tau_signed_restricted,
+    chapter_f::tau_signed_restricted,
+    exacts::tau_signed_restricted_exact,
+    chapter_f::tau_signed_restricted_interval,
+    exacts::tau_signed_restricted_interval_exact,
+    h | PyObject
+);
 
-py_binding!(tau,                             chapter_f::tau,                            exacts::tau_exact,                            chapter_f::tau_interval,              exacts::tau_interval_exact,            h|PyObject);
-py_binding!(tau_signed,                      chapter_f::tau_signed,                     exacts::tau_signed_exact,                     chapter_f::tau_signed_interval,       exacts::tau_signed_interval_exact,     h|PyObject);
-py_binding!(tau_restricted,                  chapter_f::tau_restricted,                 exacts::tau_restricted_exact,                 chapter_f::tau_restricted_interval,   exacts::tau_restricted_interval_exact, h|PyObject);
-py_binding!(tau_signed_restricted,           chapter_f::tau_signed_restricted,          exacts::tau_signed_restricted_exact,          chapter_f::tau_signed_restricted_interval, exacts::tau_signed_restricted_interval_exact, h|PyObject);
-
-py_binding_mu!(mu,                             chapter_g::mu,                            exacts::mu_exact,                            k, l);
-py_binding_mu!(mu_signed,                      chapter_g::mu_signed,                     exacts::mu_signed_exact,                     k, l);
-py_binding_mu!(mu_restricted,                  chapter_g::mu_restricted,                 exacts::mu_restricted_exact,                 k, l);
-py_binding_mu!(mu_signed_restricted,           chapter_g::mu_signed_restricted,          exacts::mu_signed_restricted_exact,          k, l);
+py_binding_mu!(mu, chapter_g::mu, exacts::mu_exact, k, l);
+py_binding_mu!(
+    mu_signed,
+    chapter_g::mu_signed,
+    exacts::mu_signed_exact,
+    k,
+    l
+);
+py_binding_mu!(
+    mu_restricted,
+    chapter_g::mu_restricted,
+    exacts::mu_restricted_exact,
+    k,
+    l
+);
+py_binding_mu!(
+    mu_signed_restricted,
+    chapter_g::mu_signed_restricted,
+    exacts::mu_signed_restricted_exact,
+    k,
+    l
+);
