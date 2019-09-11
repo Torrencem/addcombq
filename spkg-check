@@ -2,4 +2,7 @@ echo "running tests..."
 
 cd tests
 
-sage-python23 test_*.py -v
+for f in test_*.py
+do
+    sage-python23 "$f" -v
+done

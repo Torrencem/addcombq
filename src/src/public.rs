@@ -59,8 +59,11 @@ pub fn wrap_binding(py: Python, ob: PyObject, s: &str) -> PyResult<PyObject> {
         // in __globals__
         py.run(r#"
 def signalling_f():
-    q.put(f(*args, verbose=verbose))
-    event.set()
+    try:
+        q.put(f(*args, verbose=verbose))
+    finally:
+        event.set()
+        q.put(None)
         "#, Some(&locals), None)?;
         // Retrieve the function we created to pass into mpr
         let signalling_f = py.eval("signalling_f", Some(&locals), None)?;

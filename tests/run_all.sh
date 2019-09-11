@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
 
-sage test_*.py -v
+for f in test_*.py
+do
+    sage "$f" -v
+done

@@ -1,6 +1,6 @@
 # addcombq
 
-This is a Sage package (.spkg) for fast Additive Combinatorics functions in Sage.
+This is a Sage package (.spkg) for fast Additive Combinatorics functions in Sage. Check out (Bela Bajnok's book)[https://arxiv.org/pdf/1705.07444.pdf] on the subject to get an idea of the types of problems these can be used for.
 
 To install into your local sage, make sure the sage installation is in PATH as "sage", then run INSTALL.sh. This will detect your sage installation, package and copy the correct files into it, and then run the sage package build. To instruct sage to run spkg-check after installation, run `INSTALL.sh test` instead.
 
@@ -9,7 +9,7 @@ Are We Release Yet? Important goals towards release:
 - [x] Port all code from the old WASM codebase
 - [x] Make all functions support intervals being passed instead of h's
 - [x] Clean up the code from interval argument conversions. In particular, find the TODO, and get rid of the .unwrap()s in valid code paths and replaces with try!'s and Results
-- [ ] Add some tests for error cases
+- [x] Add some tests for error cases
 - [ ] Add contributing / writing more functions guideline for codebase
 - [ ] Make code styles more consistent
 - [x] Add License
@@ -27,3 +27,4 @@ Are We Release Yet? Important goals towards release:
 - [ ] Fix the weird internet behavior from spkg-build on Mac (looks unlikely unfortunately)
 - [ ] (optional) Improve error messages for "reasonable" failures in wrapper functions (such as invalid argument types)
 - [ ] Make work on sage with Python3. The CPython package in Rust must be given a different feature flag.
+- [ ] Implement (perhaps in Python) some of the extra functions Bela mentions in his book (v functions, c function, etc.)
