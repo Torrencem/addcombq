@@ -37,50 +37,42 @@ class TestInterface(unittest.TestCase):
         poorly
         """
         # Too many parameters:
-        print("--- too many parameters ---")
         try:
             nu(10, 3, 2, 1, 0)
             self.fail()
         except Exception as e:
-            print(e)
-        print("---")
+            pass
+
         try:
             phi((10, 2), 3, 2, 1)
             self.fail()
         except Exception as e:
-            print(e)
+            pass
         
         # Wrong tuples
-        time.sleep(0.01) # flush
-        print("--- wrong tuples ---")
-        time.sleep(0.01) # flush
         try:
             nu(5, (2, 1), 2)
             self.fail()
         except Exception as e:
-            print(e)
-        print("---")
+            pass
+
         try:
             mu(5, (1, 2), 2)
             self.fail()
         except Exception as e:
-            print(e)
+            pass
         
         # Too few parameters:
-        time.sleep(0.01) # flush
-        print("--- too few parameters ---")
-        time.sleep(0.01) # flush
         try:
             nu(10, 3)
             self.fail()
         except Exception as e:
-            print(e)
-        print("---")
+            pass
         try:
             phi(10)
             self.fail()
         except Exception as e:
-            print(e)
+            pass
 
 if __name__ == "__main__":
     unittest.main()

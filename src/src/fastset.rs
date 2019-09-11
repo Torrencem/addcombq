@@ -157,7 +157,13 @@ impl Iterator for EachSetExact {
 // }
 
 pub fn each_set_exact(max_size: u32, set_size: u32) -> EachSetExact {
-    assert!(max_size >= set_size);
+    if max_size < set_size {
+        return EachSetExact {
+            state: 0,
+            setmask: 0,
+            doneflag: true,
+        }
+    }
     let naivestate = (1u64 << (set_size)) - 1;
     let setmask = !((1u64 << (max_size)) - 1);
     return EachSetExact {

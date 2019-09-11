@@ -173,7 +173,7 @@ pub fn hfoldsumset(set: &Vec<GElem>, h: u32, mod_v: &Vec<u32>) -> HashSet<GElem>
     let mut res: HashSet<GElem> = HashSet::new();
     let as_vec: Vec<GElem> = set.clone();
     let n: usize = mod_v.len();
-    if as_vec.len() == 0 {
+    if as_vec.len() == 0 || h == 0 {
         res.insert(GElem(vec![0; n]));
         return res;
     }
@@ -205,7 +205,7 @@ pub fn hfoldsignedsumset(set: &Vec<GElem>, h: u32, mod_v: &Vec<u32>) -> HashSet<
     let mut res: HashSet<GElem> = HashSet::new();
     let as_vec: Vec<GElem> = set.clone();
     let n: usize = mod_v.len();
-    if as_vec.len() == 0 {
+    if as_vec.len() == 0 || h == 0 {
         res.insert(GElem(vec![0; n]));
         return res;
     }
@@ -285,7 +285,7 @@ pub fn hfoldrestrictedsumset(set: &Vec<GElem>, h: u32, mod_v: &Vec<u32>) -> Hash
     let mut res: HashSet<GElem> = HashSet::new();
     let as_vec: Vec<GElem> = set.clone();
     let n: usize = mod_v.len();
-    if as_vec.len() == 0 {
+    if as_vec.len() == 0 || h == 0 {
         res.insert(GElem(vec![0; n]));
         return res;
     }
@@ -321,7 +321,7 @@ pub fn hfoldrestrictedsignedsumset(set: &Vec<GElem>, h: u32, mod_v: &Vec<u32>) -
     let mut res: HashSet<GElem> = HashSet::new();
     let as_vec: Vec<GElem> = set.clone();
     let n: usize = mod_v.len();
-    if as_vec.len() == 0 {
+    if as_vec.len() == 0 || h == 0 {
         res.insert(GElem(vec![0; n]));
         return res;
     }
