@@ -2,7 +2,7 @@ before_script:
 - ./INSTALL.sh
 
 addcomb:
-  image: sagemath/sagemath:latest
+  image: "ruby:2.1"
   
   script:
   - tests/run_all.sh
