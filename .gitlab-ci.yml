@@ -1,0 +1,5 @@
+image: sagemath/sagemath
+
+addcomb:
+  script:
+    - ./INSTALL.sh
