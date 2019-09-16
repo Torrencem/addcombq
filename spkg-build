@@ -12,7 +12,7 @@ then
 		fi
 	fi
 
-        curl -sf -L https://static.rust-lang.org/rustup.sh | sh -s -y
+        curl -sf -L https://static.rust-lang.org/rustup.sh | bash -s -- -y
 
         if [ $? -ne 0 ]; then
                 echo >&2 "Error installing rust. Try manually installing it"
