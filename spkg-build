@@ -31,6 +31,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 	if [[ ! -f /usr/bin/python3 ]]; then
 		apt-get update
 		yes | apt-get install python3
+		yes | apt-get install python-dev
 	fi
 fi
 cd doc
