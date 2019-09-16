@@ -20,7 +20,7 @@ then
         fi
 
 	rustup toolchain install nightly
-	rustup default nightly
+	rustup override set nightly
 
         echo "Rust installed. Continuing..."
 fi
@@ -39,7 +39,7 @@ cd ..
 
 echo building program
 
-~/.cargo/bin/cargo build --release
+~/.cargo/bin/cargo +nightly build --release
 
 mkdir -p build
 
