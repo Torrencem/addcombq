@@ -9,6 +9,13 @@ ver() {
     cat package-version.txt | tr -d '\n'
 }
 
+# Build with Cargo
+# Why build here instead of on install?
+# Because sometimes spkg-build isn't run,
+# or it's run without internet access
+# for some reason
+bash spkg-build
+
 ./package.sh
 
 SAGE_MAIN=$(which sage)
