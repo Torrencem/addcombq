@@ -5,9 +5,14 @@ if [[ ! -f ~/.cargo/bin/cargo ]];
 then
         echo "Cargo (and so Rust) is not installed. Attempting to install rust..."
 
+	if [[ "$OSTYPE" == "linux-gnu" ]]; then
+		apt-get update
+		apt-get install curl
+	fi
+
         curl -sf -L https://static.rust-lang.org/rustup.sh | sh
 
-        if [$? -ne 0]; then
+        if [ $? -ne 0 ]; then
                 echo >&2 "Error installing rust. Try manually installing it"
                 exit 1
         fi
