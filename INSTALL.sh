@@ -39,10 +39,10 @@ esac
 rm $SAGE_DIR/upstream/addcombq-$(ver).tar.gz
 cp ./addcombq-$(ver).tar.gz $SAGE_DIR/upstream/addcombq-$(ver).tar.gz
 
-rm -r $SAGE_DIR/build/pkgs/addcombq
-
-mkdir $SAGE_DIR/build/pkgs/addcombq
-tar -C $SAGE_DIR/build/pkgs/addcombq -zxvf ./addcombq-$(ver).tar.gz
+#rm -r $SAGE_DIR/build/pkgs/addcombq
+#
+#mkdir $SAGE_DIR/build/pkgs/addcombq
+#tar -C $SAGE_DIR/build/pkgs/addcombq -zxvf ./addcombq-$(ver).tar.gz
 
 sage --package fix-checksum
 
