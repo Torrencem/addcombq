@@ -5,4 +5,5 @@ addcomb:
   image: "sagemath/sagemath:8.0"
   
   script:
+  - cd tests
   - tests/run_all.sh
