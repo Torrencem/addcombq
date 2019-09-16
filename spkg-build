@@ -50,8 +50,3 @@ if hash ./target/release/libaddcombq.so 2> /dev/null;
 then
 	cp ./target/release/libaddcombq.so ./build/_addcomb.so
 fi
-
-echo "DEBUG:"
-
-cd target/release
-ls
