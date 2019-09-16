@@ -6,4 +6,4 @@ addcomb:
   
   script:
   - cd tests
-  - run_all.sh
+  - bash run_all.sh
