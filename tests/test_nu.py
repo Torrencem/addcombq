@@ -9,12 +9,11 @@ class TestNu(unittest.TestCase):
     def test_values(self):
         # Based on part of the table in Problem A.5
         correct_table = {
-            11: 2, 12: 3,
-            13: 1, 14: 2
+            11: 2, 12: 3
         }
 
-        table = {x:0 for x in range(11, 15)}
-        for n in range(11, 15):
+        table = {x:0 for x in range(11, 13)}
+        for n in range(11, 13):
             for m in range(1, n):
                 for h in range(1, n/2):
                     expected = min(n, binomial(m + h - 1, h))

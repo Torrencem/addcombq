@@ -10,6 +10,7 @@ Are We Release Yet? Important goals towards release:
 - [x] Make all functions support intervals being passed instead of h's
 - [x] Clean up the code from interval argument conversions. In particular, find the TODO, and get rid of the .unwrap()s in valid code paths and replaces with try!'s and Results
 - [x] Add some tests for error cases
+- [ ] Add Sage superclasses for methods (including SageObject for testing, replacing test suite)
 - [ ] Add contributing / writing more functions guideline for codebase
 - [x] Make code styles more consistent
 - [x] Add License
