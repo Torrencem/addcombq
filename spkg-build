@@ -18,6 +18,10 @@ then
                 echo >&2 "Error installing rust. Try manually installing it"
                 exit 1
         fi
+
+	rustup toolchain install nightly
+	rustup default nightly
+
         echo "Rust installed. Continuing..."
 fi
 
