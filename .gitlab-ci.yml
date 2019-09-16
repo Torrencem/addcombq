@@ -1,8 +1,8 @@
 before_script:
-- bash INSTALL.sh
+- ./INSTALL.sh
 
 addcomb:
-  image: sagemath/sagemath
+  image: sagemath/sagemath:latest
   
   script:
   - tests/run_all.sh
