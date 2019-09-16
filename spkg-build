@@ -19,8 +19,8 @@ then
                 exit 1
         fi
 
-	rustup toolchain install nightly
-	rustup override set nightly
+	~/.cargo/bin/rustup toolchain install nightly
+	~/.cargo/bin/rustup override set nightly
 
         echo "Rust installed. Continuing..."
 fi
