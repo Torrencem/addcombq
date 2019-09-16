@@ -8,11 +8,11 @@ then
 	if [[ "$OSTYPE" == "linux-gnu" ]]; then
 		if [[ ! -f /usr/bin/curl ]]; then
 			apt-get update
-			apt-get install curl
+			yes | apt-get install curl
 		fi
 	fi
 
-        /usr/bin/curl -sf -L https://static.rust-lang.org/rustup.sh | sh
+        curl -sf -L https://static.rust-lang.org/rustup.sh | sh
 
         if [ $? -ne 0 ]; then
                 echo >&2 "Error installing rust. Try manually installing it"
@@ -26,11 +26,11 @@ echo building doc
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
 	if [[ ! -f /usr/bin/python3 ]]; then
 		apt-get update
-		apt-get install python3
+		yes | apt-get install python3
 	fi
 fi
 cd doc
-/usr/bin/python3 build.py
+python3 build.py
 cd ..
 
 echo building program
