@@ -1,0 +1,11 @@
+src/target
+**/*.rs.bk
+src/build
+src/addcomb.egg-info
+src/dist
+addcomb*.tar.gz
+addcomb*.spkg
+src/doc/compiled
+.vscode
+tests/*.pyc
+tests/__pycache__
