@@ -1,0 +1,13 @@
+Additive Combinatorics module for Sage
+
+The functions in this module calculate values of functions provided in Bela Bajnok's book "Additive Combinatorics: A Menu of Research Problems". The functions in the book given by greek letters are available in this module under their respective names. Each function has specific argument types, which can be found by using "help(/function name/)" after importing them
+
+IMPORTANT NOTE:
+
+The functions with the standard names (i.e. nu_unsigned) are convenience wrappers which do several slow things:
+- Capture standard output from verbose=True for correct display in Jupyter notebooks
+- Set up computations on a seperate process so they can be terminated at any time with KeyboardInterrupts
+
+This adds several milliseconds of unavoidable delay to computations, so if this is important to you, instead import the names with an underscore in front (i.e. _nu_unsigned), which do not do the above things
+
+

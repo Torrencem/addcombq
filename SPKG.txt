@@ -14,8 +14,12 @@ lol
 
 == Dependencies ==
 
-None
+Cargo and rust must be installed in PATH for this to build correctly.
 
 == Special Update/Build Instructions ==
 
-N / A
+To build, make sure you have cargo installed as it's needed for the building process
+Then run ./package.sh to create an archive of the package contents. This script also
+downloads the source files for the dependencies for the rust code using 'cargo fetch'
+which is necessary on MacOS. Then run ./INSTALL.sh to install the archive generated
+by the packaging command
