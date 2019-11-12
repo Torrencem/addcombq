@@ -8,6 +8,8 @@ use crate::comb::chapter_e;
 use crate::comb::chapter_f;
 use crate::comb::chapter_g;
 
+use crate::fastset::FastSet;
+
 use std::any::Any;
 
 use crate::comb::exacts;
@@ -300,36 +302,36 @@ macro_rules! py_binding_mu {
 
 py_binding!(
     nu,
-    chapter_a::nu,
+    chapter_a::nu::<FastSet>,
     exacts::nu_exact,
-    chapter_a::nu_interval,
+    chapter_a::nu_interval::<FastSet>,
     exacts::nu_interval_exact,
     m | u32,
     h | PyObject
 );
 py_binding!(
     nu_signed,
-    chapter_a::nu_signed,
+    chapter_a::nu_signed::<FastSet>,
     exacts::nu_signed_exact,
-    chapter_a::nu_signed_interval,
+    chapter_a::nu_signed_interval::<FastSet>,
     exacts::nu_signed_interval_exact,
     m | u32,
     h | PyObject
 );
 py_binding!(
     nu_restricted,
-    chapter_a::nu_restricted,
+    chapter_a::nu_restricted::<FastSet>,
     exacts::nu_restricted_exact,
-    chapter_a::nu_restricted_interval,
+    chapter_a::nu_restricted_interval::<FastSet>,
     exacts::nu_restricted_interval_exact,
     m | u32,
     h | PyObject
 );
 py_binding!(
     nu_signed_restricted,
-    chapter_a::nu_signed_restricted,
+    chapter_a::nu_signed_restricted::<FastSet>,
     exacts::nu_signed_restricted_exact,
-    chapter_a::nu_signed_restricted_interval,
+    chapter_a::nu_signed_restricted_interval::<FastSet>,
     exacts::nu_signed_restricted_interval_exact,
     m | u32,
     h | PyObject

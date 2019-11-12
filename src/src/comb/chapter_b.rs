@@ -2,6 +2,8 @@ use crate::comb::*;
 use crate::fastset::*;
 use std::cmp;
 
+use crate::setlike::HFolds;
+
 macro_rules! info {
     ($verb_cond:ident, $( $arg:tt )+) => {
         if $verb_cond {

@@ -8,6 +8,7 @@ use cpython::PyObject;
 mod comb;
 mod exactset;
 mod fastset;
+mod setlike;
 
 mod public;
 
