@@ -20,8 +20,8 @@ pub fn rho<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bool) -> u32 {
             smallest_set = a;
         }
     }
-    info!(verbose, "Set with smallest sumset: {}", smallest_set);
-    info!(verbose, "(sumsets to:) {}", smallest_set.hfoldsumset(h, n));
+    info!(verbose, "Set with smallest sumset: {:?}", smallest_set);
+    info!(verbose, "(sumsets to:) {:?}", smallest_set.hfoldsumset(h, n));
     curr_smallest
 }
 
@@ -35,10 +35,10 @@ pub fn rho_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): (u32, u32), verbo
             smallest_set = a;
         }
     }
-    info!(verbose, "Set with smallest sumset: {}", smallest_set);
+    info!(verbose, "Set with smallest sumset: {:?}", smallest_set);
     info!(
         verbose,
-        "(sumsets to:) {}",
+        "(sumsets to:) {:?}",
         smallest_set.hfoldintervalsumset((ia, ib), n)
     );
     curr_smallest
@@ -47,17 +47,17 @@ pub fn rho_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): (u32, u32), verbo
 pub fn rho_signed<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bool) -> u32 {
     let mut smallest_set = S::empty();
     let mut curr_smallest = n.gsize();
-    for a in each_set_exact(n.clone(), m) {
+    for a in S::each_set_exact(n.clone(), m) {
         let size = a.hfoldsignedsumset(h, n.clone()).size();
         if size < curr_smallest {
             curr_smallest = size;
             smallest_set = a;
         }
     }
-    info!(verbose, "Set with smallest sumset: {}", smallest_set);
+    info!(verbose, "Set with smallest sumset: {:?}", smallest_set);
     info!(
         verbose,
-        "(sumsets to:) {}",
+        "(sumsets to:) {:?}",
         smallest_set.hfoldsignedsumset(h, n)
     );
     curr_smallest
@@ -73,10 +73,10 @@ pub fn rho_signed_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): (u32, u32)
             smallest_set = a;
         }
     }
-    info!(verbose, "Set with smallest sumset: {}", smallest_set);
+    info!(verbose, "Set with smallest sumset: {:?}", smallest_set);
     info!(
         verbose,
-        "(sumsets to:) {}",
+        "(sumsets to:) {:?}",
         smallest_set.hfoldintervalsignedsumset((ia, ib), n)
     );
     curr_smallest
@@ -92,10 +92,10 @@ pub fn rho_restricted<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bool) ->
             smallest_set = a;
         }
     }
-    info!(verbose, "Set with smallest sumset: {}", smallest_set);
+    info!(verbose, "Set with smallest sumset: {:?}", smallest_set);
     info!(
         verbose,
-        "(sumsets to:) {}",
+        "(sumsets to:) {:?}",
         smallest_set.hfoldrestrictedsumset(h, n)
     );
     curr_smallest
@@ -111,10 +111,10 @@ pub fn rho_restricted_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): (u32, 
             smallest_set = a;
         }
     }
-    info!(verbose, "Set with smallest sumset: {}", smallest_set);
+    info!(verbose, "Set with smallest sumset: {:?}", smallest_set);
     info!(
         verbose,
-        "(sumsets to:) {}",
+        "(sumsets to:) {:?}",
         smallest_set.hfoldintervalrestrictedsumset((ia, ib), n)
     );
     curr_smallest
@@ -123,17 +123,17 @@ pub fn rho_restricted_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): (u32, 
 pub fn rho_signed_restricted<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bool) -> u32 {
     let mut smallest_set = S::empty();
     let mut curr_smallest = n.gsize();
-    for a in each_set_exact(n.clone(), m) {
+    for a in S::each_set_exact(n.clone(), m) {
         let size = a.hfoldrestrictedsignedsumset(h, n.clone()).size();
         if size < curr_smallest {
             curr_smallest = size;
             smallest_set = a;
         }
     }
-    info!(verbose, "Set with smallest sumset: {}", smallest_set);
+    info!(verbose, "Set with smallest sumset: {:?}", smallest_set);
     info!(
         verbose,
-        "(sumsets to:) {}",
+        "(sumsets to:) {:?}",
         smallest_set.hfoldrestrictedsignedsumset(h, n)
     );
     curr_smallest
@@ -142,17 +142,17 @@ pub fn rho_signed_restricted<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: b
 pub fn rho_signed_restricted_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     let mut smallest_set = S::empty();
     let mut curr_smallest = n.gsize();
-    for a in each_set_exact(n.clone(), m) {
+    for a in S::each_set_exact(n.clone(), m) {
         let size = a.hfoldintervalrestrictedsignedsumset((ia, ib), n.clone()).size();
         if size < curr_smallest {
             curr_smallest = size;
             smallest_set = a;
         }
     }
-    info!(verbose, "Set with smallest sumset: {}", smallest_set);
+    info!(verbose, "Set with smallest sumset: {:?}", smallest_set);
     info!(
         verbose,
-        "(sumsets to:) {}",
+        "(sumsets to:) {:?}",
         smallest_set.hfoldintervalrestrictedsignedsumset((ia, ib), n)
     );
     curr_smallest

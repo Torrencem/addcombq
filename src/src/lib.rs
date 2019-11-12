@@ -43,12 +43,12 @@ py_module_initializer!(addcomb, initaddcomb, PyInit_addcomb, |py, m| {
     // add_bindings_to_mod!(py, m, sigma_signed, a_, h | PyObject);
     // add_bindings_to_mod!(py, m, sigma_restricted, a_, h | PyObject);
     // add_bindings_to_mod!(py, m, sigma_signed_restricted, a_, h | PyObject);
-    //
-    // add_bindings_to_mod!(py, m, rho, a_, m | u32, h | PyObject);
-    // add_bindings_to_mod!(py, m, rho_signed, a_, m | u32, h | PyObject);
-    // add_bindings_to_mod!(py, m, rho_restricted, a_, m | u32, h | PyObject);
-    // add_bindings_to_mod!(py, m, rho_signed_restricted, a_, m | u32, h | PyObject);
-    //
+
+    add_bindings_to_mod!(py, m, rho, a_, m | u32, h | PyObject);
+    add_bindings_to_mod!(py, m, rho_signed, a_, m | u32, h | PyObject);
+    add_bindings_to_mod!(py, m, rho_restricted, a_, m | u32, h | PyObject);
+    add_bindings_to_mod!(py, m, rho_signed_restricted, a_, m | u32, h | PyObject);
+
     // add_bindings_to_mod!(py, m, chi, a_, h | PyObject);
     // add_bindings_to_mod!(py, m, chi_signed, a_, h | PyObject);
     // add_bindings_to_mod!(py, m, chi_restricted, a_, h | PyObject);

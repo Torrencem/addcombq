@@ -212,7 +212,7 @@ macro_rules! interval_call {
 }
 
 macro_rules! py_binding {
-    ($bound_name:ident, $fs_version:expr, $fs_int_version:expr, $($ex_args:ident | $ex_arg_type:ident),+) => {
+    ($bound_name:ident, $fs_version:expr, $ex_version:expr, $fs_int_version:expr, $ex_int_version:expr, $($ex_args:ident | $ex_arg_type:ident),+) => {
         pub fn $bound_name(py: Python, n: PyObject, $($ex_args : $ex_arg_type),+ , verbose: bool) -> PyResult<u32> {
             // Setup c_out capturing
             let capt_c_out = setup_capt_c_out(py)?;
@@ -224,9 +224,9 @@ macro_rules! py_binding {
                     let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
                     let val: u32;
                     if !icall {
-                        val = $fs_version::<FastSet>(n, $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                        val = $fs_version(n, $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                     } else {
-                        val = $fs_int_version::<FastSet>(n, $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                        val = $fs_int_version(n, $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                     }
                     // Stop c_out capturing
                     capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
@@ -235,9 +235,9 @@ macro_rules! py_binding {
                     let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
                     let val: u32;
                     if !icall {
-                        val = $ex_version::<Vec<u32>>(Rc::new(vec![n]), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                        val = $ex_version(Rc::new(vec![n]), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                     } else {
-                        val = $ex_int_version::<Vec<u32>>(Rc::new(vec![n]), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                        val = $ex_int_version(Rc::new(vec![n]), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                     }
                     capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
                     Ok(val)
@@ -253,9 +253,9 @@ macro_rules! py_binding {
                 let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
                 let val: u32;
                 if !icall {
-                    val = $ex_version::<Vec<u32>>(Rc::new(tmp), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                    val = $ex_version(Rc::new(tmp), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                 } else {
-                    val = $ex_int_version::<Vec<u32>>(Rc::new(tmp), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                    val = $ex_int_version(Rc::new(tmp), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                 }
                 capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
                 Ok(val)
@@ -406,29 +406,37 @@ py_binding!(
 
 py_binding!(
     rho,
-    chapter_d::rho,
-    chapter_d::rho_interval,
+    chapter_d::rho::<FastSet>,
+    chapter_d::rho::<Vec<GElem>>,
+    chapter_d::rho_interval::<FastSet>,
+    chapter_d::rho_interval::<Vec<GElem>>,
     m | u32,
     h | PyObject
 );
 py_binding!(
     rho_signed,
-    chapter_d::rho_signed,
-    chapter_d::rho_signed_interval,
+    chapter_d::rho_signed::<FastSet>,
+    chapter_d::rho_signed::<Vec<GElem>>,
+    chapter_d::rho_signed_interval::<FastSet>,
+    chapter_d::rho_signed_interval::<Vec<GElem>>,
     m | u32,
     h | PyObject
 );
 py_binding!(
     rho_restricted,
-    chapter_d::rho_restricted,
-    chapter_d::rho_restricted_interval,
+    chapter_d::rho_restricted::<FastSet>,
+    chapter_d::rho_restricted::<Vec<GElem>>,
+    chapter_d::rho_restricted_interval::<FastSet>,
+    chapter_d::rho_restricted_interval::<Vec<GElem>>,
     m | u32,
     h | PyObject
 );
 py_binding!(
     rho_signed_restricted,
-    chapter_d::rho_signed_restricted,
-    chapter_d::rho_signed_restricted_interval,
+    chapter_d::rho_signed_restricted::<FastSet>,
+    chapter_d::rho_signed_restricted::<Vec<GElem>>,
+    chapter_d::rho_signed_restricted_interval::<FastSet>,
+    chapter_d::rho_signed_restricted_interval::<Vec<GElem>>,
     m | u32,
     h | PyObject
 );
