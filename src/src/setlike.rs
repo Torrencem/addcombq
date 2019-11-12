@@ -2,12 +2,16 @@ use std::fmt::Display;
 
 use crate::fastset;
 
-pub trait Group: Copy {
-    fn zero(&self) -> Self;
+use std::rc::Rc;
+
+pub trait Group: Clone {
+    type Element;
+    fn zero(&self) -> Self::Element;
     fn gsize(&self) -> u32;
 }
 
 impl Group for u32 {
+    type Element = u32;
     #[inline(always)]
     fn zero(&self) -> u32 {
         0u32
@@ -19,9 +23,24 @@ impl Group for u32 {
     }
 }
 
+impl Group for Rc<Vec<u32>> {
+    type Element = Vec<u32>;
+    fn zero(&self) -> Vec<u32> {
+        vec![0u32, (**self).len() as u32]
+    }
+
+    fn gsize(&self) -> u32 {
+        let mut res = 1;
+        for num in (**self).iter() {
+            res *= num;
+        }
+        res
+    }
+}
+
 pub trait HFolds {
-    type Element;
     type Group: Group;
+    type Element = <<Self as HFolds>::Group as Group>::Element;
     
     fn hfoldsumset(&self, h: u32, n: Self::Group) -> Self;
     fn hfoldintervalsumset(&self, hs: (u32, u32), n: Self::Group) -> Self;
