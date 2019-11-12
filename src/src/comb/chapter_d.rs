@@ -1,6 +1,6 @@
 use crate::fastset::*;
 
-use crate::setlike::HFolds;
+use crate::setlike::{SetLike, Group};
 
 macro_rules! info {
     ($verb_cond:ident, $( $arg:tt )+) => {
@@ -10,11 +10,11 @@ macro_rules! info {
     };
 }
 
-pub fn rho(n: u32, m: u32, h: u32, verbose: bool) -> u32 {
-    let mut smallest_set = empty_set();
-    let mut curr_smallest = n;
-    for a in each_set_exact(n, m) {
-        let size = a.hfoldsumset(h, n).size();
+pub fn rho<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bool) -> u32 {
+    let mut smallest_set = S::empty();
+    let mut curr_smallest = n.gsize();
+    for a in S::each_set_exact(n.clone(), m) {
+        let size = a.hfoldsumset(h, n.clone()).size();
         if size < curr_smallest {
             curr_smallest = size;
             smallest_set = a;
@@ -25,11 +25,11 @@ pub fn rho(n: u32, m: u32, h: u32, verbose: bool) -> u32 {
     curr_smallest
 }
 
-pub fn rho_interval(n: u32, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
-    let mut smallest_set = empty_set();
-    let mut curr_smallest = n;
-    for a in each_set_exact(n, m) {
-        let size = a.hfoldintervalsumset((ia, ib), n).size();
+pub fn rho_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
+    let mut smallest_set = S::empty();
+    let mut curr_smallest = n.gsize();
+    for a in S::each_set_exact(n.clone(), m) {
+        let size = a.hfoldintervalsumset((ia, ib), n.clone()).size();
         if size < curr_smallest {
             curr_smallest = size;
             smallest_set = a;
@@ -44,11 +44,11 @@ pub fn rho_interval(n: u32, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 
     curr_smallest
 }
 
-pub fn rho_signed(n: u32, m: u32, h: u32, verbose: bool) -> u32 {
-    let mut smallest_set = empty_set();
-    let mut curr_smallest = n;
-    for a in each_set_exact(n, m) {
-        let size = a.hfoldsignedsumset(h, n).size();
+pub fn rho_signed<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bool) -> u32 {
+    let mut smallest_set = S::empty();
+    let mut curr_smallest = n.gsize();
+    for a in each_set_exact(n.clone(), m) {
+        let size = a.hfoldsignedsumset(h, n.clone()).size();
         if size < curr_smallest {
             curr_smallest = size;
             smallest_set = a;
@@ -63,11 +63,11 @@ pub fn rho_signed(n: u32, m: u32, h: u32, verbose: bool) -> u32 {
     curr_smallest
 }
 
-pub fn rho_signed_interval(n: u32, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
-    let mut smallest_set = empty_set();
-    let mut curr_smallest = n;
-    for a in each_set_exact(n, m) {
-        let size = a.hfoldintervalsignedsumset((ia, ib), n).size();
+pub fn rho_signed_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
+    let mut smallest_set = S::empty();
+    let mut curr_smallest = n.gsize();
+    for a in S::each_set_exact(n.clone(), m) {
+        let size = a.hfoldintervalsignedsumset((ia, ib), n.clone()).size();
         if size < curr_smallest {
             curr_smallest = size;
             smallest_set = a;
@@ -82,11 +82,11 @@ pub fn rho_signed_interval(n: u32, m: u32, (ia, ib): (u32, u32), verbose: bool) 
     curr_smallest
 }
 
-pub fn rho_restricted(n: u32, m: u32, h: u32, verbose: bool) -> u32 {
-    let mut smallest_set = empty_set();
-    let mut curr_smallest = n;
-    for a in each_set_exact(n, m) {
-        let size = a.hfoldrestrictedsumset(h, n).size();
+pub fn rho_restricted<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bool) -> u32 {
+    let mut smallest_set = S::empty();
+    let mut curr_smallest = n.gsize();
+    for a in S::each_set_exact(n.clone(), m) {
+        let size = a.hfoldrestrictedsumset(h, n.clone()).size();
         if size < curr_smallest {
             curr_smallest = size;
             smallest_set = a;
@@ -101,11 +101,11 @@ pub fn rho_restricted(n: u32, m: u32, h: u32, verbose: bool) -> u32 {
     curr_smallest
 }
 
-pub fn rho_restricted_interval(n: u32, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
-    let mut smallest_set = empty_set();
-    let mut curr_smallest = n;
-    for a in each_set_exact(n, m) {
-        let size = a.hfoldintervalrestrictedsumset((ia, ib), n).size();
+pub fn rho_restricted_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
+    let mut smallest_set = S::empty();
+    let mut curr_smallest = n.gsize();
+    for a in S::each_set_exact(n.clone(), m) {
+        let size = a.hfoldintervalrestrictedsumset((ia, ib), n.clone()).size();
         if size < curr_smallest {
             curr_smallest = size;
             smallest_set = a;
@@ -120,11 +120,11 @@ pub fn rho_restricted_interval(n: u32, m: u32, (ia, ib): (u32, u32), verbose: bo
     curr_smallest
 }
 
-pub fn rho_signed_restricted(n: u32, m: u32, h: u32, verbose: bool) -> u32 {
-    let mut smallest_set = empty_set();
-    let mut curr_smallest = n;
-    for a in each_set_exact(n, m) {
-        let size = a.hfoldrestrictedsignedsumset(h, n).size();
+pub fn rho_signed_restricted<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bool) -> u32 {
+    let mut smallest_set = S::empty();
+    let mut curr_smallest = n.gsize();
+    for a in each_set_exact(n.clone(), m) {
+        let size = a.hfoldrestrictedsignedsumset(h, n.clone()).size();
         if size < curr_smallest {
             curr_smallest = size;
             smallest_set = a;
@@ -139,11 +139,11 @@ pub fn rho_signed_restricted(n: u32, m: u32, h: u32, verbose: bool) -> u32 {
     curr_smallest
 }
 
-pub fn rho_signed_restricted_interval(n: u32, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
-    let mut smallest_set = empty_set();
-    let mut curr_smallest = n;
-    for a in each_set_exact(n, m) {
-        let size = a.hfoldintervalrestrictedsignedsumset((ia, ib), n).size();
+pub fn rho_signed_restricted_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): (u32, u32), verbose: bool) -> u32 {
+    let mut smallest_set = S::empty();
+    let mut curr_smallest = n.gsize();
+    for a in each_set_exact(n.clone(), m) {
+        let size = a.hfoldintervalrestrictedsignedsumset((ia, ib), n.clone()).size();
         if size < curr_smallest {
             curr_smallest = size;
             smallest_set = a;

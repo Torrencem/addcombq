@@ -3,7 +3,7 @@ use std::convert::TryInto;
 use crate::comb::chapter_a;
 // use crate::comb::chapter_b;
 // use crate::comb::chapter_c;
-// use crate::comb::chapter_d;
+use crate::comb::chapter_d;
 // use crate::comb::chapter_e;
 // use crate::comb::chapter_f;
 // use crate::comb::chapter_g;
@@ -212,7 +212,7 @@ macro_rules! interval_call {
 }
 
 macro_rules! py_binding {
-    ($bound_name:ident, $fs_version:expr, $ex_version:expr, $fs_int_version:expr, $ex_int_version:expr, $($ex_args:ident | $ex_arg_type:ident),+) => {
+    ($bound_name:ident, $fs_version:expr, $fs_int_version:expr, $($ex_args:ident | $ex_arg_type:ident),+) => {
         pub fn $bound_name(py: Python, n: PyObject, $($ex_args : $ex_arg_type),+ , verbose: bool) -> PyResult<u32> {
             // Setup c_out capturing
             let capt_c_out = setup_capt_c_out(py)?;
@@ -224,9 +224,9 @@ macro_rules! py_binding {
                     let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
                     let val: u32;
                     if !icall {
-                        val = $fs_version(n, $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                        val = $fs_version::<FastSet>(n, $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                     } else {
-                        val = $fs_int_version(n, $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                        val = $fs_int_version::<FastSet>(n, $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                     }
                     // Stop c_out capturing
                     capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
@@ -235,9 +235,9 @@ macro_rules! py_binding {
                     let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
                     let val: u32;
                     if !icall {
-                        val = $ex_version(Rc::new(vec![n]), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                        val = $ex_version::<Vec<u32>>(Rc::new(vec![n]), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                     } else {
-                        val = $ex_int_version(Rc::new(vec![n]), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                        val = $ex_int_version::<Vec<u32>>(Rc::new(vec![n]), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                     }
                     capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
                     Ok(val)
@@ -253,9 +253,9 @@ macro_rules! py_binding {
                 let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
                 let val: u32;
                 if !icall {
-                    val = $ex_version(Rc::new(tmp), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                    val = $ex_version::<Vec<u32>>(Rc::new(tmp), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                 } else {
-                    val = $ex_int_version(Rc::new(tmp), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                    val = $ex_int_version::<Vec<u32>>(Rc::new(tmp), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                 }
                 capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
                 Ok(val)
@@ -403,43 +403,35 @@ py_binding!(
 //     exacts::sigma_signed_restricted_interval_exact,
 //     h | PyObject
 // );
-//
-// py_binding!(
-//     rho,
-//     chapter_d::rho,
-//     exacts::rho_exact,
-//     chapter_d::rho_interval,
-//     exacts::rho_interval_exact,
-//     m | u32,
-//     h | PyObject
-// );
-// py_binding!(
-//     rho_signed,
-//     chapter_d::rho_signed,
-//     exacts::rho_signed_exact,
-//     chapter_d::rho_signed_interval,
-//     exacts::rho_signed_interval_exact,
-//     m | u32,
-//     h | PyObject
-// );
-// py_binding!(
-//     rho_restricted,
-//     chapter_d::rho_restricted,
-//     exacts::rho_restricted_exact,
-//     chapter_d::rho_restricted_interval,
-//     exacts::rho_restricted_interval_exact,
-//     m | u32,
-//     h | PyObject
-// );
-// py_binding!(
-//     rho_signed_restricted,
-//     chapter_d::rho_signed_restricted,
-//     exacts::rho_signed_restricted_exact,
-//     chapter_d::rho_signed_restricted_interval,
-//     exacts::rho_signed_restricted_interval_exact,
-//     m | u32,
-//     h | PyObject
-// );
+
+py_binding!(
+    rho,
+    chapter_d::rho,
+    chapter_d::rho_interval,
+    m | u32,
+    h | PyObject
+);
+py_binding!(
+    rho_signed,
+    chapter_d::rho_signed,
+    chapter_d::rho_signed_interval,
+    m | u32,
+    h | PyObject
+);
+py_binding!(
+    rho_restricted,
+    chapter_d::rho_restricted,
+    chapter_d::rho_restricted_interval,
+    m | u32,
+    h | PyObject
+);
+py_binding!(
+    rho_signed_restricted,
+    chapter_d::rho_signed_restricted,
+    chapter_d::rho_signed_restricted_interval,
+    m | u32,
+    h | PyObject
+);
 //
 // py_binding!(
 //     chi,
