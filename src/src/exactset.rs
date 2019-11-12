@@ -5,6 +5,8 @@ use std::iter::IntoIterator;
 use itertools::Combinations;
 use itertools::Itertools;
 
+use std::rc::Rc;
+
 use std::iter;
 
 pub struct CombWithReplacement {
@@ -57,13 +59,13 @@ pub fn combinations_with_replacement(n: u32, r: u32) -> CombWithReplacement {
     }
 }
 
-pub struct EachElement<'a> {
+pub struct EachElement {
     pub curr: Vec<u32>,
-    pub mod_v: &'a Vec<u32>,
+    pub mod_v: Rc<Vec<u32>>,
     pub first: bool,
 }
 
-impl<'a> Iterator for EachElement<'a> {
+impl Iterator for EachElement {
     type Item = Vec<u32>;
 
     fn next(&mut self) -> Option<Vec<u32>> {
@@ -87,22 +89,22 @@ impl<'a> Iterator for EachElement<'a> {
 #[derive(Hash, Eq, PartialEq, Clone)]
 pub struct GElem(pub Vec<u32>);
 
-pub fn each_set_exact(size: u32, mod_v: &Vec<u32>) -> EachSetExact {
+pub fn each_set_exact(size: u32, mod_v: Rc<Vec<u32>>) -> EachSetExact {
     EachSetExact {
         c: (EachElement {
             curr: vec![0; mod_v.len()],
-            mod_v: &mod_v,
+            mod_v: mod_v.clone(),
             first: true,
         })
         .combinations(size as usize),
     }
 }
 
-pub struct EachSetExact<'a> {
-    pub c: Combinations<EachElement<'a>>,
+pub struct EachSetExact {
+    pub c: Combinations<EachElement>,
 }
 
-impl<'a> Iterator for EachSetExact<'a> {
+impl Iterator for EachSetExact {
     type Item = Vec<GElem>;
 
     fn next(&mut self) -> Option<Vec<GElem>> {
@@ -111,11 +113,11 @@ impl<'a> Iterator for EachSetExact<'a> {
     }
 }
 
-pub fn each_set_exact_no_zero(size: u32, mod_v: &Vec<u32>) -> EachSetExact {
+pub fn each_set_exact_no_zero(size: u32, mod_v: Rc<Vec<u32>>) -> EachSetExact {
     EachSetExact {
         c: (EachElement {
             curr: vec![0; mod_v.len()],
-            mod_v: &mod_v,
+            mod_v: mod_v.clone(),
             first: false,
         })
         .combinations(size as usize),
@@ -123,7 +125,7 @@ pub fn each_set_exact_no_zero(size: u32, mod_v: &Vec<u32>) -> EachSetExact {
 }
 
 #[inline]
-pub fn mod_sum(x: &GElem, y: &GElem, mod_v: &Vec<u32>) -> GElem {
+pub fn mod_sum(x: &GElem, y: &GElem, mod_v: Rc<Vec<u32>>) -> GElem {
     let GElem(xc) = x;
     let GElem(yc) = y;
     debug_assert!(xc.len() == yc.len());
@@ -132,7 +134,7 @@ pub fn mod_sum(x: &GElem, y: &GElem, mod_v: &Vec<u32>) -> GElem {
         .iter_mut()
         .zip(xc.into_iter())
         .zip(yc.into_iter())
-        .zip(mod_v)
+        .zip(mod_v.iter())
     {
         *zref = (xval + yval) % mod_val;
     }
@@ -169,7 +171,7 @@ impl fmt::Debug for GElem {
     }
 }
 
-pub fn hfoldsumset(set: &Vec<GElem>, h: u32, mod_v: &Vec<u32>) -> HashSet<GElem> {
+pub fn hfoldsumset(set: &Vec<GElem>, h: u32, mod_v: Rc<Vec<u32>>) -> HashSet<GElem> {
     let mut res: HashSet<GElem> = HashSet::new();
     let as_vec: Vec<GElem> = set.clone();
     let n: usize = mod_v.len();
@@ -184,24 +186,24 @@ pub fn hfoldsumset(set: &Vec<GElem>, h: u32, mod_v: &Vec<u32>) -> HashSet<GElem>
                 .into_iter()
                 .map(|index| as_vec[index as usize].clone())
                 .fold(GElem(vec![0; n]), |prev, curr| {
-                    mod_sum(&prev, &curr, &mod_v)
+                    mod_sum(&prev, &curr, mod_v.clone())
                 }),
         );
     }
     res
 }
 
-pub fn hfoldintervalsumset(set: &Vec<GElem>, intv: (u32, u32), mod_v: &Vec<u32>) -> HashSet<GElem> {
+pub fn hfoldintervalsumset(set: &Vec<GElem>, intv: (u32, u32), mod_v: Rc<Vec<u32>>) -> HashSet<GElem> {
     let mut res: HashSet<_> = HashSet::new();
     let (ia, ib) = intv;
     for i in ia..=ib {
-        let tmp = hfoldsumset(set, i, mod_v);
+        let tmp = hfoldsumset(set, i, mod_v.clone());
         res = res.union(&tmp).cloned().collect();
     }
     res
 }
 
-pub fn hfoldsignedsumset(set: &Vec<GElem>, h: u32, mod_v: &Vec<u32>) -> HashSet<GElem> {
+pub fn hfoldsignedsumset(set: &Vec<GElem>, h: u32, mod_v: Rc<Vec<u32>>) -> HashSet<GElem> {
     let mut res: HashSet<GElem> = HashSet::new();
     let as_vec: Vec<GElem> = set.clone();
     let n: usize = mod_v.len();
@@ -228,11 +230,11 @@ pub fn hfoldsignedsumset(set: &Vec<GElem>, h: u32, mod_v: &Vec<u32>) -> HashSet<
                                 mod_sum(
                                     &prev_elem,
                                     &elem_sub(&GElem((*mod_v).to_vec()), &elem),
-                                    &mod_v,
+                                    mod_v.clone(),
                                 ),
                             )
                         } else {
-                            (0, mod_sum(&prev_elem, &elem, &mod_v))
+                            (0, mod_sum(&prev_elem, &elem, mod_v.clone()))
                         }
                     })
                     .1,
@@ -266,7 +268,7 @@ pub fn hfoldsignedsumset(set: &Vec<GElem>, h: u32, mod_v: &Vec<u32>) -> HashSet<
 pub fn hfoldintervalsignedsumset(
     set: &Vec<GElem>,
     intv: (u32, u32),
-    mod_v: &Vec<u32>,
+    mod_v: Rc<Vec<u32>>,
 ) -> HashSet<GElem> {
     let mut res: HashSet<_> = HashSet::new();
     let (ia, ib) = intv;
@@ -275,13 +277,13 @@ pub fn hfoldintervalsignedsumset(
             res.insert(GElem(vec![0; set.len()]));
             continue;
         }
-        let tmp = hfoldsignedsumset(set, i, mod_v);
+        let tmp = hfoldsignedsumset(set, i, mod_v.clone());
         res = res.union(&tmp).cloned().collect();
     }
     res
 }
 
-pub fn hfoldrestrictedsumset(set: &Vec<GElem>, h: u32, mod_v: &Vec<u32>) -> HashSet<GElem> {
+pub fn hfoldrestrictedsumset(set: &Vec<GElem>, h: u32, mod_v: Rc<Vec<u32>>) -> HashSet<GElem> {
     let mut res: HashSet<GElem> = HashSet::new();
     let as_vec: Vec<GElem> = set.clone();
     let n: usize = mod_v.len();
@@ -296,7 +298,7 @@ pub fn hfoldrestrictedsumset(set: &Vec<GElem>, h: u32, mod_v: &Vec<u32>) -> Hash
                 .into_iter()
                 .map(|index| as_vec[index as usize].clone())
                 .fold(GElem(vec![0; n]), |prev, curr| {
-                    mod_sum(&prev, &curr, &mod_v)
+                    mod_sum(&prev, &curr, mod_v.clone())
                 }),
         );
     }
@@ -306,18 +308,18 @@ pub fn hfoldrestrictedsumset(set: &Vec<GElem>, h: u32, mod_v: &Vec<u32>) -> Hash
 pub fn hfoldintervalrestrictedsumset(
     set: &Vec<GElem>,
     intv: (u32, u32),
-    mod_v: &Vec<u32>,
+    mod_v: Rc<Vec<u32>>,
 ) -> HashSet<GElem> {
     let mut res: HashSet<_> = HashSet::new();
     let (ia, ib) = intv;
     for i in ia..=ib {
-        let tmp = hfoldrestrictedsumset(set, i, mod_v);
+        let tmp = hfoldrestrictedsumset(set, i, mod_v.clone());
         res = res.union(&tmp).cloned().collect();
     }
     res
 }
 
-pub fn hfoldrestrictedsignedsumset(set: &Vec<GElem>, h: u32, mod_v: &Vec<u32>) -> HashSet<GElem> {
+pub fn hfoldrestrictedsignedsumset(set: &Vec<GElem>, h: u32, mod_v: Rc<Vec<u32>>) -> HashSet<GElem> {
     let mut res: HashSet<GElem> = HashSet::new();
     let as_vec: Vec<GElem> = set.clone();
     let n: usize = mod_v.len();
@@ -344,11 +346,11 @@ pub fn hfoldrestrictedsignedsumset(set: &Vec<GElem>, h: u32, mod_v: &Vec<u32>) -
                                 mod_sum(
                                     &prev_elem,
                                     &elem_sub(&GElem((*mod_v).to_vec()), &elem),
-                                    &mod_v,
+                                    mod_v.clone(),
                                 ),
                             )
                         } else {
-                            (0, mod_sum(&prev_elem, &elem, &mod_v))
+                            (0, mod_sum(&prev_elem, &elem, mod_v.clone()))
                         }
                     })
                     .1,
@@ -376,12 +378,12 @@ pub fn hfoldrestrictedsignedsumset(set: &Vec<GElem>, h: u32, mod_v: &Vec<u32>) -
 pub fn hfoldintervalrestrictedsignedsumset(
     set: &Vec<GElem>,
     intv: (u32, u32),
-    mod_v: &Vec<u32>,
+    mod_v: Rc<Vec<u32>>,
 ) -> HashSet<GElem> {
     let mut res: HashSet<_> = HashSet::new();
     let (ia, ib) = intv;
     for i in ia..=ib {
-        let tmp = hfoldrestrictedsignedsumset(set, i, mod_v);
+        let tmp = hfoldrestrictedsignedsumset(set, i, mod_v.clone());
         res = res.union(&tmp).cloned().collect();
     }
     res
@@ -391,14 +393,3 @@ pub fn empty_set() -> Vec<GElem> {
     vec![]
 }
 
-pub fn gsize(mod_v: &Vec<u32>) -> u32 {
-    let mut res = 1;
-    for num in mod_v {
-        res *= num;
-    }
-    res
-}
-
-pub fn zero_free(set: HashSet<GElem>, mod_v: &Vec<u32>) -> bool {
-    set.contains(&GElem(vec![0; mod_v.len()]))
-}

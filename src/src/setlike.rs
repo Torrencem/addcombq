@@ -1,6 +1,9 @@
-use std::fmt::Display;
+use std::fmt::Debug;
 
 use crate::fastset;
+use crate::exactset;
+
+use crate::exactset::GElem;
 
 use std::rc::Rc;
 
@@ -24,9 +27,9 @@ impl Group for u32 {
 }
 
 impl Group for Rc<Vec<u32>> {
-    type Element = Vec<u32>;
-    fn zero(&self) -> Vec<u32> {
-        vec![0u32, (**self).len() as u32]
+    type Element = GElem;
+    fn zero(&self) -> GElem {
+        GElem(vec![0u32, (**self).len() as u32])
     }
 
     fn gsize(&self) -> u32 {
@@ -52,7 +55,7 @@ pub trait HFolds {
     fn hfoldintervalrestrictedsignedsumset(&self, hs: (u32, u32), n: Self::Group) -> Self; 
 }
 
-pub trait SetLike: Display + Clone + HFolds {
+pub trait SetLike: Debug + Clone + HFolds {
     type EachSetExact: Iterator<Item=Self>;
     type EachSetExactZero: Iterator<Item=Self>;
     type EachSetExactNoZero: Iterator<Item=Self>;
@@ -66,7 +69,37 @@ pub trait SetLike: Display + Clone + HFolds {
     fn is_full(&self, n: Self::Group) -> bool;
     fn size(&self) -> u32;
     fn add(&mut self, i: Self::Element);
-    fn contains(&self, i: Self::Element) -> bool;
+    fn contains(&self, i: &Self::Element) -> bool;
+}
+
+impl HFolds for Vec<GElem> {
+    type Group = Rc<Vec<u32>>;
+    type Element = GElem;
+    
+    fn hfoldsumset(&self, h: u32, n: Self::Group) -> Self {
+        exactset::hfoldsumset(&self, h, n).into_iter().collect()
+    }
+    fn hfoldintervalsumset(&self, hs: (u32, u32), n: Self::Group) -> Self {
+        exactset::hfoldintervalsumset(&self, hs, n).into_iter().collect()
+    }
+    fn hfoldrestrictedsumset(&self, h: u32, n: Self::Group) -> Self {
+        exactset::hfoldrestrictedsumset(&self, h, n).into_iter().collect()
+    }
+    fn hfoldintervalrestrictedsumset(&self, hs: (u32, u32), n: Self::Group) -> Self {
+        exactset::hfoldintervalrestrictedsumset(&self, hs, n).into_iter().collect()
+    }
+    fn hfoldsignedsumset(&self, h: u32, n: Self::Group) -> Self {
+        exactset::hfoldsignedsumset(&self, h, n).into_iter().collect()
+    }
+    fn hfoldintervalsignedsumset(&self, hs: (u32, u32), n: Self::Group) -> Self {
+        exactset::hfoldintervalsignedsumset(&self, hs, n).into_iter().collect()
+    }
+    fn hfoldrestrictedsignedsumset(&self, h: u32, n: Self::Group) -> Self {
+        exactset::hfoldrestrictedsignedsumset(&self, h, n).into_iter().collect()
+    }
+    fn hfoldintervalrestrictedsignedsumset(&self, hs: (u32, u32), n: Self::Group) -> Self {
+        exactset::hfoldintervalrestrictedsignedsumset(&self, hs, n).into_iter().collect()
+    }
 }
 
 impl SetLike for fastset::FastSet {
@@ -105,8 +138,49 @@ impl SetLike for fastset::FastSet {
         self.add(i)
     }
 
-    fn contains(&self, i: u32) -> bool {
-        self.access(i)
+    fn contains(&self, i: &u32) -> bool {
+        self.access(*i)
     }
 }
 
+impl SetLike for Vec<GElem> {
+    type EachSetExact = exactset::EachSetExact;
+    type EachSetExactZero = exactset::EachSetExact;
+    type EachSetExactNoZero = exactset::EachSetExact;
+    fn empty() -> Self {
+        exactset::empty_set()
+    }
+    fn singleton(i: GElem) -> Self {
+        vec![i]
+    }
+    fn each_set_exact(g: Self::Group, set_size: u32) -> Self::EachSetExact {
+        exactset::each_set_exact(set_size, g)
+    }
+    fn each_set_exact_zero(g: Self::Group, set_size: u32) -> Self::EachSetExactZero {
+        // TODO: Fix and optimize this
+        exactset::each_set_exact(set_size, g)
+    }
+    fn each_set_exact_no_zero(g: Self::Group, set_size: u32) -> Self::EachSetExactNoZero {
+        exactset::each_set_exact_no_zero(set_size, g)
+    }
+
+    fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
+    fn is_full(&self, n: Self::Group) -> bool {
+        self.len() as u32 == n.gsize()
+    }
+
+    fn size(&self) -> u32 {
+        self.len() as u32
+    }
+
+    fn add(&mut self, i: GElem) {
+        self.push(i)
+    }
+
+    fn contains(&self, i: &GElem) -> bool {
+        self.contains(i)
+    }
+}

@@ -1,18 +1,19 @@
 use std::convert::TryInto;
 
 use crate::comb::chapter_a;
-use crate::comb::chapter_b;
-use crate::comb::chapter_c;
-use crate::comb::chapter_d;
-use crate::comb::chapter_e;
-use crate::comb::chapter_f;
-use crate::comb::chapter_g;
+// use crate::comb::chapter_b;
+// use crate::comb::chapter_c;
+// use crate::comb::chapter_d;
+// use crate::comb::chapter_e;
+// use crate::comb::chapter_f;
+// use crate::comb::chapter_g;
 
 use crate::fastset::FastSet;
+use crate::exactset::GElem;
 
 use std::any::Any;
 
-use crate::comb::exacts;
+use std::rc::Rc;
 
 use cpython::exc;
 use cpython::{
@@ -234,9 +235,9 @@ macro_rules! py_binding {
                     let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
                     let val: u32;
                     if !icall {
-                        val = $ex_version(&[n], $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                        val = $ex_version(Rc::new(vec![n]), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                     } else {
-                        val = $ex_int_version(&[n], $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                        val = $ex_int_version(Rc::new(vec![n]), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                     }
                     capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
                     Ok(val)
@@ -252,9 +253,9 @@ macro_rules! py_binding {
                 let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
                 let val: u32;
                 if !icall {
-                    val = $ex_version(tmp.as_slice(), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                    val = $ex_version(Rc::new(tmp), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                 } else {
-                    val = $ex_int_version(tmp.as_slice(), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                    val = $ex_int_version(Rc::new(tmp), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
                 }
                 capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
                 Ok(val)
@@ -265,266 +266,266 @@ macro_rules! py_binding {
 
 // Ignore interval stuff
 // only for mu
-macro_rules! py_binding_mu {
-    ($bound_name:ident, $fs_version:expr, $ex_version:expr, $($ex_args:ident),+) => {
-        pub fn $bound_name(py: Python, n: PyObject, $($ex_args : u32),+ , verbose: bool) -> PyResult<u32> {
-            // Setup c_out capturing
-            let capt_c_out = setup_capt_c_out(py)?;
-            capt_c_out.call_method(py, "next", NoArgs, None)?;
-            let numb = into_pyint(py, &n);
-            if let Ok(n) = numb {
-                let n: u32 = n.value(py).try_into().unwrap(); // Will panic here if negative
-                if n <= 63 {
-                    let val = $fs_version(n, $($ex_args),+, verbose);
-                    // Stop c_out capturing
-                    capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
-                    Ok(val)
-                } else {
-                    let val = $ex_version(&[n], $($ex_args),+, verbose);
-                    capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
-                    Ok(val)
-                }
-            } else {
-                let list = into_pyiter(&py, &n)?; // Will return here if something awful is given
-                let mut tmp = vec![];
-                for pyob in list {
-                    let numb = into_pyint(py, &pyob?)?;
-                    let val = numb.value(py).try_into().unwrap();
-                    tmp.push(val);
-                }
-                let val = $ex_version(tmp.as_slice(), $($ex_args),+, verbose);
-                capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
-                Ok(val)
-            }
-        }
-    };
-}
+// macro_rules! py_binding_mu {
+//     ($bound_name:ident, $fs_version:expr, $ex_version:expr, $($ex_args:ident),+) => {
+//         pub fn $bound_name(py: Python, n: PyObject, $($ex_args : u32),+ , verbose: bool) -> PyResult<u32> {
+//             // Setup c_out capturing
+//             let capt_c_out = setup_capt_c_out(py)?;
+//             capt_c_out.call_method(py, "next", NoArgs, None)?;
+//             let numb = into_pyint(py, &n);
+//             if let Ok(n) = numb {
+//                 let n: u32 = n.value(py).try_into().unwrap(); // Will panic here if negative
+//                 if n <= 63 {
+//                     let val = $fs_version(n, $($ex_args),+, verbose);
+//                     // Stop c_out capturing
+//                     capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+//                     Ok(val)
+//                 } else {
+//                     let val = $ex_version(&[n], $($ex_args),+, verbose);
+//                     capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+//                     Ok(val)
+//                 }
+//             } else {
+//                 let list = into_pyiter(&py, &n)?; // Will return here if something awful is given
+//                 let mut tmp = vec![];
+//                 for pyob in list {
+//                     let numb = into_pyint(py, &pyob?)?;
+//                     let val = numb.value(py).try_into().unwrap();
+//                     tmp.push(val);
+//                 }
+//                 let val = $ex_version(tmp.as_slice(), $($ex_args),+, verbose);
+//                 capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+//                 Ok(val)
+//             }
+//         }
+//     };
+// }
 
 py_binding!(
     nu,
     chapter_a::nu::<FastSet>,
-    exacts::nu_exact,
+    chapter_a::nu::<Vec<GElem>>,
     chapter_a::nu_interval::<FastSet>,
-    exacts::nu_interval_exact,
+    chapter_a::nu_interval::<Vec<GElem>>,
     m | u32,
     h | PyObject
 );
 py_binding!(
     nu_signed,
     chapter_a::nu_signed::<FastSet>,
-    exacts::nu_signed_exact,
+    chapter_a::nu_signed::<Vec<GElem>>,
     chapter_a::nu_signed_interval::<FastSet>,
-    exacts::nu_signed_interval_exact,
+    chapter_a::nu_signed_interval::<Vec<GElem>>,
     m | u32,
     h | PyObject
 );
 py_binding!(
     nu_restricted,
     chapter_a::nu_restricted::<FastSet>,
-    exacts::nu_restricted_exact,
+    chapter_a::nu_restricted::<Vec<GElem>>,
     chapter_a::nu_restricted_interval::<FastSet>,
-    exacts::nu_restricted_interval_exact,
+    chapter_a::nu_restricted_interval::<Vec<GElem>>,
     m | u32,
     h | PyObject
 );
 py_binding!(
     nu_signed_restricted,
     chapter_a::nu_signed_restricted::<FastSet>,
-    exacts::nu_signed_restricted_exact,
+    chapter_a::nu_signed_restricted::<Vec<GElem>>,
     chapter_a::nu_signed_restricted_interval::<FastSet>,
-    exacts::nu_signed_restricted_interval_exact,
+    chapter_a::nu_signed_restricted_interval::<Vec<GElem>>,
     m | u32,
     h | PyObject
 );
 
-py_binding!(
-    phi,
-    chapter_b::phi,
-    exacts::phi_exact,
-    chapter_b::phi_interval,
-    exacts::phi_interval_exact,
-    h | PyObject
-);
-py_binding!(
-    phi_signed,
-    chapter_b::phi_signed,
-    exacts::phi_signed_exact,
-    chapter_b::phi_signed_interval,
-    exacts::phi_signed_interval_exact,
-    h | PyObject
-);
-py_binding!(
-    phi_restricted,
-    chapter_b::phi_restricted,
-    exacts::phi_restricted_exact,
-    chapter_b::phi_restricted_interval,
-    exacts::phi_restricted_interval_exact,
-    h | PyObject
-);
-py_binding!(
-    phi_signed_restricted,
-    chapter_b::phi_signed_restricted,
-    exacts::phi_signed_restricted_exact,
-    chapter_b::phi_signed_restricted_interval,
-    exacts::phi_signed_restricted_interval_exact,
-    h | PyObject
-);
-
-py_binding!(
-    sigma,
-    chapter_c::sigma,
-    exacts::sigma_exact,
-    chapter_c::sigma_interval,
-    exacts::sigma_interval_exact,
-    h | PyObject
-);
-py_binding!(
-    sigma_signed,
-    chapter_c::sigma_signed,
-    exacts::sigma_signed_exact,
-    chapter_c::sigma_signed_interval,
-    exacts::sigma_signed_interval_exact,
-    h | PyObject
-);
-py_binding!(
-    sigma_restricted,
-    chapter_c::sigma_restricted,
-    exacts::sigma_restricted_exact,
-    chapter_c::sigma_restricted_interval,
-    exacts::sigma_restricted_interval_exact,
-    h | PyObject
-);
-py_binding!(
-    sigma_signed_restricted,
-    chapter_c::sigma_signed_restricted,
-    exacts::sigma_signed_restricted_exact,
-    chapter_c::sigma_signed_restricted_interval,
-    exacts::sigma_signed_restricted_interval_exact,
-    h | PyObject
-);
-
-py_binding!(
-    rho,
-    chapter_d::rho,
-    exacts::rho_exact,
-    chapter_d::rho_interval,
-    exacts::rho_interval_exact,
-    m | u32,
-    h | PyObject
-);
-py_binding!(
-    rho_signed,
-    chapter_d::rho_signed,
-    exacts::rho_signed_exact,
-    chapter_d::rho_signed_interval,
-    exacts::rho_signed_interval_exact,
-    m | u32,
-    h | PyObject
-);
-py_binding!(
-    rho_restricted,
-    chapter_d::rho_restricted,
-    exacts::rho_restricted_exact,
-    chapter_d::rho_restricted_interval,
-    exacts::rho_restricted_interval_exact,
-    m | u32,
-    h | PyObject
-);
-py_binding!(
-    rho_signed_restricted,
-    chapter_d::rho_signed_restricted,
-    exacts::rho_signed_restricted_exact,
-    chapter_d::rho_signed_restricted_interval,
-    exacts::rho_signed_restricted_interval_exact,
-    m | u32,
-    h | PyObject
-);
-
-py_binding!(
-    chi,
-    chapter_e::chi,
-    exacts::chi_exact,
-    chapter_e::chi_interval,
-    exacts::chi_interval_exact,
-    h | PyObject
-);
-py_binding!(
-    chi_signed,
-    chapter_e::chi_signed,
-    exacts::chi_signed_exact,
-    chapter_e::chi_signed_interval,
-    exacts::chi_signed_interval_exact,
-    h | PyObject
-);
-py_binding!(
-    chi_restricted,
-    chapter_e::chi_restricted,
-    exacts::chi_restricted_exact,
-    chapter_e::chi_restricted_interval,
-    exacts::chi_restricted_interval_exact,
-    h | PyObject
-);
-py_binding!(
-    chi_signed_restricted,
-    chapter_e::chi_signed_restricted,
-    exacts::chi_signed_restricted_exact,
-    chapter_e::chi_signed_restricted_interval,
-    exacts::chi_signed_restricted_interval_exact,
-    h | PyObject
-);
-
-py_binding!(
-    tau,
-    chapter_f::tau,
-    exacts::tau_exact,
-    chapter_f::tau_interval,
-    exacts::tau_interval_exact,
-    h | PyObject
-);
-py_binding!(
-    tau_signed,
-    chapter_f::tau_signed,
-    exacts::tau_signed_exact,
-    chapter_f::tau_signed_interval,
-    exacts::tau_signed_interval_exact,
-    h | PyObject
-);
-py_binding!(
-    tau_restricted,
-    chapter_f::tau_restricted,
-    exacts::tau_restricted_exact,
-    chapter_f::tau_restricted_interval,
-    exacts::tau_restricted_interval_exact,
-    h | PyObject
-);
-py_binding!(
-    tau_signed_restricted,
-    chapter_f::tau_signed_restricted,
-    exacts::tau_signed_restricted_exact,
-    chapter_f::tau_signed_restricted_interval,
-    exacts::tau_signed_restricted_interval_exact,
-    h | PyObject
-);
-
-py_binding_mu!(mu, chapter_g::mu, exacts::mu_exact, k, l);
-py_binding_mu!(
-    mu_signed,
-    chapter_g::mu_signed,
-    exacts::mu_signed_exact,
-    k,
-    l
-);
-py_binding_mu!(
-    mu_restricted,
-    chapter_g::mu_restricted,
-    exacts::mu_restricted_exact,
-    k,
-    l
-);
-py_binding_mu!(
-    mu_signed_restricted,
-    chapter_g::mu_signed_restricted,
-    exacts::mu_signed_restricted_exact,
-    k,
-    l
-);
+// py_binding!(
+//     phi,
+//     chapter_b::phi,
+//     exacts::phi_exact,
+//     chapter_b::phi_interval,
+//     exacts::phi_interval_exact,
+//     h | PyObject
+// );
+// py_binding!(
+//     phi_signed,
+//     chapter_b::phi_signed,
+//     exacts::phi_signed_exact,
+//     chapter_b::phi_signed_interval,
+//     exacts::phi_signed_interval_exact,
+//     h | PyObject
+// );
+// py_binding!(
+//     phi_restricted,
+//     chapter_b::phi_restricted,
+//     exacts::phi_restricted_exact,
+//     chapter_b::phi_restricted_interval,
+//     exacts::phi_restricted_interval_exact,
+//     h | PyObject
+// );
+// py_binding!(
+//     phi_signed_restricted,
+//     chapter_b::phi_signed_restricted,
+//     exacts::phi_signed_restricted_exact,
+//     chapter_b::phi_signed_restricted_interval,
+//     exacts::phi_signed_restricted_interval_exact,
+//     h | PyObject
+// );
+//
+// py_binding!(
+//     sigma,
+//     chapter_c::sigma,
+//     exacts::sigma_exact,
+//     chapter_c::sigma_interval,
+//     exacts::sigma_interval_exact,
+//     h | PyObject
+// );
+// py_binding!(
+//     sigma_signed,
+//     chapter_c::sigma_signed,
+//     exacts::sigma_signed_exact,
+//     chapter_c::sigma_signed_interval,
+//     exacts::sigma_signed_interval_exact,
+//     h | PyObject
+// );
+// py_binding!(
+//     sigma_restricted,
+//     chapter_c::sigma_restricted,
+//     exacts::sigma_restricted_exact,
+//     chapter_c::sigma_restricted_interval,
+//     exacts::sigma_restricted_interval_exact,
+//     h | PyObject
+// );
+// py_binding!(
+//     sigma_signed_restricted,
+//     chapter_c::sigma_signed_restricted,
+//     exacts::sigma_signed_restricted_exact,
+//     chapter_c::sigma_signed_restricted_interval,
+//     exacts::sigma_signed_restricted_interval_exact,
+//     h | PyObject
+// );
+//
+// py_binding!(
+//     rho,
+//     chapter_d::rho,
+//     exacts::rho_exact,
+//     chapter_d::rho_interval,
+//     exacts::rho_interval_exact,
+//     m | u32,
+//     h | PyObject
+// );
+// py_binding!(
+//     rho_signed,
+//     chapter_d::rho_signed,
+//     exacts::rho_signed_exact,
+//     chapter_d::rho_signed_interval,
+//     exacts::rho_signed_interval_exact,
+//     m | u32,
+//     h | PyObject
+// );
+// py_binding!(
+//     rho_restricted,
+//     chapter_d::rho_restricted,
+//     exacts::rho_restricted_exact,
+//     chapter_d::rho_restricted_interval,
+//     exacts::rho_restricted_interval_exact,
+//     m | u32,
+//     h | PyObject
+// );
+// py_binding!(
+//     rho_signed_restricted,
+//     chapter_d::rho_signed_restricted,
+//     exacts::rho_signed_restricted_exact,
+//     chapter_d::rho_signed_restricted_interval,
+//     exacts::rho_signed_restricted_interval_exact,
+//     m | u32,
+//     h | PyObject
+// );
+//
+// py_binding!(
+//     chi,
+//     chapter_e::chi,
+//     exacts::chi_exact,
+//     chapter_e::chi_interval,
+//     exacts::chi_interval_exact,
+//     h | PyObject
+// );
+// py_binding!(
+//     chi_signed,
+//     chapter_e::chi_signed,
+//     exacts::chi_signed_exact,
+//     chapter_e::chi_signed_interval,
+//     exacts::chi_signed_interval_exact,
+//     h | PyObject
+// );
+// py_binding!(
+//     chi_restricted,
+//     chapter_e::chi_restricted,
+//     exacts::chi_restricted_exact,
+//     chapter_e::chi_restricted_interval,
+//     exacts::chi_restricted_interval_exact,
+//     h | PyObject
+// );
+// py_binding!(
+//     chi_signed_restricted,
+//     chapter_e::chi_signed_restricted,
+//     exacts::chi_signed_restricted_exact,
+//     chapter_e::chi_signed_restricted_interval,
+//     exacts::chi_signed_restricted_interval_exact,
+//     h | PyObject
+// );
+//
+// py_binding!(
+//     tau,
+//     chapter_f::tau,
+//     exacts::tau_exact,
+//     chapter_f::tau_interval,
+//     exacts::tau_interval_exact,
+//     h | PyObject
+// );
+// py_binding!(
+//     tau_signed,
+//     chapter_f::tau_signed,
+//     exacts::tau_signed_exact,
+//     chapter_f::tau_signed_interval,
+//     exacts::tau_signed_interval_exact,
+//     h | PyObject
+// );
+// py_binding!(
+//     tau_restricted,
+//     chapter_f::tau_restricted,
+//     exacts::tau_restricted_exact,
+//     chapter_f::tau_restricted_interval,
+//     exacts::tau_restricted_interval_exact,
+//     h | PyObject
+// );
+// py_binding!(
+//     tau_signed_restricted,
+//     chapter_f::tau_signed_restricted,
+//     exacts::tau_signed_restricted_exact,
+//     chapter_f::tau_signed_restricted_interval,
+//     exacts::tau_signed_restricted_interval_exact,
+//     h | PyObject
+// );
+//
+// py_binding_mu!(mu, chapter_g::mu, exacts::mu_exact, k, l);
+// py_binding_mu!(
+//     mu_signed,
+//     chapter_g::mu_signed,
+//     exacts::mu_signed_exact,
+//     k,
+//     l
+// );
+// py_binding_mu!(
+//     mu_restricted,
+//     chapter_g::mu_restricted,
+//     exacts::mu_restricted_exact,
+//     k,
+//     l
+// );
+// py_binding_mu!(
+//     mu_signed_restricted,
+//     chapter_g::mu_signed_restricted,
+//     exacts::mu_signed_restricted_exact,
+//     k,
+//     l
+// );

@@ -16,6 +16,7 @@ fn in_interval(val: u32, interval: (u32, u32)) -> bool {
 impl HFolds for FastSet {
     type Element = u32;
     type Group = u32;
+
     #[inline]
     fn hfoldsumset(&self, h: u32, n: u32) -> FastSet {
         if h == 0 {
