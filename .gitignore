@@ -1,5 +1,6 @@
 src/target
 **/*.rs.bk
+**/*.swp
 src/build
 src/addcomb.egg-info
 src/dist

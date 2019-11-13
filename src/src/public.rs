@@ -4,7 +4,7 @@ use crate::comb::chapter_a;
 // use crate::comb::chapter_b;
 // use crate::comb::chapter_c;
 use crate::comb::chapter_d;
-// use crate::comb::chapter_e;
+use crate::comb::chapter_e;
 // use crate::comb::chapter_f;
 // use crate::comb::chapter_g;
 
@@ -440,40 +440,40 @@ py_binding!(
     m | u32,
     h | PyObject
 );
-//
-// py_binding!(
-//     chi,
-//     chapter_e::chi,
-//     exacts::chi_exact,
-//     chapter_e::chi_interval,
-//     exacts::chi_interval_exact,
-//     h | PyObject
-// );
-// py_binding!(
-//     chi_signed,
-//     chapter_e::chi_signed,
-//     exacts::chi_signed_exact,
-//     chapter_e::chi_signed_interval,
-//     exacts::chi_signed_interval_exact,
-//     h | PyObject
-// );
-// py_binding!(
-//     chi_restricted,
-//     chapter_e::chi_restricted,
-//     exacts::chi_restricted_exact,
-//     chapter_e::chi_restricted_interval,
-//     exacts::chi_restricted_interval_exact,
-//     h | PyObject
-// );
-// py_binding!(
-//     chi_signed_restricted,
-//     chapter_e::chi_signed_restricted,
-//     exacts::chi_signed_restricted_exact,
-//     chapter_e::chi_signed_restricted_interval,
-//     exacts::chi_signed_restricted_interval_exact,
-//     h | PyObject
-// );
-//
+
+py_binding!(
+    chi,
+    chapter_e::chi::<FastSet>,
+    chapter_e::chi::<Vec<GElem>>,
+    chapter_e::chi_interval::<FastSet>,
+    chapter_e::chi_interval::<Vec<GElem>>,
+    h | PyObject
+);
+py_binding!(
+    chi_signed,
+    chapter_e::chi_signed::<FastSet>,
+    chapter_e::chi_signed::<Vec<GElem>>,
+    chapter_e::chi_signed_interval::<FastSet>,
+    chapter_e::chi_signed_interval::<Vec<GElem>>,
+    h | PyObject
+);
+py_binding!(
+    chi_restricted,
+    chapter_e::chi_restricted::<FastSet>,
+    chapter_e::chi_restricted::<Vec<GElem>>,
+    chapter_e::chi_restricted_interval::<FastSet>,
+    chapter_e::chi_restricted_interval::<Vec<GElem>>,
+    h | PyObject
+);
+py_binding!(
+    chi_signed_restricted,
+    chapter_e::chi_signed_restricted::<FastSet>,
+    chapter_e::chi_signed_restricted::<Vec<GElem>>,
+    chapter_e::chi_signed_restricted_interval::<FastSet>,
+    chapter_e::chi_signed_restricted_interval::<Vec<GElem>>,
+    h | PyObject
+);
+
 // py_binding!(
 //     tau,
 //     chapter_f::tau,

@@ -69,7 +69,7 @@ pub trait SetLike: Debug + Clone + HFolds {
     fn is_full(&self, n: Self::Group) -> bool;
     fn size(&self) -> u32;
     fn add(&mut self, i: Self::Element);
-    fn contains(&self, i: &Self::Element) -> bool;
+    fn has(&self, i: &Self::Element) -> bool;
 }
 
 impl HFolds for Vec<GElem> {
@@ -138,7 +138,7 @@ impl SetLike for fastset::FastSet {
         self.add(i)
     }
 
-    fn contains(&self, i: &u32) -> bool {
+    fn has(&self, i: &u32) -> bool {
         self.access(*i)
     }
 }
@@ -180,7 +180,7 @@ impl SetLike for Vec<GElem> {
         self.push(i)
     }
 
-    fn contains(&self, i: &GElem) -> bool {
+    fn has(&self, i: &GElem) -> bool {
         self.contains(i)
     }
 }
