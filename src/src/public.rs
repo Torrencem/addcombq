@@ -1,7 +1,7 @@
 use std::convert::TryInto;
 
 use crate::comb::chapter_a;
-// use crate::comb::chapter_b;
+use crate::comb::chapter_b;
 use crate::comb::chapter_c;
 use crate::comb::chapter_d;
 use crate::comb::chapter_e;
@@ -338,37 +338,38 @@ py_binding!(
     h | PyObject
 );
 
-// py_binding!(
-//     phi,
-//     chapter_b::phi,
-//     exacts::phi_exact,
-//     chapter_b::phi_interval,
-//     exacts::phi_interval_exact,
-//     h | PyObject
-// );
-// py_binding!(
-//     phi_signed,
-//     chapter_b::phi_signed,
-//     exacts::phi_signed_exact,
-//     chapter_b::phi_signed_interval,
-//     exacts::phi_signed_interval_exact,
-//     h | PyObject
-// );
-// py_binding!(
-//     phi_restricted,
-//     chapter_b::phi_restricted,
-//     exacts::phi_restricted_exact,
-//     chapter_b::phi_restricted_interval,
-//     exacts::phi_restricted_interval_exact,
-//     h | PyObject
-// );
-// py_binding!(
-//     phi_signed_restricted,
-//     chapter_b::phi_signed_restricted,
-//     exacts::phi_signed_restricted_exact,
-//     chapter_b::phi_signed_restricted_interval,
-//     exacts::phi_signed_restricted_interval_exact,
-//     h | PyObject
+py_binding!(
+    phi,
+    chapter_b::phi::<FastSet>,
+    chapter_b::phi::<Vec<GElem>>,
+    chapter_b::phi_interval::<FastSet>,
+    chapter_b::phi_interval::<Vec<GElem>>,
+    h | PyObject
+);
+py_binding!(
+    phi_signed,
+    chapter_b::phi_signed::<FastSet>,
+    chapter_b::phi_signed::<Vec<GElem>>,
+    chapter_b::phi_signed_interval::<FastSet>,
+    chapter_b::phi_signed_interval::<Vec<GElem>>,
+    h | PyObject
+);
+py_binding!(
+    phi_restricted,
+    chapter_b::phi_restricted::<FastSet>,
+    chapter_b::phi_restricted::<Vec<GElem>>,
+    chapter_b::phi_restricted_interval::<FastSet>,
+    chapter_b::phi_restricted_interval::<Vec<GElem>>,
+    h | PyObject
+);
+py_binding!(
+    phi_signed_restricted,
+    chapter_b::phi_signed_restricted::<FastSet>,
+    chapter_b::phi_signed_restricted::<Vec<GElem>>,
+    chapter_b::phi_signed_restricted_interval::<FastSet>,
+    chapter_b::phi_signed_restricted_interval::<Vec<GElem>>,
+    h | PyObject
+);
 
 py_binding!(
     sigma,

@@ -2,7 +2,7 @@ use itertools::max;
 use std::cmp;
 
 pub mod chapter_a;
-// pub mod chapter_b;
+pub mod chapter_b;
 pub mod chapter_c;
 pub mod chapter_d;
 pub mod chapter_e;
