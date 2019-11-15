@@ -42,8 +42,8 @@ impl Group for Rc<Vec<u32>> {
 }
 
 pub trait HFolds {
-    type Group: Group;
-    type Element = <<Self as HFolds>::Group as Group>::Element;
+    type Element;
+    type Group: Group<Element = Self::Element>;
     
     fn hfoldsumset(&self, h: u32, n: Self::Group) -> Self;
     fn hfoldintervalsumset(&self, hs: (u32, u32), n: Self::Group) -> Self;
@@ -70,7 +70,12 @@ pub trait SetLike: Debug + Clone + HFolds {
     fn size(&self) -> u32;
     fn add(&mut self, i: Self::Element);
     fn has(&self, i: &Self::Element) -> bool;
+
+    fn zero_free(&self, n: Self::Group) -> bool {
+        self.has(&n.zero())
+    }
 }
+
 
 impl HFolds for Vec<GElem> {
     type Group = Rc<Vec<u32>>;

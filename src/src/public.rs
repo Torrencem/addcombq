@@ -2,10 +2,10 @@ use std::convert::TryInto;
 
 use crate::comb::chapter_a;
 // use crate::comb::chapter_b;
-// use crate::comb::chapter_c;
+use crate::comb::chapter_c;
 use crate::comb::chapter_d;
 use crate::comb::chapter_e;
-// use crate::comb::chapter_f;
+use crate::comb::chapter_f;
 // use crate::comb::chapter_g;
 
 use crate::fastset::FastSet;
@@ -369,40 +369,39 @@ py_binding!(
 //     chapter_b::phi_signed_restricted_interval,
 //     exacts::phi_signed_restricted_interval_exact,
 //     h | PyObject
-// );
-//
-// py_binding!(
-//     sigma,
-//     chapter_c::sigma,
-//     exacts::sigma_exact,
-//     chapter_c::sigma_interval,
-//     exacts::sigma_interval_exact,
-//     h | PyObject
-// );
-// py_binding!(
-//     sigma_signed,
-//     chapter_c::sigma_signed,
-//     exacts::sigma_signed_exact,
-//     chapter_c::sigma_signed_interval,
-//     exacts::sigma_signed_interval_exact,
-//     h | PyObject
-// );
-// py_binding!(
-//     sigma_restricted,
-//     chapter_c::sigma_restricted,
-//     exacts::sigma_restricted_exact,
-//     chapter_c::sigma_restricted_interval,
-//     exacts::sigma_restricted_interval_exact,
-//     h | PyObject
-// );
-// py_binding!(
-//     sigma_signed_restricted,
-//     chapter_c::sigma_signed_restricted,
-//     exacts::sigma_signed_restricted_exact,
-//     chapter_c::sigma_signed_restricted_interval,
-//     exacts::sigma_signed_restricted_interval_exact,
-//     h | PyObject
-// );
+
+py_binding!(
+    sigma,
+    chapter_c::sigma::<FastSet>,
+    chapter_c::sigma::<Vec<GElem>>,
+    chapter_c::sigma_interval::<FastSet>,
+    chapter_c::sigma_interval::<Vec<GElem>>,
+    h | PyObject
+);
+py_binding!(
+    sigma_signed,
+    chapter_c::sigma_signed::<FastSet>,
+    chapter_c::sigma_signed::<Vec<GElem>>,
+    chapter_c::sigma_signed_interval::<FastSet>,
+    chapter_c::sigma_signed_interval::<Vec<GElem>>,
+    h | PyObject
+);
+py_binding!(
+    sigma_restricted,
+    chapter_c::sigma_restricted::<FastSet>,
+    chapter_c::sigma_restricted::<Vec<GElem>>,
+    chapter_c::sigma_restricted_interval::<FastSet>,
+    chapter_c::sigma_restricted_interval::<Vec<GElem>>,
+    h | PyObject
+);
+py_binding!(
+    sigma_signed_restricted,
+    chapter_c::sigma_signed_restricted::<FastSet>,
+    chapter_c::sigma_signed_restricted::<Vec<GElem>>,
+    chapter_c::sigma_signed_restricted_interval::<FastSet>,
+    chapter_c::sigma_signed_restricted_interval::<Vec<GElem>>,
+    h | PyObject
+);
 
 py_binding!(
     rho,
@@ -474,39 +473,39 @@ py_binding!(
     h | PyObject
 );
 
-// py_binding!(
-//     tau,
-//     chapter_f::tau,
-//     exacts::tau_exact,
-//     chapter_f::tau_interval,
-//     exacts::tau_interval_exact,
-//     h | PyObject
-// );
-// py_binding!(
-//     tau_signed,
-//     chapter_f::tau_signed,
-//     exacts::tau_signed_exact,
-//     chapter_f::tau_signed_interval,
-//     exacts::tau_signed_interval_exact,
-//     h | PyObject
-// );
-// py_binding!(
-//     tau_restricted,
-//     chapter_f::tau_restricted,
-//     exacts::tau_restricted_exact,
-//     chapter_f::tau_restricted_interval,
-//     exacts::tau_restricted_interval_exact,
-//     h | PyObject
-// );
-// py_binding!(
-//     tau_signed_restricted,
-//     chapter_f::tau_signed_restricted,
-//     exacts::tau_signed_restricted_exact,
-//     chapter_f::tau_signed_restricted_interval,
-//     exacts::tau_signed_restricted_interval_exact,
-//     h | PyObject
-// );
-//
+py_binding!(
+    tau,
+    chapter_f::tau::<FastSet>,
+    chapter_f::tau::<Vec<GElem>>,
+    chapter_f::tau_interval::<FastSet>,
+    chapter_f::tau_interval::<Vec<GElem>>,
+    h | PyObject
+);
+py_binding!(
+    tau_signed,
+    chapter_f::tau_signed::<FastSet>,
+    chapter_f::tau_signed::<Vec<GElem>>,
+    chapter_f::tau_signed_interval::<FastSet>,
+    chapter_f::tau_signed_interval::<Vec<GElem>>,
+    h | PyObject
+);
+py_binding!(
+    tau_restricted,
+    chapter_f::tau_restricted::<FastSet>,
+    chapter_f::tau_restricted::<Vec<GElem>>,
+    chapter_f::tau_restricted_interval::<FastSet>,
+    chapter_f::tau_restricted_interval::<Vec<GElem>>,
+    h | PyObject
+);
+py_binding!(
+    tau_signed_restricted,
+    chapter_f::tau_signed_restricted::<FastSet>,
+    chapter_f::tau_signed_restricted::<Vec<GElem>>,
+    chapter_f::tau_signed_restricted_interval::<FastSet>,
+    chapter_f::tau_signed_restricted_interval::<Vec<GElem>>,
+    h | PyObject
+);
+
 // py_binding_mu!(mu, chapter_g::mu, exacts::mu_exact, k, l);
 // py_binding_mu!(
 //     mu_signed,
