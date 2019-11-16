@@ -61,10 +61,10 @@ py_module_initializer!(addcomb, initaddcomb, PyInit_addcomb, |py, m| {
     add_bindings_to_mod!(py, m, tau_restricted, a_, h | PyObject);
     add_bindings_to_mod!(py, m, tau_signed_restricted, a_, h | PyObject);
 
-    // add_bindings_to_mod!(py, m, mu, a_, k | u32, l | u32);
-    // add_bindings_to_mod!(py, m, mu_signed, a_, k | u32, l | u32);
-    // add_bindings_to_mod!(py, m, mu_restricted, a_, k | u32, l | u32);
-    // add_bindings_to_mod!(py, m, mu_signed_restricted, a_, k | u32, l | u32);
+    add_bindings_to_mod!(py, m, mu, a_, k | u32, l | u32);
+    add_bindings_to_mod!(py, m, mu_signed, a_, k | u32, l | u32);
+    add_bindings_to_mod!(py, m, mu_restricted, a_, k | u32, l | u32);
+    add_bindings_to_mod!(py, m, mu_signed_restricted, a_, k | u32, l | u32);
 
     Ok(())
 });

@@ -1,11 +1,14 @@
 use std::fmt::Debug;
 
 use crate::fastset;
+use crate::fastset::FastSet;
 use crate::exactset;
 
 use crate::exactset::GElem;
 
 use std::rc::Rc;
+
+use array_tool::vec::Intersect;
 
 pub trait Group: Clone {
     type Element;
@@ -70,6 +73,7 @@ pub trait SetLike: Debug + Clone + HFolds {
     fn size(&self) -> u32;
     fn add(&mut self, i: Self::Element);
     fn has(&self, i: &Self::Element) -> bool;
+    fn intersect(&mut self, other: Self);
 
     fn zero_free(&self, n: Self::Group) -> bool {
         self.has(&n.zero())
@@ -146,6 +150,10 @@ impl SetLike for fastset::FastSet {
     fn has(&self, i: &u32) -> bool {
         self.access(*i)
     }
+
+    fn intersect(&mut self, other: FastSet) {
+        FastSet::intersect(self, &other)
+    }
 }
 
 impl SetLike for Vec<GElem> {
@@ -187,5 +195,10 @@ impl SetLike for Vec<GElem> {
 
     fn has(&self, i: &GElem) -> bool {
         self.contains(i)
+    }
+
+    fn intersect(&mut self, other: Vec<GElem>) {
+        let tmp = Intersect::intersect(self, other);
+        *self = (*tmp).to_vec();
     }
 }

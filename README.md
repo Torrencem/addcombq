@@ -6,6 +6,8 @@ At the moment, the only way to make the install work correctly is to have cargo 
 
 To install into your local sage, make sure the sage installation is in PATH as "sage", then run INSTALL.sh. This will detect your sage installation, package and copy the correct files into it, and then run the sage package build. To instruct sage to run spkg-check after installation, run `INSTALL.sh test` instead.
 
+Warning: since a large refactor occured, the results of these functions should be tested a bit before relying on them.
+
 Are We Release Yet? Important goals towards release:
 
 - [x] Port all code from the old WASM codebase

@@ -6,7 +6,7 @@ use crate::comb::chapter_c;
 use crate::comb::chapter_d;
 use crate::comb::chapter_e;
 use crate::comb::chapter_f;
-// use crate::comb::chapter_g;
+use crate::comb::chapter_g;
 
 use crate::fastset::FastSet;
 use crate::exactset::GElem;
@@ -266,40 +266,40 @@ macro_rules! py_binding {
 
 // Ignore interval stuff
 // only for mu
-// macro_rules! py_binding_mu {
-//     ($bound_name:ident, $fs_version:expr, $ex_version:expr, $($ex_args:ident),+) => {
-//         pub fn $bound_name(py: Python, n: PyObject, $($ex_args : u32),+ , verbose: bool) -> PyResult<u32> {
-//             // Setup c_out capturing
-//             let capt_c_out = setup_capt_c_out(py)?;
-//             capt_c_out.call_method(py, "next", NoArgs, None)?;
-//             let numb = into_pyint(py, &n);
-//             if let Ok(n) = numb {
-//                 let n: u32 = n.value(py).try_into().unwrap(); // Will panic here if negative
-//                 if n <= 63 {
-//                     let val = $fs_version(n, $($ex_args),+, verbose);
-//                     // Stop c_out capturing
-//                     capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
-//                     Ok(val)
-//                 } else {
-//                     let val = $ex_version(&[n], $($ex_args),+, verbose);
-//                     capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
-//                     Ok(val)
-//                 }
-//             } else {
-//                 let list = into_pyiter(&py, &n)?; // Will return here if something awful is given
-//                 let mut tmp = vec![];
-//                 for pyob in list {
-//                     let numb = into_pyint(py, &pyob?)?;
-//                     let val = numb.value(py).try_into().unwrap();
-//                     tmp.push(val);
-//                 }
-//                 let val = $ex_version(tmp.as_slice(), $($ex_args),+, verbose);
-//                 capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
-//                 Ok(val)
-//             }
-//         }
-//     };
-// }
+macro_rules! py_binding_mu {
+    ($bound_name:ident, $fs_version:expr, $ex_version:expr, $($ex_args:ident),+) => {
+        pub fn $bound_name(py: Python, n: PyObject, $($ex_args : u32),+ , verbose: bool) -> PyResult<u32> {
+            // Setup c_out capturing
+            let capt_c_out = setup_capt_c_out(py)?;
+            capt_c_out.call_method(py, "next", NoArgs, None)?;
+            let numb = into_pyint(py, &n);
+            if let Ok(n) = numb {
+                let n: u32 = n.value(py).try_into().unwrap(); // Will panic here if negative
+                if n <= 63 {
+                    let val = $fs_version(n, $($ex_args),+, verbose);
+                    // Stop c_out capturing
+                    capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+                    Ok(val)
+                } else {
+                    let val = $ex_version(Rc::new(vec![n]), $($ex_args),+, verbose);
+                    capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+                    Ok(val)
+                }
+            } else {
+                let list = into_pyiter(&py, &n)?; // Will return here if something awful is given
+                let mut tmp = vec![];
+                for pyob in list {
+                    let numb = into_pyint(py, &pyob?)?;
+                    let val = numb.value(py).try_into().unwrap();
+                    tmp.push(val);
+                }
+                let val = $ex_version(Rc::new(tmp), $($ex_args),+, verbose);
+                capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+                Ok(val)
+            }
+        }
+    };
+}
 
 py_binding!(
     nu,
@@ -507,25 +507,25 @@ py_binding!(
     h | PyObject
 );
 
-// py_binding_mu!(mu, chapter_g::mu, exacts::mu_exact, k, l);
-// py_binding_mu!(
-//     mu_signed,
-//     chapter_g::mu_signed,
-//     exacts::mu_signed_exact,
-//     k,
-//     l
-// );
-// py_binding_mu!(
-//     mu_restricted,
-//     chapter_g::mu_restricted,
-//     exacts::mu_restricted_exact,
-//     k,
-//     l
-// );
-// py_binding_mu!(
-//     mu_signed_restricted,
-//     chapter_g::mu_signed_restricted,
-//     exacts::mu_signed_restricted_exact,
-//     k,
-//     l
-// );
+py_binding_mu!(mu, chapter_g::mu::<FastSet>, chapter_g::mu::<Vec<GElem>>, k, l);
+py_binding_mu!(
+    mu_signed,
+    chapter_g::mu_signed::<FastSet>,
+    chapter_g::mu_signed::<Vec<GElem>>,
+    k,
+    l
+);
+py_binding_mu!(
+    mu_restricted,
+    chapter_g::mu_restricted::<FastSet>,
+    chapter_g::mu_restricted::<Vec<GElem>>,
+    k,
+    l
+);
+py_binding_mu!(
+    mu_signed_restricted,
+    chapter_g::mu_signed_restricted::<FastSet>,
+    chapter_g::mu_signed_restricted::<Vec<GElem>>,
+    k,
+    l
+);
