@@ -6,7 +6,7 @@ edition = "2018"
 
 [lib]
 name = "addcombq"
-crate-type = ["dylib"]
+crate-type = ["rlib", "dylib"]
 
 [dependencies]
 itertools = "0.8.0"
@@ -15,8 +15,13 @@ specialize = "0.0.3"
 
 [dev-dependencies]
 rand = "0.6.5"
+criterion = "0.3"
 
 [dependencies.cpython]
 version = "0.3.0"
 default-features = false
 features = ["python27-sys"]
+
+[[bench]]
+name = "fastset_benches"
+harness = false

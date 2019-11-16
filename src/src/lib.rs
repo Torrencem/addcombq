@@ -11,10 +11,10 @@ extern crate specialize;
 
 use cpython::PyObject;
 
-mod comb;
-mod exactset;
-mod fastset;
-mod setlike;
+pub mod comb;
+pub mod exactset;
+pub mod fastset;
+pub mod setlike;
 
 mod public;
 
