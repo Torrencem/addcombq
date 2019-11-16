@@ -70,11 +70,14 @@ pub fn mu_restricted<S: SetLike>(n: S::Group, k: u32, l: u32, verbose: bool) -> 
     if k > n.gsize() || l > n.gsize() {
         return n.gsize();
     }
-    let lower_bound = 1;
-    // if l == 1 && (n == k * (k * k - 1)) {
-    //     lower_bound = cmp::max(n / (k + 1) + k - 1, k * k);
-    //     info!(verbose, "Using lower bound: {:?}", lower_bound);
-    // }
+    let mut lower_bound = 1;
+    let val = &n;
+    if let Some(&n) = constrain!(ref val as u32) {
+        if l == 1 && (n == k * (k * k - 1)) {
+            lower_bound = cmp::max(n / (k + 1) + k - 1, k * k);
+            info!(verbose, "Using lower bound: {:?}", lower_bound);
+        }
+    }
     for m in lower_bound..n.gsize() {
         let mut found = false;
         for a in S::each_set_exact(n.clone(), m) {

@@ -28,19 +28,22 @@ pub fn phi_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u32), verbose: bool
 }
 
 fn _phi_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u32), verbose: bool) -> u32 {
-    let lower_bound = 1;
+    let mut lower_bound = 1;
     // Proposition B.10
-    // if (ia, ib).0 == 0 {
-    //     let s = (ia, ib).1;
-    //     lower_bound = cmp::max(
-    //         1,
-    //         (((factorial(s) * n) as f32).powf(1f32 / (s as f32)).ceil() as i32) - (s as i32),
-    //     ) as u32;
-    //     info!(
-    //         verbose,
-    //         "(Proposition B.10) Using lower bound: {:?}", lower_bound
-    //     );
-    // }
+    let val = &n;
+    if let Some(&n) = constrain!(ref val as u32) {
+        if (ia, ib).0 == 0 {
+            let s = (ia, ib).1;
+            lower_bound = cmp::max(
+                1,
+                (((factorial(s) * n) as f32).powf(1f32 / (s as f32)).ceil() as i32) - (s as i32),
+            ) as u32;
+            info!(
+                verbose,
+                "(Proposition B.10) Using lower bound: {:?}", lower_bound
+            );
+        }
+    }
 
     for m in lower_bound.. {
         for a in S::each_set_exact(n.clone(), m) {
@@ -103,15 +106,18 @@ pub fn phi_restricted<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
 }
 
 pub fn phi_restricted_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u32), verbose: bool) -> u32 {
-    let lower_bound = 1u32;
+    let mut lower_bound = 1u32;
     // Proposition B.73
-    // if (ia, ib) == (0, 2) {
-    //     lower_bound = ((((8 * n - 7) as f32).sqrt() - 1.0) / 2.0).ceil() as u32;
-    //     info!(
-    //         verbose,
-    //         "(Proposition B.73) Using lower bound: {:?}", lower_bound
-    //     );
-    // }
+    let val = &n;
+    if let Some(n) = constrain!(ref val as u32) {
+        if (ia, ib) == (0, 2) {
+            lower_bound = ((((8 * n - 7) as f32).sqrt() - 1.0) / 2.0).ceil() as u32;
+            info!(
+                verbose,
+                "(Proposition B.73) Using lower bound: {:?}", lower_bound
+            );
+        }
+    }
     for m in lower_bound.. {
         for a in S::each_set_exact(n.clone(), m) {
             if a.hfoldintervalrestrictedsumset((ia, ib), n.clone()).is_full(n.clone()) {

@@ -1,10 +1,13 @@
 #![feature(concat_idents)]
-#![feature(associated_type_defaults)]
+#![feature(specialization)]
 #![allow(unused_imports)] // TODO
 #![allow(dead_code)] // TODO
 
 #[macro_use]
 extern crate cpython;
+
+#[macro_use]
+extern crate specialize;
 
 use cpython::PyObject;
 
