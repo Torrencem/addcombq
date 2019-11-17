@@ -1,38 +1,9 @@
 import unittest
 
 from addcomb import *
-from sage.all import binomial
 from common import from_table
 
 class TestNu(unittest.TestCase):
-
-    def test_values(self):
-        # Based on part of the table in Problem A.5
-        correct_table = {
-            11: 2, 12: 3,
-            13: 1, 14: 2
-        }
-
-        table = {x:0 for x in range(11, 15)}
-        for n in range(11, 15):
-            for m in range(1, n):
-                for h in range(1, n/2):
-                    expected = min(n, binomial(m + h - 1, h))
-                    actual = nu(n, m, h)
-                    if expected != actual:
-                        table[n] += 1
-
-        self.assertDictEqual(correct_table, table)
-
-        # From Problem A.31
-        from_table(self.assertEqual, {
-            nu_restricted: {
-                (10, 5, 2): 9,
-                (15, 6, 4): 13,
-                (17, 6, 4): 14
-            }
-        })
-    
     def test_edge_cases(self):
         from_table(self.assertEqual, {
             nu: {

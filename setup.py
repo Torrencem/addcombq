@@ -14,12 +14,13 @@ class PreCompExtension(Extension):
 
 class cp_build_ext(build_ext):
        def build_extension(self, ext):
-              ''' Copies the already-compiled extension
-              (based on https://stackoverflow.com/a/12012086/6504760)
-              '''
+              # run build commands
+              import subprocess
+              subprocess.check_call("python3 doc/build.py", shell=True)
+              subprocess.check_call("cargo build --release", shell=True)
+
               import shutil
-              # 3 specific:
-              #os.makedirs(os.path.dirname(self.get_ext_fullpath(ext.name)), exist_ok=True)
+              from os import path
 
               try:
                      os.makedirs(os.path.dirname(self.get_ext_fullpath(ext.name)))
@@ -27,7 +28,11 @@ class cp_build_ext(build_ext):
                      if e.errno != errno.EEXIST:
                             raise
               
-              print("Setup.py: Copied file to location:")
+              if path.exists("./target/release/libaddcombq.dylib"):
+                  shutil.copyfile("./target/release/libaddcombq.dylib", ext.source)
+              elif path.exists("./target/release/libaddcombq.so"):
+                  shutil.copyfile("./target/release/libaddcombq.so", ext.source)
+              print("Setup.py: Copying file to location:")
               print(self.get_ext_fullpath(ext.name))
               shutil.copyfile(ext.source, self.get_ext_fullpath(ext.name))
               

@@ -1,8 +1,0 @@
-echo "running tests..."
-
-cd tests
-
-for f in test_*.py
-do
-    sage-python23 "$f" -v
-done
