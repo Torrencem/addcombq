@@ -11,6 +11,8 @@ use crate::comb::chapter_g;
 use crate::fastset::FastSet;
 use crate::exactset::GElem;
 
+use paste;
+
 use std::any::Any;
 
 use std::rc::Rc;
@@ -301,213 +303,65 @@ macro_rules! py_binding_mu {
     };
 }
 
-py_binding!(
-    nu,
-    chapter_a::nu::<FastSet>,
-    chapter_a::nu::<Vec<GElem>>,
-    chapter_a::nu_interval::<FastSet>,
-    chapter_a::nu_interval::<Vec<GElem>>,
-    m | u32,
-    h | PyObject
-);
-py_binding!(
-    nu_signed,
-    chapter_a::nu_signed::<FastSet>,
-    chapter_a::nu_signed::<Vec<GElem>>,
-    chapter_a::nu_signed_interval::<FastSet>,
-    chapter_a::nu_signed_interval::<Vec<GElem>>,
-    m | u32,
-    h | PyObject
-);
-py_binding!(
-    nu_restricted,
-    chapter_a::nu_restricted::<FastSet>,
-    chapter_a::nu_restricted::<Vec<GElem>>,
-    chapter_a::nu_restricted_interval::<FastSet>,
-    chapter_a::nu_restricted_interval::<Vec<GElem>>,
-    m | u32,
-    h | PyObject
-);
-py_binding!(
-    nu_signed_restricted,
-    chapter_a::nu_signed_restricted::<FastSet>,
-    chapter_a::nu_signed_restricted::<Vec<GElem>>,
-    chapter_a::nu_signed_restricted_interval::<FastSet>,
-    chapter_a::nu_signed_restricted_interval::<Vec<GElem>>,
-    m | u32,
-    h | PyObject
+macro_rules! bind_all {
+    ($to:tt, $md:tt, $($ex_args:ident | $ex_arg_type:ident),+) => {
+        paste::item! {
+            py_binding! (
+                $to,
+                $md::$to::<FastSet>,
+                $md::$to::<Vec<GElem>>,
+                $md::[<$to _interval>]::<FastSet>,
+                $md::[<$to _interval>]::<Vec<GElem>>,
+                $($ex_args | $ex_arg_type),+
+            );
+        }
+    }
+}
+
+macro_rules! bind_variants {
+    ($to:tt, $md:tt, $($ex_args:ident | $ex_arg_type:ident),+) => {
+        paste::item! {
+            bind_all!($to, $md, $($ex_args | $ex_arg_type),+);
+            bind_all!([<$to _signed>], $md, $($ex_args | $ex_arg_type),+);
+            bind_all!([<$to _restricted>], $md, $($ex_args | $ex_arg_type),+);
+            bind_all!([<$to _signed_restricted>], $md, $($ex_args | $ex_arg_type),+);
+        }
+    }
+}
+
+bind_variants!(
+    nu, chapter_a, m | u32, h | PyObject
 );
 
-py_binding!(
-    phi,
-    chapter_b::phi::<FastSet>,
-    chapter_b::phi::<Vec<GElem>>,
-    chapter_b::phi_interval::<FastSet>,
-    chapter_b::phi_interval::<Vec<GElem>>,
-    h | PyObject
-);
-py_binding!(
-    phi_signed,
-    chapter_b::phi_signed::<FastSet>,
-    chapter_b::phi_signed::<Vec<GElem>>,
-    chapter_b::phi_signed_interval::<FastSet>,
-    chapter_b::phi_signed_interval::<Vec<GElem>>,
-    h | PyObject
-);
-py_binding!(
-    phi_restricted,
-    chapter_b::phi_restricted::<FastSet>,
-    chapter_b::phi_restricted::<Vec<GElem>>,
-    chapter_b::phi_restricted_interval::<FastSet>,
-    chapter_b::phi_restricted_interval::<Vec<GElem>>,
-    h | PyObject
-);
-py_binding!(
-    phi_signed_restricted,
-    chapter_b::phi_signed_restricted::<FastSet>,
-    chapter_b::phi_signed_restricted::<Vec<GElem>>,
-    chapter_b::phi_signed_restricted_interval::<FastSet>,
-    chapter_b::phi_signed_restricted_interval::<Vec<GElem>>,
-    h | PyObject
+bind_variants!(
+    phi, chapter_b, h | PyObject
 );
 
-py_binding!(
-    sigma,
-    chapter_c::sigma::<FastSet>,
-    chapter_c::sigma::<Vec<GElem>>,
-    chapter_c::sigma_interval::<FastSet>,
-    chapter_c::sigma_interval::<Vec<GElem>>,
-    h | PyObject
-);
-py_binding!(
-    sigma_signed,
-    chapter_c::sigma_signed::<FastSet>,
-    chapter_c::sigma_signed::<Vec<GElem>>,
-    chapter_c::sigma_signed_interval::<FastSet>,
-    chapter_c::sigma_signed_interval::<Vec<GElem>>,
-    h | PyObject
-);
-py_binding!(
-    sigma_restricted,
-    chapter_c::sigma_restricted::<FastSet>,
-    chapter_c::sigma_restricted::<Vec<GElem>>,
-    chapter_c::sigma_restricted_interval::<FastSet>,
-    chapter_c::sigma_restricted_interval::<Vec<GElem>>,
-    h | PyObject
-);
-py_binding!(
-    sigma_signed_restricted,
-    chapter_c::sigma_signed_restricted::<FastSet>,
-    chapter_c::sigma_signed_restricted::<Vec<GElem>>,
-    chapter_c::sigma_signed_restricted_interval::<FastSet>,
-    chapter_c::sigma_signed_restricted_interval::<Vec<GElem>>,
-    h | PyObject
+bind_variants!(
+    sigma, chapter_c, h | PyObject
 );
 
-py_binding!(
-    rho,
-    chapter_d::rho::<FastSet>,
-    chapter_d::rho::<Vec<GElem>>,
-    chapter_d::rho_interval::<FastSet>,
-    chapter_d::rho_interval::<Vec<GElem>>,
-    m | u32,
-    h | PyObject
-);
-py_binding!(
-    rho_signed,
-    chapter_d::rho_signed::<FastSet>,
-    chapter_d::rho_signed::<Vec<GElem>>,
-    chapter_d::rho_signed_interval::<FastSet>,
-    chapter_d::rho_signed_interval::<Vec<GElem>>,
-    m | u32,
-    h | PyObject
-);
-py_binding!(
-    rho_restricted,
-    chapter_d::rho_restricted::<FastSet>,
-    chapter_d::rho_restricted::<Vec<GElem>>,
-    chapter_d::rho_restricted_interval::<FastSet>,
-    chapter_d::rho_restricted_interval::<Vec<GElem>>,
-    m | u32,
-    h | PyObject
-);
-py_binding!(
-    rho_signed_restricted,
-    chapter_d::rho_signed_restricted::<FastSet>,
-    chapter_d::rho_signed_restricted::<Vec<GElem>>,
-    chapter_d::rho_signed_restricted_interval::<FastSet>,
-    chapter_d::rho_signed_restricted_interval::<Vec<GElem>>,
-    m | u32,
-    h | PyObject
+bind_variants!(
+    rho, chapter_d, m | u32, h | PyObject
 );
 
-py_binding!(
-    chi,
-    chapter_e::chi::<FastSet>,
-    chapter_e::chi::<Vec<GElem>>,
-    chapter_e::chi_interval::<FastSet>,
-    chapter_e::chi_interval::<Vec<GElem>>,
-    h | PyObject
-);
-py_binding!(
-    chi_signed,
-    chapter_e::chi_signed::<FastSet>,
-    chapter_e::chi_signed::<Vec<GElem>>,
-    chapter_e::chi_signed_interval::<FastSet>,
-    chapter_e::chi_signed_interval::<Vec<GElem>>,
-    h | PyObject
-);
-py_binding!(
-    chi_restricted,
-    chapter_e::chi_restricted::<FastSet>,
-    chapter_e::chi_restricted::<Vec<GElem>>,
-    chapter_e::chi_restricted_interval::<FastSet>,
-    chapter_e::chi_restricted_interval::<Vec<GElem>>,
-    h | PyObject
-);
-py_binding!(
-    chi_signed_restricted,
-    chapter_e::chi_signed_restricted::<FastSet>,
-    chapter_e::chi_signed_restricted::<Vec<GElem>>,
-    chapter_e::chi_signed_restricted_interval::<FastSet>,
-    chapter_e::chi_signed_restricted_interval::<Vec<GElem>>,
-    h | PyObject
+bind_variants!(
+    chi, chapter_e, h | PyObject
 );
 
-py_binding!(
-    tau,
-    chapter_f::tau::<FastSet>,
-    chapter_f::tau::<Vec<GElem>>,
-    chapter_f::tau_interval::<FastSet>,
-    chapter_f::tau_interval::<Vec<GElem>>,
-    h | PyObject
-);
-py_binding!(
-    tau_signed,
-    chapter_f::tau_signed::<FastSet>,
-    chapter_f::tau_signed::<Vec<GElem>>,
-    chapter_f::tau_signed_interval::<FastSet>,
-    chapter_f::tau_signed_interval::<Vec<GElem>>,
-    h | PyObject
-);
-py_binding!(
-    tau_restricted,
-    chapter_f::tau_restricted::<FastSet>,
-    chapter_f::tau_restricted::<Vec<GElem>>,
-    chapter_f::tau_restricted_interval::<FastSet>,
-    chapter_f::tau_restricted_interval::<Vec<GElem>>,
-    h | PyObject
-);
-py_binding!(
-    tau_signed_restricted,
-    chapter_f::tau_signed_restricted::<FastSet>,
-    chapter_f::tau_signed_restricted::<Vec<GElem>>,
-    chapter_f::tau_signed_restricted_interval::<FastSet>,
-    chapter_f::tau_signed_restricted_interval::<Vec<GElem>>,
-    h | PyObject
+bind_variants!(
+    tau, chapter_f, h | PyObject
 );
 
-py_binding_mu!(mu, chapter_g::mu::<FastSet>, chapter_g::mu::<Vec<GElem>>, k, l);
+// Mu functions don't fit pattern
+
+py_binding_mu!(
+    mu, 
+    chapter_g::mu::<FastSet>, 
+    chapter_g::mu::<Vec<GElem>>, 
+    k, 
+    l
+);
 py_binding_mu!(
     mu_signed,
     chapter_g::mu_signed::<FastSet>,

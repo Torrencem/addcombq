@@ -94,6 +94,9 @@ pub fn phi_restricted<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
     if h == 1 {
         return n.gsize();
     }
+    if n.gsize() <= h {
+        return n.gsize();
+    }
     for m in 2u32.. {
         for a in S::each_set_exact(n.clone(), m) {
             if a.hfoldrestrictedsumset(h, n.clone()).is_full(n.clone()) {
@@ -130,6 +133,9 @@ pub fn phi_restricted_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u32), ve
 }
 
 pub fn phi_signed_restricted<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
+    if n.gsize() <= h {
+        return n.gsize();
+    }
     for m in 2u32.. {
         for a in S::each_set_exact(n.clone(), m) {
             if a.hfoldrestrictedsignedsumset(h, n.clone()).is_full(n.clone()) {

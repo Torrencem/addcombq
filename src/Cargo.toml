@@ -12,6 +12,7 @@ crate-type = ["rlib", "dylib"]
 itertools = "0.8.0"
 array_tool = "1.0.3"
 specialize = "0.0.3"
+paste = "0.1.6"
 
 [dev-dependencies]
 rand = "0.6.5"

@@ -76,7 +76,7 @@ pub trait SetLike: Debug + Clone + HFolds {
     fn intersect(&mut self, other: Self);
 
     fn zero_free(&self, n: Self::Group) -> bool {
-        self.has(&n.zero())
+        !self.has(&n.zero())
     }
 }
 
