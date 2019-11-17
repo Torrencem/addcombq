@@ -73,6 +73,13 @@ mod tests {
     use crate::comb::chapter_a::*;
     use crate::comb::chapter_b::*;
     use crate::comb::chapter_c::*;
+    use crate::comb::chapter_d::*;
+    use crate::comb::chapter_e::*;
+    use crate::comb::chapter_f::*;
+    use crate::comb::chapter_g::*;
+
+    use crate::setlike::HFolds;
+    use crate::setlike::SetLike;
 
     extern crate rand;
 
@@ -145,11 +152,37 @@ mod tests {
                     phi,
                     phi_signed,
                     phi_restricted,
-                    phi_signed_restricted,
+                    phi_signed_restricted);
+
+        comp_all_2!(7, vars2,
                     sigma,
                     sigma_signed,
                     sigma_restricted,
                     sigma_signed_restricted);
+
+        comp_all_3!(20, vars3,
+                    rho,
+                    rho_signed,
+                    rho_restricted,
+                    rho_signed_restricted);
+        
+        comp_all_2!(30, vars2,
+                    chi,
+                    chi_signed,
+                    chi_restricted,
+                    chi_signed_restricted);
+
+        comp_all_2!(20, vars2,
+                    tau,
+                    tau_signed,
+                    tau_restricted,
+                    tau_signed_restricted);
+        
+        comp_all_3!(15, vars3,
+                    mu,
+                    mu_signed,
+                    mu_restricted,
+                    mu_signed_restricted);
     }
 
     #[test]
@@ -159,5 +192,9 @@ mod tests {
         // If new errors are found, add them here
         comp_fs!(sigma_signed, 10, 3);
         comp_fs!(sigma_signed, 11, 2);
+        
+        let s = vec![GElem(vec![1]), GElem(vec![0])];
+        assert!(!s.zero_free(Rc::new(vec![7])));
+        comp_fs!(tau, 7, 3);
     }
 }

@@ -27,7 +27,8 @@ pub fn tau<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
             return m;
         }
     }
-    unreachable!();
+    info!(verbose, "Found no sets which give zero-free sumsets");
+    return 0;
 }
 
 pub fn tau_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u32), verbose: bool) -> u32 {
@@ -45,7 +46,8 @@ pub fn tau_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u32), verbose: bool
             return m;
         }
     }
-    unreachable!();
+    info!(verbose, "Found no sets which give zero-free sumsets");
+    return 0;
 }
 
 pub fn tau_restricted<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
@@ -86,7 +88,8 @@ pub fn tau_restricted<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
             return m;
         }
     }
-    unreachable!();
+    info!(verbose, "Found no sets which give zero-free sumsets");
+    return 0;
 }
 
 pub fn tau_restricted_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u32), verbose: bool) -> u32 {
@@ -108,7 +111,8 @@ pub fn tau_restricted_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u32), ve
             return m;
         }
     }
-    unreachable!();
+    info!(verbose, "Found no sets which give zero-free sumsets");
+    return 0;
 }
 
 pub fn tau_signed<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
@@ -126,7 +130,8 @@ pub fn tau_signed<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
             return m;
         }
     }
-    unreachable!();
+    info!(verbose, "Found no sets which give zero-free sumsets");
+    return 0;
 }
 
 pub fn tau_signed_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u32), verbose: bool) -> u32 {
@@ -148,7 +153,8 @@ pub fn tau_signed_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u32), verbos
             return m;
         }
     }
-    unreachable!();
+    info!(verbose, "Found no sets which give zero-free sumsets");
+    return 0;
 }
 
 pub fn tau_signed_restricted<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
@@ -166,7 +172,8 @@ pub fn tau_signed_restricted<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> 
             return m;
         }
     }
-    unreachable!();
+    info!(verbose, "Found no sets which give zero-free sumsets");
+    return 0;
 }
 
 pub fn tau_signed_restricted_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u32), verbose: bool) -> u32 {
@@ -188,7 +195,8 @@ pub fn tau_signed_restricted_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u
             return m;
         }
     }
-    unreachable!();
+    info!(verbose, "Found no sets which give zero-free sumsets");
+    return 0;
 }
 
 #[cfg(test)]

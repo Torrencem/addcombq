@@ -32,7 +32,7 @@ impl Group for u32 {
 impl Group for Rc<Vec<u32>> {
     type Element = GElem;
     fn zero(&self) -> GElem {
-        GElem(vec![0u32, (**self).len() as u32])
+        GElem(vec![0u32; (**self).len()])
     }
 
     fn gsize(&self) -> u32 {
