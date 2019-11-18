@@ -17,7 +17,7 @@ class cp_build_ext(build_ext):
               # run build commands
               import subprocess
               subprocess.check_call("python3 doc/build.py", shell=True)
-              subprocess.check_call("cargo build --release", shell=True)
+              subprocess.check_call("cargo +nightly build --release", shell=True)
 
               import shutil
               from os import path
@@ -38,12 +38,13 @@ class cp_build_ext(build_ext):
               
 
 setup (name = 'addcomb',
-       version = '0.1',
+       version = '0.1.2',
        author = "Matt Torrence <gh-Torrencem>",
        description = """Fast Additive Combinatorics for use in Sage""",
        cmdclass = {
               'build_ext': cp_build_ext
        },
        ext_modules=[PreCompExtension("addcomb", "./build/_addcomb.so")],
-       zip_safe=False
+       zip_safe=False,
+       include_package_data=True
        )

@@ -1,0 +1,6 @@
+include Cargo.*
+include LICENSE
+recursive-include .cargo *
+recursive-include src *
+recursive-include doc *
+recursive-include benches *

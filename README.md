@@ -2,7 +2,7 @@
 
 This is a Sage package (python package) for fast Additive Combinatorics functions in Sage. Check out [Bela Bajnok's book](https://arxiv.org/pdf/1705.07444.pdf) on the subject to get an idea of the types of problems these can be used for.
 
-To install, make sure to install rust (and cargo), then run `python setup.py install` to install to python.
+To install, make sure to install rust (and cargo), then run `python setup.py install`, or `python -m pip install addcomb --user` to install to python 2.7.
 
 In sage, you can run the functions from the book as follows:
 
