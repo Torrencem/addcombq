@@ -1,6 +1,6 @@
 use crate::comb::*;
 
-use crate::setlike::{SetLike, Group};
+use crate::setlike::{Group, SetLike};
 
 macro_rules! info {
     ($verb_cond:ident, $( $arg:tt )+) => {
@@ -108,7 +108,7 @@ pub fn sigma_restricted<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
 
 pub fn sigma_restricted_interval<S: SetLike>(n: S::Group, s: u32, verbose: bool) -> u32 {
     for m in (1..n.gsize()).rev() {
-        let expected = (0..=cmp::min(s, m)).map(|h| choose(m, h)).sum();
+        let expected: u32 = (0..=cmp::min(s, m)).map(|h| choose(m, h)).sum();
         let mut found = false;
         for a in S::each_set_exact(n.clone(), m) {
             if a.hfold_interval_restricted_sumset((0, s), n.clone()).size() == expected {
@@ -146,7 +146,7 @@ pub fn sigma_signed_restricted<S: SetLike>(n: S::Group, h: u32, verbose: bool) -
 
 pub fn sigma_signed_restricted_interval<S: SetLike>(n: S::Group, s: u32, verbose: bool) -> u32 {
     for m in (1..n.gsize()).rev() {
-        let expected = (0..=cmp::min(s, m))
+        let expected: u32 = (0..=cmp::min(s, m))
             .map(|h| choose(m, h) * (2u32).pow(h))
             .sum();
         let mut found = false;
@@ -168,6 +168,7 @@ pub fn sigma_signed_restricted_interval<S: SetLike>(n: S::Group, s: u32, verbose
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::fastset::FastSet;
 
     // Verify examples according to table on page 153 (details page 154)
     #[test]

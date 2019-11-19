@@ -193,7 +193,11 @@ pub fn hfold_sumset(set: &Vec<GElem>, h: u32, mod_v: Rc<Vec<u32>>) -> HashSet<GE
     res
 }
 
-pub fn hfold_interval_sumset(set: &Vec<GElem>, intv: (u32, u32), mod_v: Rc<Vec<u32>>) -> HashSet<GElem> {
+pub fn hfold_interval_sumset(
+    set: &Vec<GElem>,
+    intv: (u32, u32),
+    mod_v: Rc<Vec<u32>>,
+) -> HashSet<GElem> {
     let mut res: HashSet<_> = HashSet::new();
     let (ia, ib) = intv;
     for i in ia..=ib {
@@ -319,7 +323,11 @@ pub fn hfold_interval_restricted_sumset(
     res
 }
 
-pub fn hfold_restricted_signed_sumset(set: &Vec<GElem>, h: u32, mod_v: Rc<Vec<u32>>) -> HashSet<GElem> {
+pub fn hfold_restricted_signed_sumset(
+    set: &Vec<GElem>,
+    h: u32,
+    mod_v: Rc<Vec<u32>>,
+) -> HashSet<GElem> {
     let mut res: HashSet<GElem> = HashSet::new();
     let as_vec: Vec<GElem> = set.clone();
     let n: usize = mod_v.len();
@@ -392,4 +400,3 @@ pub fn hfold_interval_restricted_signed_sumset(
 pub fn empty_set() -> Vec<GElem> {
     vec![]
 }
-

@@ -1,7 +1,7 @@
 use crate::comb::*;
 use std::cmp;
 
-use crate::setlike::{SetLike, Group};
+use crate::setlike::{Group, SetLike};
 
 macro_rules! info {
     ($verb_cond:ident, $( $arg:tt )+) => {
@@ -46,7 +46,9 @@ fn _phi_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u32), verbose: bool) -
 
     for m in lower_bound.. {
         for a in S::each_set_exact(n.clone(), m) {
-            if a.hfold_interval_sumset((ia, ib), n.clone()).is_full(n.clone()) {
+            if a.hfold_interval_sumset((ia, ib), n.clone())
+                .is_full(n.clone())
+            {
                 info!(verbose, "Found spanning set: {:?}", a);
                 return m;
             }
@@ -76,7 +78,9 @@ pub fn phi_signed<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
 pub fn phi_signed_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u32), verbose: bool) -> u32 {
     for m in 1u32.. {
         for a in S::each_set_exact(n.clone(), m) {
-            if a.hfold_interval_signed_sumset((ia, ib), n.clone()).is_full(n.clone()) {
+            if a.hfold_interval_signed_sumset((ia, ib), n.clone())
+                .is_full(n.clone())
+            {
                 info!(verbose, "Found spanning set: {:?}", a);
                 return m;
             }
@@ -107,7 +111,11 @@ pub fn phi_restricted<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
     unreachable!();
 }
 
-pub fn phi_restricted_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u32), verbose: bool) -> u32 {
+pub fn phi_restricted_interval<S: SetLike>(
+    n: S::Group,
+    (ia, ib): (u32, u32),
+    verbose: bool,
+) -> u32 {
     let mut lower_bound = 1u32;
     // Proposition B.73
     let val = &n;
@@ -122,7 +130,9 @@ pub fn phi_restricted_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u32), ve
     }
     for m in lower_bound.. {
         for a in S::each_set_exact(n.clone(), m) {
-            if a.hfold_interval_restricted_sumset((ia, ib), n.clone()).is_full(n.clone()) {
+            if a.hfold_interval_restricted_sumset((ia, ib), n.clone())
+                .is_full(n.clone())
+            {
                 info!(verbose, "Found spanning set: {:?}", a);
                 return m;
             }
@@ -137,7 +147,9 @@ pub fn phi_signed_restricted<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> 
     }
     for m in 2u32.. {
         for a in S::each_set_exact(n.clone(), m) {
-            if a.hfold_restricted_signed_sumset(h, n.clone()).is_full(n.clone()) {
+            if a.hfold_restricted_signed_sumset(h, n.clone())
+                .is_full(n.clone())
+            {
                 info!(verbose, "Found spanning set: {:?}", a);
                 return m;
             }
@@ -146,10 +158,16 @@ pub fn phi_signed_restricted<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> 
     unreachable!();
 }
 
-pub fn phi_signed_restricted_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u32), verbose: bool) -> u32 {
+pub fn phi_signed_restricted_interval<S: SetLike>(
+    n: S::Group,
+    (ia, ib): (u32, u32),
+    verbose: bool,
+) -> u32 {
     for m in 1u32.. {
         for a in S::each_set_exact(n.clone(), m) {
-            if a.hfold_interval_restricted_signed_sumset((ia, ib), n.clone()).is_full(n.clone()) {
+            if a.hfold_interval_restricted_signed_sumset((ia, ib), n.clone())
+                .is_full(n.clone())
+            {
                 info!(verbose, "Found spanning set: {:?}", a);
                 return m;
             }

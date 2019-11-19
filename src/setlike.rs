@@ -1,8 +1,8 @@
 use std::fmt::Debug;
 
+use crate::exactset;
 use crate::fastset;
 use crate::fastset::FastSet;
-use crate::exactset;
 
 use crate::exactset::GElem;
 
@@ -10,18 +10,17 @@ use std::rc::Rc;
 
 use array_tool::vec::Intersect;
 
-/// A trait for representations of cyclic groups (i.e. Z_5 as "5")
+/// A trait for representations of abelian groups (i.e. Z_5 as "5")
 pub trait Group: Clone {
-
     /// The type of elements of the group (i.e. u32)
     type Element;
-    
+
     /// Given a representation of a group, returns the identity element
     ///
     /// # Example
     ///
     /// ```
-    /// use addcomb::setlike::Group;
+    /// use addcombq::setlike::Group;
     /// let g = 15u32;       // Z_15
     /// let zero = g.zero(); // 0u32
     ///
@@ -31,64 +30,32 @@ pub trait Group: Clone {
     /// ```
     fn zero(&self) -> Self::Element;
 
-    /// Returns the size of a cyclic group
+    /// Returns the size of an abelian group
     ///
     /// # Example
     ///
     /// ```
-    /// use addcomb::setlike::Group;
+    /// use addcombq::setlike::Group;
     /// let g = 15u32;     // Z_15
     /// let s = g.gsize(); // 15u32
     ///
     /// use std::rc::Rc;
     /// let g = Rc::new(vec![50, 30, 20]);  // Z_50 x Z_30 x Z_20
-    /// let s = g.size();  // 50 * 30 * 20
+    /// let s = g.gsize();  // 50 * 30 * 20
     /// ```
     fn gsize(&self) -> u32;
 }
 
-// Implementations of Group for the representations used
-// for FastSet and exactset respectively
-
-impl Group for u32 {
-    type Element = u32;
-    #[inline(always)]
-    fn zero(&self) -> u32 {
-        0u32
-    }
-
-    #[inline(always)]
-    fn gsize(&self) -> u32 {
-        *self
-    }
-}
-
-impl Group for Rc<Vec<u32>> {
-    type Element = GElem;
-    fn zero(&self) -> GElem {
-        GElem(vec![0u32; (**self).len()])
-    }
-
-    fn gsize(&self) -> u32 {
-        let mut res = 1;
-        for num in (**self).iter() {
-            res *= num;
-        }
-        res
-    }
-}
-
 /// A trait for things you can take hfold sumsets of (e.g. set-like things)
 pub trait HFolds {
-
     /// The elements of our set; the things we're adding together
     type Element;
 
     /// The underlying group representation for our set. Useful
-    /// for constraining our set type to a particular kind of 
+    /// for constraining our set type to a particular kind of
     /// group (i.e. small cyclic groups, for FastSets)
     type Group: Group<Element = Self::Element>;
-    
+
     /// Calculate the h-fold sumset of a set
     ///
     /// # Arguments
@@ -116,7 +83,7 @@ pub trait HFolds {
     /// * `h` - The number of times we add elements of our set with each other
     ///
     /// * `n` - The group to use
-    /// 
+    ///
     fn hfold_restricted_sumset(&self, h: u32, n: Self::Group) -> Self;
 
     /// Calculate the h-fold restricted sumset over an interval. The same as the
@@ -127,7 +94,7 @@ pub trait HFolds {
     /// * `hs` - A tuple `a, b` representing the closed interval [a, b]
     ///
     /// * `n` - The group to use
-    /// 
+    ///
     fn hfold_interval_restricted_sumset(&self, hs: (u32, u32), n: Self::Group) -> Self;
 
     /// Calculate the h-fold signed sumset (terms are allowed to be subtracted)
@@ -137,7 +104,7 @@ pub trait HFolds {
     /// * `h` - The number of times we add/subtract elements of our set with each other
     ///
     /// * `n` - The group to use
-    /// 
+    ///
     fn hfold_signed_sumset(&self, h: u32, n: Self::Group) -> Self;
 
     /// Calculate the h-fold signed sumset over an interval. The same as the
@@ -148,7 +115,7 @@ pub trait HFolds {
     /// * `hs` - A tuple `a, b` representing the closed interval [a, b]
     ///
     /// * `n` - The group to use
-    /// 
+    ///
     fn hfold_interval_signed_sumset(&self, hs: (u32, u32), n: Self::Group) -> Self;
 
     /// Calculate the h-fold restricted signed sumset (terms cannot repeat, but can
@@ -159,7 +126,7 @@ pub trait HFolds {
     /// * `h` - The number of times we add/subtract elements of our set with each other
     ///
     /// * `n` - The group to use
-    /// 
+    ///
     fn hfold_restricted_signed_sumset(&self, h: u32, n: Self::Group) -> Self;
 
     /// Calculate the h-fold restricted signed sumset over an interval. The same as
@@ -170,23 +137,22 @@ pub trait HFolds {
     /// * `hs` - A tuple `a, b` representing the closed interval [a, b]
     ///
     /// * `n` - The group to use
-    /// 
-    fn hfold_interval_restricted_signed_sumset(&self, hs: (u32, u32), n: Self::Group) -> Self; 
+    ///
+    fn hfold_interval_restricted_signed_sumset(&self, hs: (u32, u32), n: Self::Group) -> Self;
 }
 
 /// A trait for sets which can be used internally for b-functions
 pub trait SetLike: Debug + Clone + HFolds {
-
     /// An iterator type which gives each `Self` in a given group
-    type EachSetExact: Iterator<Item=Self>;
+    type EachSetExact: Iterator<Item = Self>;
 
     /// An iterator type which gives each `Self` in a given group, where each
     /// element is required to contain the zero element
-    type EachSetExactZero: Iterator<Item=Self>;
+    type EachSetExactZero: Iterator<Item = Self>;
 
     /// An iterator type which gives each `Self` in a given group, where each
     /// element does not contain the zero element
-    type EachSetExactNoZero: Iterator<Item=Self>;
+    type EachSetExactNoZero: Iterator<Item = Self>;
 
     /// Returns the empty set
     fn empty() -> Self;
@@ -244,41 +210,85 @@ pub trait SetLike: Debug + Clone + HFolds {
 
     /// Compute the intersection of this set with another
     fn intersect(&mut self, other: Self);
-    
+
     /// Compute whether or not this set contains 0 of a given group
     fn zero_free(&self, n: Self::Group) -> bool {
         !self.has(&n.zero())
     }
 }
 
+// Implementations of Group for the representations used
+// for FastSet and exactset respectively
+
+impl Group for u32 {
+    type Element = u32;
+    #[inline(always)]
+    fn zero(&self) -> u32 {
+        0u32
+    }
+
+    #[inline(always)]
+    fn gsize(&self) -> u32 {
+        *self
+    }
+}
+
+impl Group for Rc<Vec<u32>> {
+    type Element = GElem;
+    fn zero(&self) -> GElem {
+        GElem(vec![0u32; (**self).len()])
+    }
+
+    fn gsize(&self) -> u32 {
+        let mut res = 1;
+        for num in (**self).iter() {
+            res *= num;
+        }
+        res
+    }
+}
 
 impl HFolds for Vec<GElem> {
     type Group = Rc<Vec<u32>>;
     type Element = GElem;
-    
+
     fn hfold_sumset(&self, h: u32, n: Self::Group) -> Self {
         exactset::hfold_sumset(&self, h, n).into_iter().collect()
     }
     fn hfold_interval_sumset(&self, hs: (u32, u32), n: Self::Group) -> Self {
-        exactset::hfold_interval_sumset(&self, hs, n).into_iter().collect()
+        exactset::hfold_interval_sumset(&self, hs, n)
+            .into_iter()
+            .collect()
     }
     fn hfold_restricted_sumset(&self, h: u32, n: Self::Group) -> Self {
-        exactset::hfold_restricted_sumset(&self, h, n).into_iter().collect()
+        exactset::hfold_restricted_sumset(&self, h, n)
+            .into_iter()
+            .collect()
     }
     fn hfold_interval_restricted_sumset(&self, hs: (u32, u32), n: Self::Group) -> Self {
-        exactset::hfold_interval_restricted_sumset(&self, hs, n).into_iter().collect()
+        exactset::hfold_interval_restricted_sumset(&self, hs, n)
+            .into_iter()
+            .collect()
     }
     fn hfold_signed_sumset(&self, h: u32, n: Self::Group) -> Self {
-        exactset::hfold_signed_sumset(&self, h, n).into_iter().collect()
+        exactset::hfold_signed_sumset(&self, h, n)
+            .into_iter()
+            .collect()
     }
     fn hfold_interval_signed_sumset(&self, hs: (u32, u32), n: Self::Group) -> Self {
-        exactset::hfold_interval_signed_sumset(&self, hs, n).into_iter().collect()
+        exactset::hfold_interval_signed_sumset(&self, hs, n)
+            .into_iter()
+            .collect()
     }
     fn hfold_restricted_signed_sumset(&self, h: u32, n: Self::Group) -> Self {
-        exactset::hfold_restricted_signed_sumset(&self, h, n).into_iter().collect()
+        exactset::hfold_restricted_signed_sumset(&self, h, n)
+            .into_iter()
+            .collect()
     }
     fn hfold_interval_restricted_signed_sumset(&self, hs: (u32, u32), n: Self::Group) -> Self {
-        exactset::hfold_interval_restricted_signed_sumset(&self, hs, n).into_iter().collect()
+        exactset::hfold_interval_restricted_signed_sumset(&self, hs, n)
+            .into_iter()
+            .collect()
     }
 }
 

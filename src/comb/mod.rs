@@ -49,30 +49,6 @@ pub fn factorial(x: u32) -> u32 {
     prod
 }
 
-// fn slow_prime(n: usize) -> bool {
-//     for x in 2..=(n as f32).sqrt().ceil() as usize {
-//         if x % n == 0 {
-//             return false;
-//         }
-//     }
-//     return true;
-// }
-
-// lazy_static! {
-//     static ref PRIMES: [bool; 500] = {
-//         let mut p = [false; 500];
-//         for i in 0..499 {
-//             p[i] = slow_prime(i);
-//         }
-//         p
-//     };
-// }
-
-// #[inline]
-// pub fn prime(n: u32) -> bool {
-//     PRIMES[n as usize]
-// }
-
 // Somewhat slow, as it includes n/2 .. n when
 // it doesn't have to, but concise
 #[inline]
@@ -111,7 +87,8 @@ pub fn v(g: u32, n: u32, h: u32) -> u32 {
     .unwrap()
 }
 
-pub fn is_invariant(v: &Vec<u32>) -> bool {
+/// Check if a given vector is the invariant representation of an abelian group
+pub fn is_invariant(v: &[u32]) -> bool {
     for i in 1..v.len() {
         if v[i - 1] % v[i] != 0 {
             return false;
@@ -125,23 +102,40 @@ mod tests {
     use super::*;
 
     // Compare with the 2.4 tables
-    // (page 27) TODO
     #[test]
     pub fn test_c_a() {
-        println!("a(j, k): \n");
+        let correct_table = vec![
+            1,  1,  1,  1,   1,    1,    1, 
+            1,  3,  5,  7,   9,    11,   13, 
+            1,  5,  13, 25,  41,   61,   85, 
+            1,  7,  25, 63,  129,  231,  377, 
+            1,  9,  41, 129, 321,  681,  1289, 
+            1,  11, 61, 231, 681,  1683, 3653, 
+            1,  13, 85, 377, 1289, 3653, 8989,
+        ];
+        let mut i = 0;
         for k in 0..=6 {
             for j in 0..=6 {
-                print!("{} ", a(j, k));
+                assert_eq!(a(j, k), correct_table[i]);
+                i += 1;
             }
-            println!("");
         }
 
-        println!("\nc(j, k): \n");
+        let correct_table = vec![
+            1, 1,  1,  1,   1,   1,    1, 
+            0, 2,  2,  2,   2,   2,    2, 
+            0, 4,  8,  12,  16,  20,   24, 
+            0, 6,  18, 38,  66,  102,  146, 
+            0, 8,  32, 88,  192, 360,  608, 
+            0, 10, 50, 170, 450, 1002, 1970, 
+            0, 12, 72, 292, 912, 2364, 5336,
+        ];
+        i = 0;
         for k in 0..=6 {
             for j in 0..=6 {
-                print!("{} ", c(j, k));
+                assert_eq!(c(j, k), correct_table[i]);
+                i += 1;
             }
-            println!("");
         }
     }
 }

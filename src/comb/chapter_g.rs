@@ -1,4 +1,4 @@
-use crate::setlike::{SetLike, Group};
+use crate::setlike::{Group, SetLike};
 use std::cmp;
 
 macro_rules! info {
@@ -21,7 +21,12 @@ pub fn mu<S: SetLike>(n: S::Group, k: u32, l: u32, verbose: bool) -> u32 {
             k_a.intersect(l_a.clone());
             if k_a.is_empty() {
                 info!(verbose, "For m={:?}, found {:?}, which is sum-free", m, a);
-                info!(verbose, "(kA = {:?}, lA = {:?})", a.hfold_sumset(k, n.clone()), l_a);
+                info!(
+                    verbose,
+                    "(kA = {:?}, lA = {:?})",
+                    a.hfold_sumset(k, n.clone()),
+                    l_a
+                );
                 found = true;
                 break;
             }
@@ -137,6 +142,7 @@ pub fn mu_signed_restricted<S: SetLike>(n: S::Group, k: u32, l: u32, verbose: bo
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::fastset::FastSet;
 
     // Based on page 358, 359
     #[test]

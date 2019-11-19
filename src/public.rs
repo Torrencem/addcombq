@@ -8,8 +8,8 @@ use crate::comb::chapter_e;
 use crate::comb::chapter_f;
 use crate::comb::chapter_g;
 
-use crate::fastset::FastSet;
 use crate::exactset::GElem;
+use crate::fastset::FastSet;
 
 use paste;
 
@@ -119,12 +119,12 @@ fn into_pyint(py: Python, x: &PyObject) -> PyResult<PyInt> {
     Ok(as_int.cast_into(py)?)
 }
 
-fn into_pyiter<'p>(py: &'p Python, x: &PyObject) -> PyResult<PyIterator<'p>> {
+fn into_pyiter<'p>(py: Python<'p>, x: &PyObject) -> PyResult<PyIterator<'p>> {
     let iter_converter = py.eval("iter", None, None)?;
 
-    let as_iter = iter_converter.call(*py, (x,), None)?;
+    let as_iter = iter_converter.call(py, (x,), None)?;
 
-    Ok(PyIterator::from_object(*py, as_iter)?)
+    Ok(PyIterator::from_object(py, as_iter)?)
 }
 
 // Run the code from capture_c_out.py to setup
@@ -146,7 +146,7 @@ def handle_stream(stream):
 }
 
 fn is_int<P: ToPyObject>(py: Python, x: &P) -> bool {
-    !into_pyint(py, x.to_py_object(py).as_object()).is_err()
+    into_pyint(py, x.to_py_object(py).as_object()).is_ok()
 }
 
 enum ArgEither {
@@ -174,23 +174,23 @@ impl Into<(u32, u32)> for ArgEither {
     }
 }
 
-fn format_arg<T: Any>(py: &Python, arg: &T) -> PyResult<ArgEither> {
+fn format_arg<T: Any>(py: Python, arg: &T) -> PyResult<ArgEither> {
     let value_arg = arg as &dyn Any;
     match value_arg.downcast_ref::<PyObject>() {
         Some(pobj) => {
-            let asint = into_pyint(*py, pobj);
+            let asint = into_pyint(py, pobj);
             if let Ok(x) = asint {
-                Ok(ArgEither::Val(x.value(*py) as u32))
+                Ok(ArgEither::Val(x.value(py) as u32))
             } else {
                 let err_message = "expected h argument to be either integer h value or iterable interval [i.e. (0, 3)]";
-                let type_err = || Err(PyErr::new::<exc::TypeError, _>(*py, err_message));
+                let type_err = || Err(PyErr::new::<exc::TypeError, _>(py, err_message));
                 let piter = into_pyiter(py, pobj);
                 if let Ok(mut piter) = piter {
-                    let a: PyInt = into_pyint(*py, &piter.next().unwrap_or_else(type_err)?)?;
-                    let b: PyInt = into_pyint(*py, &piter.next().unwrap_or_else(type_err)?)?;
-                    Ok(ArgEither::Tpl(a.value(*py) as u32, b.value(*py) as u32))
+                    let a: PyInt = into_pyint(py, &piter.next().unwrap_or_else(type_err)?)?;
+                    let b: PyInt = into_pyint(py, &piter.next().unwrap_or_else(type_err)?)?;
+                    Ok(ArgEither::Tpl(a.value(py) as u32, b.value(py) as u32))
                 } else {
-                    Err(PyErr::new::<exc::TypeError, _>(*py, err_message).into())
+                    Err(PyErr::new::<exc::TypeError, _>(py, err_message))
                 }
             }
         }
@@ -224,28 +224,26 @@ macro_rules! py_binding {
                 let n: u32 = n.value(py).try_into().unwrap(); // Will panic here if negative
                 if n <= 63 {
                     let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
-                    let val: u32;
-                    if !icall {
-                        val = $fs_version(n, $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                    let val = if !icall {
+                        $fs_version(n, $(format_arg(py, &$ex_args)?.into()),+, verbose)
                     } else {
-                        val = $fs_int_version(n, $(format_arg(&py, &$ex_args)?.into()),+, verbose);
-                    }
+                        $fs_int_version(n, $(format_arg(py, &$ex_args)?.into()),+, verbose)
+                    };
                     // Stop c_out capturing
                     capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
                     Ok(val)
                 } else {
                     let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
-                    let val: u32;
-                    if !icall {
-                        val = $ex_version(Rc::new(vec![n]), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                    let val = if !icall {
+                        $ex_version(Rc::new(vec![n]), $(format_arg(py, &$ex_args)?.into()),+, verbose)
                     } else {
-                        val = $ex_int_version(Rc::new(vec![n]), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
-                    }
+                        $ex_int_version(Rc::new(vec![n]), $(format_arg(py, &$ex_args)?.into()),+, verbose)
+                    };
                     capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
                     Ok(val)
                 }
             } else {
-                let list = into_pyiter(&py, &n)?; // Will return here if something awful is given
+                let list = into_pyiter(py, &n)?; // Will return here if something awful is given
                 let mut tmp = vec![];
                 for pyob in list {
                     let numb = into_pyint(py, &pyob?)?;
@@ -253,12 +251,11 @@ macro_rules! py_binding {
                     tmp.push(val);
                 }
                 let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
-                let val: u32;
-                if !icall {
-                    val = $ex_version(Rc::new(tmp), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
+                let val = if !icall {
+                    $ex_version(Rc::new(tmp), $(format_arg(py, &$ex_args)?.into()),+, verbose)
                 } else {
-                    val = $ex_int_version(Rc::new(tmp), $(format_arg(&py, &$ex_args)?.into()),+, verbose);
-                }
+                    $ex_int_version(Rc::new(tmp), $(format_arg(py, &$ex_args)?.into()),+, verbose)
+                };
                 capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
                 Ok(val)
             }
@@ -288,7 +285,7 @@ macro_rules! py_binding_mu {
                     Ok(val)
                 }
             } else {
-                let list = into_pyiter(&py, &n)?; // Will return here if something awful is given
+                let list = into_pyiter(py, &n)?; // Will return here if something awful is given
                 let mut tmp = vec![];
                 for pyob in list {
                     let numb = into_pyint(py, &pyob?)?;
@@ -329,37 +326,25 @@ macro_rules! bind_variants {
     }
 }
 
-bind_variants!(
-    nu, chapter_a, m | u32, h | PyObject
-);
+bind_variants!(nu, chapter_a, m | u32, h | PyObject);
 
-bind_variants!(
-    phi, chapter_b, h | PyObject
-);
+bind_variants!(phi, chapter_b, h | PyObject);
 
-bind_variants!(
-    sigma, chapter_c, h | PyObject
-);
+bind_variants!(sigma, chapter_c, h | PyObject);
 
-bind_variants!(
-    rho, chapter_d, m | u32, h | PyObject
-);
+bind_variants!(rho, chapter_d, m | u32, h | PyObject);
 
-bind_variants!(
-    chi, chapter_e, h | PyObject
-);
+bind_variants!(chi, chapter_e, h | PyObject);
 
-bind_variants!(
-    tau, chapter_f, h | PyObject
-);
+bind_variants!(tau, chapter_f, h | PyObject);
 
 // Mu functions don't fit pattern
 
 py_binding_mu!(
-    mu, 
-    chapter_g::mu::<FastSet>, 
-    chapter_g::mu::<Vec<GElem>>, 
-    k, 
+    mu,
+    chapter_g::mu::<FastSet>,
+    chapter_g::mu::<Vec<GElem>>,
+    k,
     l
 );
 py_binding_mu!(

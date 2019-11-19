@@ -25,7 +25,7 @@ pub fn cycle_rev(scontents: u64, i: u32, m: u32) -> u64 {
 }
 
 /// FastSet definition. A FastSet is a set of integers all between 0 and 63,
-/// which can be represented as the 1-bits of a 64-bit integer. Specifically, 
+/// which can be represented as the 1-bits of a 64-bit integer. Specifically,
 /// the n-th bit of contents is 1 if 1 is in the FastSet
 #[derive(Copy, Clone)]
 pub struct FastSet {
@@ -33,13 +33,13 @@ pub struct FastSet {
 }
 
 pub fn singleton(i: u32) -> FastSet {
-    return FastSet {
+    FastSet {
         contents: (1u64 << i),
-    };
+    }
 }
 
 pub fn empty_set() -> FastSet {
-    return FastSet { contents: 0u64 };
+    FastSet { contents: 0u64 }
 }
 
 impl FastSet {
@@ -47,22 +47,22 @@ impl FastSet {
     #[inline]
     pub fn access(&self, i: u32) -> bool {
         debug_assert!(i < 64);
-        return self.contents & (1u64 << i) > 0;
+        self.contents & (1u64 << i) > 0
     }
-    
+
     /// Adds a given element to this FastSet.
     #[inline]
     pub fn add(&mut self, i: u32) {
         self.contents |= 1u64 << i;
     }
-    
+
     /// Check if this FastSet is full up to and including n.
     #[inline]
     pub fn isfull(&self, n: u32) -> bool {
         // Tests if the set is full up to (and including) n
         (!(self.contents & ((1u64 << (n + 1)) - 1)) << (64 - n)) == 0
     }
-    
+
     /// Check if this FastSet is empty
     #[inline]
     pub fn isempty(&self) -> bool {
@@ -75,13 +75,13 @@ impl FastSet {
     pub fn size(&self) -> u32 {
         return self.contents.count_ones() as u32;
     }
-    
+
     /// Calculate the intersection of this FastSet with another
     #[inline]
     pub fn intersect(&mut self, other: &FastSet) {
         self.contents &= other.contents;
     }
-    
+
     /// Create a Vec representation of this FastSet. Should only
     /// really be used for printing
     #[inline]
@@ -139,15 +139,15 @@ pub fn each_set_exact(max_size: u32, set_size: u32) -> EachSetExact {
             state: 0,
             setmask: 0,
             doneflag: true,
-        }
+        };
     }
     let naivestate = (1u64 << (set_size)) - 1;
     let setmask = !((1u64 << (max_size)) - 1);
-    return EachSetExact {
+    EachSetExact {
         state: naivestate,
         setmask: setmask,
         doneflag: false,
-    };
+    }
 }
 
 pub struct EachSetExactZero {
@@ -161,14 +161,14 @@ impl Iterator for EachSetExactZero {
         let mut ret = self.esetiter.next()?;
         ret.contents <<= 1;
         ret.contents |= 1;
-        return Some(ret);
+        Some(ret)
     }
 }
 
 pub fn each_set_exact_zero(max_size: u32, set_size: u32) -> EachSetExactZero {
-    return EachSetExactZero {
+    EachSetExactZero {
         esetiter: each_set_exact(max_size - 1, set_size - 1),
-    };
+    }
 }
 
 pub struct EachSetExactNoZero {
@@ -186,9 +186,9 @@ impl Iterator for EachSetExactNoZero {
 }
 
 pub fn each_set_exact_no_zero(max_size: u32, set_size: u32) -> EachSetExactNoZero {
-    return EachSetExactNoZero {
+    EachSetExactNoZero {
         esetiter: each_set_exact(max_size - 1, set_size),
-    };
+    }
 }
 
 impl fmt::Debug for FastSet {

@@ -1,5 +1,7 @@
 #![feature(specialization)]
 #![feature(proc_macro_hygiene)]
+// Necessary for py_module_initializer! to disable unsafe warnings
+#![allow(clippy::missing_safety_doc)]
 
 #[macro_use]
 extern crate cpython;
@@ -44,19 +46,19 @@ py_module_initializer!(addcomb, initaddcomb, PyInit_addcomb, |py, m| {
     m.add(py, "__doc__", include_str!("../doc/blurb.txt"))?;
 
     use public::*;
-    
+
     add_variations_to_mod!(py, m, nu, m | u32, h | PyObject);
-    
+
     add_variations_to_mod!(py, m, phi, h | PyObject);
-    
+
     add_variations_to_mod!(py, m, sigma, h | PyObject);
-    
+
     add_variations_to_mod!(py, m, rho, m | u32, h | PyObject);
-    
+
     add_variations_to_mod!(py, m, chi, h | PyObject);
-    
+
     add_variations_to_mod!(py, m, tau, h | PyObject);
-    
+
     add_variations_to_mod!(py, m, mu, k | u32, l | u32);
 
     Ok(())
@@ -64,8 +66,6 @@ py_module_initializer!(addcomb, initaddcomb, PyInit_addcomb, |py, m| {
 
 #[cfg(test)]
 mod tests {
-    use crate::fastset::FastSet;
-    use crate::exactset::GElem;
     use crate::comb::chapter_a::*;
     use crate::comb::chapter_b::*;
     use crate::comb::chapter_c::*;
@@ -73,13 +73,14 @@ mod tests {
     use crate::comb::chapter_e::*;
     use crate::comb::chapter_f::*;
     use crate::comb::chapter_g::*;
+    use crate::exactset::GElem;
+    use crate::fastset::FastSet;
 
-    use crate::setlike::HFolds;
     use crate::setlike::SetLike;
 
     extern crate rand;
 
-    use rand::{Rng, thread_rng};
+    use rand::{thread_rng, Rng};
 
     use std::rc::Rc;
 
@@ -89,7 +90,7 @@ mod tests {
             println!("Running test on: {} {:?}", stringify!($f1), ($a1, $($args),+));
             let a = $f1($a1, $($args),+);
             let b = $f2(Rc::new(vec![$a1]), $($args),+);
-            assert_eq!(a, b, 
+            assert_eq!(a, b,
                        concat!("Consistency error: ",
                                stringify!($f1),
                                " and ",
@@ -99,7 +100,7 @@ mod tests {
                        );
         }
     }
-    
+
     // Make sure a function gives the same values for
     // it's exactset version and fastset version
     macro_rules! comp_fs {
@@ -118,7 +119,7 @@ mod tests {
             )+
         }
     }
-    
+
     // The same as above but for 2 argument functions
     macro_rules! comp_all_2 {
         ($iters:expr, $vgen:expr, $($f:ident),+) => {
@@ -134,51 +135,78 @@ mod tests {
     #[test]
     fn test_fuzz_consistency() {
         let mut rng = thread_rng();
-        let mut vars3 = || { (rng.gen_range(1, 13), rng.gen_range(1, 4), rng.gen_range(1, 6)) };
+        let mut vars3 = || {
+            (
+                rng.gen_range(1, 13),
+                rng.gen_range(1, 4),
+                rng.gen_range(1, 6),
+            )
+        };
         let mut rng2 = thread_rng();
-        let mut vars2 = || { (rng2.gen_range(1, 13), rng2.gen_range(1, 4)) };
-        
-        comp_all_3!(30, vars3,
-                    nu,
-                    nu_signed,
-                    nu_restricted,
-                    nu_signed_restricted);
-        
-        comp_all_2!(30, vars2,
-                    phi,
-                    phi_signed,
-                    phi_restricted,
-                    phi_signed_restricted);
+        let mut vars2 = || (rng2.gen_range(1, 13), rng2.gen_range(1, 4));
 
-        comp_all_2!(7, vars2,
-                    sigma,
-                    sigma_signed,
-                    sigma_restricted,
-                    sigma_signed_restricted);
+        comp_all_3!(
+            30,
+            vars3,
+            nu,
+            nu_signed,
+            nu_restricted,
+            nu_signed_restricted
+        );
 
-        comp_all_3!(20, vars3,
-                    rho,
-                    rho_signed,
-                    rho_restricted,
-                    rho_signed_restricted);
-        
-        comp_all_2!(30, vars2,
-                    chi,
-                    chi_signed,
-                    chi_restricted,
-                    chi_signed_restricted);
+        comp_all_2!(
+            30,
+            vars2,
+            phi,
+            phi_signed,
+            phi_restricted,
+            phi_signed_restricted
+        );
 
-        comp_all_2!(20, vars2,
-                    tau,
-                    tau_signed,
-                    tau_restricted,
-                    tau_signed_restricted);
-        
-        comp_all_3!(15, vars3,
-                    mu,
-                    mu_signed,
-                    mu_restricted,
-                    mu_signed_restricted);
+        comp_all_2!(
+            7,
+            vars2,
+            sigma,
+            sigma_signed,
+            sigma_restricted,
+            sigma_signed_restricted
+        );
+
+        comp_all_3!(
+            20,
+            vars3,
+            rho,
+            rho_signed,
+            rho_restricted,
+            rho_signed_restricted
+        );
+
+        comp_all_2!(
+            30,
+            vars2,
+            chi,
+            chi_signed,
+            chi_restricted,
+            chi_signed_restricted
+        );
+
+        comp_all_2!(
+            20,
+            vars2,
+            tau,
+            tau_signed,
+            tau_restricted,
+            tau_signed_restricted
+        );
+
+        comp_all_3!(
+            15,
+            vars3,
+            mu,
+            mu_signed,
+            mu_restricted,
+            mu_signed_restricted
+        );
     }
 
     #[test]
@@ -188,7 +216,7 @@ mod tests {
         // If new errors are found, add them here
         comp_fs!(sigma_signed, 10, 3);
         comp_fs!(sigma_signed, 11, 2);
-        
+
         let s = vec![GElem(vec![1]), GElem(vec![0])];
         assert!(!s.zero_free(Rc::new(vec![7])));
         comp_fs!(tau, 7, 3);
