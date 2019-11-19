@@ -1,8 +1,5 @@
-#![feature(concat_idents)]
 #![feature(specialization)]
 #![feature(proc_macro_hygiene)]
-#![allow(unused_imports)] // TODO
-#![allow(dead_code)] // TODO
 
 #[macro_use]
 extern crate cpython;
@@ -10,7 +7,6 @@ extern crate cpython;
 #[macro_use]
 extern crate specialize;
 
-#[macro_use]
 extern crate paste;
 
 use cpython::PyObject;

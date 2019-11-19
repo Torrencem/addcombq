@@ -1,6 +1,4 @@
-use crate::fastset::*;
-
-use crate::setlike::{SetLike, Group};
+use crate::setlike::{SetLike};
 
 macro_rules! info {
     ($verb_cond:ident, $( $arg:tt )+) => {

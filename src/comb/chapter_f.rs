@@ -1,7 +1,3 @@
-use crate::fastset::*;
-
-use crate::setlike::HFolds;
-
 use crate::setlike::{SetLike, Group};
 
 macro_rules! info {

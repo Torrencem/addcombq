@@ -1,5 +1,3 @@
-use crate::fastset::*;
-
 use crate::setlike::{SetLike, Group};
 
 macro_rules! info {

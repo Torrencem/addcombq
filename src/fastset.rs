@@ -6,6 +6,7 @@ fn bit_scan_low(val: u64) -> u32 {
     return val.trailing_zeros() as u32;
 }
 
+/// Cycle the first m bits of a 64 bit integer by i
 #[inline]
 pub fn cycle(scontents: u64, i: u32, m: u32) -> u64 {
     let mut ret = scontents;
@@ -23,6 +24,9 @@ pub fn cycle_rev(scontents: u64, i: u32, m: u32) -> u64 {
     cycle(scontents, m - i, m)
 }
 
+/// FastSet definition. A FastSet is a set of integers all between 0 and 63,
+/// which can be represented as the 1-bits of a 64-bit integer. Specifically, 
+/// the n-th bit of contents is 1 if 1 is in the FastSet
 #[derive(Copy, Clone)]
 pub struct FastSet {
     pub contents: u64,
@@ -39,50 +43,47 @@ pub fn empty_set() -> FastSet {
 }
 
 impl FastSet {
+    /// Check whether a given element is in this FastSet or not.
     #[inline]
     pub fn access(&self, i: u32) -> bool {
-        // assert!(i < 64);
+        debug_assert!(i < 64);
         return self.contents & (1u64 << i) > 0;
     }
-
+    
+    /// Adds a given element to this FastSet.
     #[inline]
     pub fn add(&mut self, i: u32) {
         self.contents |= 1u64 << i;
     }
-
+    
+    /// Check if this FastSet is full up to and including n.
     #[inline]
     pub fn isfull(&self, n: u32) -> bool {
         // Tests if the set is full up to (and including) n
         (!(self.contents & ((1u64 << (n + 1)) - 1)) << (64 - n)) == 0
     }
-
+    
+    /// Check if this FastSet is empty
     #[inline]
     pub fn isempty(&self) -> bool {
         self.contents == 0u64
     }
 
+    /// Get the number of elements in this FastSet. Will always be
+    /// less than or equal to 64.
     #[inline]
     pub fn size(&self) -> u32 {
         return self.contents.count_ones() as u32;
     }
-
-    // #[inline]
-    // pub fn union(&mut self, other: &FastSet) {
-    //     self.contents |= other.contents;
-    // }
-
+    
+    /// Calculate the intersection of this FastSet with another
     #[inline]
     pub fn intersect(&mut self, other: &FastSet) {
         self.contents &= other.contents;
     }
-
-    // #[inline]
-    // pub fn cycle(&mut self, i: u32, m: u32) {
-    //     // Add i (mod n) to every element of the set
-    //     assert!(i < m);
-    //     self.contents = cycle(self.contents, i, m);
-    // }
-
+    
+    /// Create a Vec representation of this FastSet. Should only
+    /// really be used for printing
     #[inline]
     pub fn as_vec(&self) -> Vec<u32> {
         let mut ret: Vec<u32> = Vec::with_capacity(self.size() as usize);
@@ -96,26 +97,6 @@ impl FastSet {
     }
 }
 
-// pub struct EachSet {
-//     state: u64,
-//     cap: u64,
-// }
-
-// impl Iterator for EachSet {
-//     type Item = FastSet;
-
-//     fn next(&mut self) -> Option<FastSet> {
-//         let curr = self.state;
-//         if curr >= self.cap {
-//             None
-//         } else {
-//             self.state += 1;
-//             Some(FastSet {contents: self.state - 1})
-//         }
-//     }
-// }
-
-// Note to initialize this struct correctly
 pub struct EachSetExact {
     state: u64,
     setmask: u64,
@@ -151,10 +132,6 @@ impl Iterator for EachSetExact {
         Some(FastSet { contents: old })
     }
 }
-
-// pub fn each_set(max_size: u32) -> EachSet {
-//     return EachSet { state: 0, cap: (1u64 << max_size) }
-// }
 
 pub fn each_set_exact(max_size: u32, set_size: u32) -> EachSetExact {
     if max_size < set_size {
@@ -216,11 +193,8 @@ pub fn each_set_exact_no_zero(max_size: u32, set_size: u32) -> EachSetExactNoZer
 
 impl fmt::Debug for FastSet {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "FastSet {:?}",
-            (0..64).filter(|n| self.access(*n)).collect::<Vec<u32>>()
-        )
+        let s = format!("{:?}", self.as_vec());
+        write!(f, "{}", s.replace("[", "{").replace("]", "}"))
     }
 }
 

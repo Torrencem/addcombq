@@ -1,5 +1,4 @@
-use crate::fastset::*;
-use crate::setlike::{HFolds, SetLike, Group};
+use crate::setlike::{SetLike, Group};
 use std::cmp;
 
 macro_rules! info {
