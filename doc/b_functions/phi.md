@@ -1,9 +1,9 @@
-The _phi_ function is defined so that _phi(G, h)_ is the minimum size of a _spanning set_ of _G_. A spanning set is a set _A_ so that the _h_ fold sumset of _A_ is the entire group _G_.
+The phi function is defined so that phi(G, h) is the minimum size of a spanning set of G. A spanning set is a set A so that the h fold sumset of A is the entire group G.
 
 ARGUMENTS:
 
-* G - Either an integer _n_ (representing G = Z\_n) or a tuple _(n1, n2, ..., nm)_ (representing G = Z\_n1 * Z\_n2 * ... * Z\_nm)
+* G - Either an integer n (representing G = Z_n) or a tuple (n1, n2, ..., nm) (representing G = Z_n1 * Z_n2 * ... * Z_nm)
 
 * h - An integer
 
-* (optional) verbose \[default: False\] - Print a spanning set _A_ of size _phi(G, h)_
+* (optional) verbose [default: False] - Print a spanning set A of size phi(G, h)

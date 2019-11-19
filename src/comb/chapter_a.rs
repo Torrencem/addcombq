@@ -12,7 +12,7 @@ pub fn nu<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bool) -> u32 {
     let mut greatest_set = S::empty();
     let mut curr_greatest = 0;
     for a in S::each_set_exact(n.clone(), m) {
-        let size = a.hfoldsumset(h, n.clone()).size();
+        let size = a.hfold_sumset(h, n.clone()).size();
         if size > curr_greatest {
             if size == n.gsize() {
                 info!(verbose, "Found spanning set: {:?}", a);
@@ -23,7 +23,7 @@ pub fn nu<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bool) -> u32 {
         }
     }
     info!(verbose, "Set with greatest sumset: {:?}", greatest_set);
-    info!(verbose, "(sumsets to:) {:?}", greatest_set.hfoldsumset(h, n));
+    info!(verbose, "(sumsets to:) {:?}", greatest_set.hfold_sumset(h, n));
     curr_greatest
 }
 
@@ -31,7 +31,7 @@ pub fn nu_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): (u32, u32), verbos
     let mut greatest_set = S::empty();
     let mut curr_greatest = 0;
     for a in S::each_set_exact(n.clone(), m) {
-        let size = a.hfoldintervalsumset((ia, ib), n.clone()).size();
+        let size = a.hfold_interval_sumset((ia, ib), n.clone()).size();
         if size > curr_greatest {
             if size == n.gsize() {
                 info!(verbose, "Found spanning set: {:?}", a);
@@ -45,7 +45,7 @@ pub fn nu_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): (u32, u32), verbos
     info!(
         verbose,
         "(sumsets to:) {:?}",
-        greatest_set.hfoldintervalsumset((ia, ib), n)
+        greatest_set.hfold_interval_sumset((ia, ib), n)
     );
     curr_greatest
 }
@@ -54,7 +54,7 @@ pub fn nu_signed<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bool) -> u32 
     let mut greatest_set = S::empty();
     let mut curr_greatest = 0;
     for a in S::each_set_exact(n.clone(), m) {
-        let size = a.hfoldsignedsumset(h, n.clone()).size();
+        let size = a.hfold_signed_sumset(h, n.clone()).size();
         if size > curr_greatest {
             if size == n.gsize() {
                 info!(verbose, "Found spanning set: {:?}", a);
@@ -68,7 +68,7 @@ pub fn nu_signed<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bool) -> u32 
     info!(
         verbose,
         "(sumsets to:) {:?}",
-        greatest_set.hfoldsignedsumset(h, n)
+        greatest_set.hfold_signed_sumset(h, n)
     );
     curr_greatest
 }
@@ -77,7 +77,7 @@ pub fn nu_signed_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): (u32, u32),
     let mut greatest_set = S::empty();
     let mut curr_greatest = 0;
     for a in S::each_set_exact(n.clone(), m) {
-        let size = a.hfoldintervalsignedsumset((ia, ib), n.clone()).size();
+        let size = a.hfold_interval_signed_sumset((ia, ib), n.clone()).size();
         if size > curr_greatest {
             if size == n.gsize() {
                 info!(verbose, "Found spanning set: {:?}", a);
@@ -91,7 +91,7 @@ pub fn nu_signed_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): (u32, u32),
     info!(
         verbose,
         "(sumsets to:) {:?}",
-        greatest_set.hfoldintervalsignedsumset((ia, ib), n)
+        greatest_set.hfold_interval_signed_sumset((ia, ib), n)
     );
     curr_greatest
 }
@@ -100,7 +100,7 @@ pub fn nu_restricted<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bool) -> 
     let mut greatest_set = S::empty();
     let mut curr_greatest = 0;
     for a in S::each_set_exact(n.clone(), m) {
-        let size = a.hfoldrestrictedsumset(h, n.clone()).size();
+        let size = a.hfold_restricted_sumset(h, n.clone()).size();
         if size > curr_greatest {
             if size == n.gsize() {
                 info!(verbose, "Found spanning set: {:?}", a);
@@ -114,7 +114,7 @@ pub fn nu_restricted<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bool) -> 
     info!(
         verbose,
         "(sumsets to:) {:?}",
-        greatest_set.hfoldrestrictedsumset(h, n)
+        greatest_set.hfold_restricted_sumset(h, n)
     );
     curr_greatest
 }
@@ -123,7 +123,7 @@ pub fn nu_restricted_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): (u32, u
     let mut greatest_set = S::empty();
     let mut curr_greatest = 0;
     for a in S::each_set_exact(n.clone(), m) {
-        let size = a.hfoldintervalrestrictedsumset((ia, ib), n.clone()).size();
+        let size = a.hfold_interval_restricted_sumset((ia, ib), n.clone()).size();
         if size > curr_greatest {
             if size == n.gsize() {
                 info!(verbose, "Found spanning set: {:?}", a);
@@ -137,7 +137,7 @@ pub fn nu_restricted_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): (u32, u
     info!(
         verbose,
         "(sumsets to:) {:?}",
-        greatest_set.hfoldintervalrestrictedsumset((ia, ib), n)
+        greatest_set.hfold_interval_restricted_sumset((ia, ib), n)
     );
     curr_greatest
 }
@@ -146,7 +146,7 @@ pub fn nu_signed_restricted<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bo
     let mut greatest_set = S::empty();
     let mut curr_greatest = 0;
     for a in S::each_set_exact(n.clone(), m) {
-        let size = a.hfoldrestrictedsignedsumset(h, n.clone()).size();
+        let size = a.hfold_restricted_signed_sumset(h, n.clone()).size();
         if size > curr_greatest {
             if size == n.gsize() {
                 info!(verbose, "Found spanning set: {:?}", a);
@@ -160,7 +160,7 @@ pub fn nu_signed_restricted<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bo
     info!(
         verbose,
         "(sumsets to:) {:?}",
-        greatest_set.hfoldrestrictedsignedsumset(h, n)
+        greatest_set.hfold_restricted_signed_sumset(h, n)
     );
     curr_greatest
 }
@@ -169,7 +169,7 @@ pub fn nu_signed_restricted_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): 
     let mut greatest_set = S::empty();
     let mut curr_greatest = 0;
     for a in S::each_set_exact(n.clone(), m) {
-        let size = a.hfoldintervalrestrictedsignedsumset((ia, ib), n.clone()).size();
+        let size = a.hfold_interval_restricted_signed_sumset((ia, ib), n.clone()).size();
         if size > curr_greatest {
             if size == n.gsize() {
                 info!(verbose, "Found spanning set: {:?}", a);
@@ -183,7 +183,7 @@ pub fn nu_signed_restricted_interval<S: SetLike>(n: S::Group, m: u32, (ia, ib): 
     info!(
         verbose,
         "(sumsets to:) {:?}",
-        greatest_set.hfoldintervalrestrictedsignedsumset((ia, ib), n)
+        greatest_set.hfold_interval_restricted_signed_sumset((ia, ib), n)
     );
     curr_greatest
 }

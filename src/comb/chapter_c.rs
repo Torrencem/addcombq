@@ -16,7 +16,7 @@ pub fn sigma<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
         let expected = choose(m + h - 1, h);
         let mut found = false;
         for a in S::each_set_exact(n.clone(), m) {
-            if a.hfoldsumset(h, n.clone()).size() == expected {
+            if a.hfold_sumset(h, n.clone()).size() == expected {
                 info!(verbose, "for m={:?}, found a={:?}", m, a);
                 found = true;
                 break;
@@ -35,7 +35,7 @@ pub fn sigma_interval<S: SetLike>(n: S::Group, s: u32, verbose: bool) -> u32 {
         let expected = choose(m + s, s);
         let mut found = false;
         for a in S::each_set_exact(n.clone(), m) {
-            if a.hfoldintervalsumset((0, s), n.clone()).size() == expected {
+            if a.hfold_interval_sumset((0, s), n.clone()).size() == expected {
                 info!(verbose, "for m={:?}, found a={:?}", m, a);
                 found = true;
                 break;
@@ -54,7 +54,7 @@ pub fn sigma_signed<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
         let expected = c(h, m);
         let mut found = false;
         for a in S::each_set_exact(n.clone(), m) {
-            if a.hfoldsignedsumset(h, n.clone()).size() == expected {
+            if a.hfold_signed_sumset(h, n.clone()).size() == expected {
                 info!(verbose, "for m={:?}, found a={:?}", m, a);
                 dbg!(expected);
                 found = true;
@@ -74,7 +74,7 @@ pub fn sigma_signed_interval<S: SetLike>(n: S::Group, s: u32, verbose: bool) -> 
         let expected = a(m, s);
         let mut found = false;
         for a in S::each_set_exact(n.clone(), m) {
-            if a.hfoldintervalsignedsumset((0, s), n.clone()).size() == expected {
+            if a.hfold_interval_signed_sumset((0, s), n.clone()).size() == expected {
                 info!(verbose, "for m={:?}, found a={:?}", m, a);
                 found = true;
                 break;
@@ -93,7 +93,7 @@ pub fn sigma_restricted<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
         let expected = choose(m, h);
         let mut found = false;
         for a in S::each_set_exact(n.clone(), m) {
-            if a.hfoldrestrictedsumset(h, n.clone()).size() == expected {
+            if a.hfold_restricted_sumset(h, n.clone()).size() == expected {
                 info!(verbose, "for m={:?}, found a={:?}", m, a);
                 found = true;
                 break;
@@ -112,7 +112,7 @@ pub fn sigma_restricted_interval<S: SetLike>(n: S::Group, s: u32, verbose: bool)
         let expected = (0..=cmp::min(s, m)).map(|h| choose(m, h)).sum();
         let mut found = false;
         for a in S::each_set_exact(n.clone(), m) {
-            if a.hfoldintervalrestrictedsumset((0, s), n.clone()).size() == expected {
+            if a.hfold_interval_restricted_sumset((0, s), n.clone()).size() == expected {
                 info!(verbose, "for m={:?}, found a={:?}", m, a);
                 found = true;
                 break;
@@ -131,7 +131,7 @@ pub fn sigma_signed_restricted<S: SetLike>(n: S::Group, h: u32, verbose: bool) -
         let expected = choose(m, h) * (2u32).pow(h);
         let mut found = false;
         for a in S::each_set_exact(n.clone(), m) {
-            if a.hfoldrestrictedsignedsumset(h, n.clone()).size() == expected {
+            if a.hfold_restricted_signed_sumset(h, n.clone()).size() == expected {
                 info!(verbose, "for m={:?}, found a={:?}", m, a);
                 found = true;
                 break;
@@ -152,7 +152,7 @@ pub fn sigma_signed_restricted_interval<S: SetLike>(n: S::Group, s: u32, verbose
             .sum();
         let mut found = false;
         for a in S::each_set_exact(n.clone(), m) {
-            if a.hfoldintervalrestrictedsumset((0, s), n.clone()).size() == expected {
+            if a.hfold_interval_restricted_sumset((0, s), n.clone()).size() == expected {
                 info!(verbose, "for m={:?}, found a={:?}", m, a);
                 found = true;
                 break;

@@ -17,12 +17,12 @@ pub fn mu<S: SetLike>(n: S::Group, k: u32, l: u32, verbose: bool) -> u32 {
     for m in 1..n.gsize() {
         let mut found = false;
         for a in S::each_set_exact(n.clone(), m) {
-            let mut k_a = a.hfoldsumset(k, n.clone());
-            let l_a = a.hfoldsumset(l, n.clone());
+            let mut k_a = a.hfold_sumset(k, n.clone());
+            let l_a = a.hfold_sumset(l, n.clone());
             k_a.intersect(l_a.clone());
             if k_a.is_empty() {
                 info!(verbose, "For m={:?}, found {:?}, which is sum-free", m, a);
-                info!(verbose, "(kA = {:?}, lA = {:?})", a.hfoldsumset(k, n.clone()), l_a);
+                info!(verbose, "(kA = {:?}, lA = {:?})", a.hfold_sumset(k, n.clone()), l_a);
                 found = true;
                 break;
             }
@@ -41,15 +41,15 @@ pub fn mu_signed<S: SetLike>(n: S::Group, k: u32, l: u32, verbose: bool) -> u32 
     for m in 1..n.gsize() {
         let mut found = false;
         for a in S::each_set_exact(n.clone(), m) {
-            let mut k_a = a.hfoldsignedsumset(k, n.clone());
-            let l_a = a.hfoldsignedsumset(l, n.clone());
+            let mut k_a = a.hfold_signed_sumset(k, n.clone());
+            let l_a = a.hfold_signed_sumset(l, n.clone());
             k_a.intersect(l_a.clone());
             if k_a.is_empty() {
                 info!(verbose, "For m={:?}, found {:?}, which is sum-free", m, a);
                 info!(
                     verbose,
                     "(kA = {:?}, lA = {:?})",
-                    a.hfoldsignedsumset(k, n.clone()),
+                    a.hfold_signed_sumset(k, n.clone()),
                     l_a
                 );
                 found = true;
@@ -81,15 +81,15 @@ pub fn mu_restricted<S: SetLike>(n: S::Group, k: u32, l: u32, verbose: bool) -> 
     for m in lower_bound..n.gsize() {
         let mut found = false;
         for a in S::each_set_exact(n.clone(), m) {
-            let mut k_a = a.hfoldrestrictedsumset(k, n.clone());
-            let l_a = a.hfoldrestrictedsumset(l, n.clone());
+            let mut k_a = a.hfold_restricted_sumset(k, n.clone());
+            let l_a = a.hfold_restricted_sumset(l, n.clone());
             k_a.intersect(l_a.clone());
             if k_a.is_empty() {
                 info!(verbose, "For m={:?}, found {:?}, which is sum-free", m, a);
                 info!(
                     verbose,
                     "(kA = {:?}, lA = {:?})",
-                    a.hfoldrestrictedsumset(k, n.clone()),
+                    a.hfold_restricted_sumset(k, n.clone()),
                     l_a
                 );
                 found = true;
@@ -113,15 +113,15 @@ pub fn mu_signed_restricted<S: SetLike>(n: S::Group, k: u32, l: u32, verbose: bo
     for m in 1..n.gsize() {
         let mut found = false;
         for a in S::each_set_exact(n.clone(), m) {
-            let mut k_a = a.hfoldrestrictedsignedsumset(k, n.clone());
-            let l_a = a.hfoldrestrictedsignedsumset(l, n.clone());
+            let mut k_a = a.hfold_restricted_signed_sumset(k, n.clone());
+            let l_a = a.hfold_restricted_signed_sumset(l, n.clone());
             k_a.intersect(l_a.clone());
             if k_a.is_empty() {
                 info!(verbose, "For m={:?}, found {:?}, which is sum-free", m, a);
                 info!(
                     verbose,
                     "(kA = {:?}, lA = {:?})",
-                    a.hfoldrestrictedsignedsumset(k, n.clone()),
+                    a.hfold_restricted_signed_sumset(k, n.clone()),
                     l_a
                 );
                 found = true;

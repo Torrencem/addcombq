@@ -18,7 +18,7 @@ impl HFolds for FastSet {
     type Group = u32;
 
     #[inline]
-    fn hfoldsumset(&self, h: u32, n: u32) -> FastSet {
+    fn hfold_sumset(&self, h: u32, n: u32) -> FastSet {
         if h == 0 {
             return singleton(0);
         }
@@ -40,7 +40,7 @@ impl HFolds for FastSet {
     }
 
     #[inline]
-    fn hfoldintervalsumset(&self, hs: (u32, u32), n: u32) -> FastSet {
+    fn hfold_interval_sumset(&self, hs: (u32, u32), n: u32) -> FastSet {
         let (h1, h2) = hs;
 
         let mut final_res = 0u64;
@@ -68,7 +68,7 @@ impl HFolds for FastSet {
     }
 
     #[inline]
-    fn hfoldrestrictedsumset(&self, h: u32, n: u32) -> FastSet {
+    fn hfold_restricted_sumset(&self, h: u32, n: u32) -> FastSet {
         if h > self.size() {
             return empty_set();
         }
@@ -81,14 +81,14 @@ impl HFolds for FastSet {
     }
 
     #[inline]
-    fn hfoldintervalrestrictedsumset(&self, hs: (u32, u32), n: u32) -> FastSet {
+    fn hfold_interval_restricted_sumset(&self, hs: (u32, u32), n: u32) -> FastSet {
         FastSet {
             contents: _hfirs(self.contents, 1u64, hs.1, hs, n, empty_set(), n + 1),
         }
     }
 
     #[inline]
-    fn hfoldsignedsumset(&self, h: u32, n: u32) -> FastSet {
+    fn hfold_signed_sumset(&self, h: u32, n: u32) -> FastSet {
         if h == 0 {
             return singleton(0);
         }
@@ -98,7 +98,7 @@ impl HFolds for FastSet {
     }
 
     #[inline]
-    fn hfoldintervalsignedsumset(&self, hs: (u32, u32), n: u32) -> FastSet {
+    fn hfold_interval_signed_sumset(&self, hs: (u32, u32), n: u32) -> FastSet {
         FastSet {
             contents: _hfiss(
                 self.contents,
@@ -114,7 +114,7 @@ impl HFolds for FastSet {
     }
 
     #[inline]
-    fn hfoldrestrictedsignedsumset(&self, h: u32, n: u32) -> FastSet {
+    fn hfold_restricted_signed_sumset(&self, h: u32, n: u32) -> FastSet {
         if h > self.size() {
             return empty_set();
         }
@@ -127,7 +127,7 @@ impl HFolds for FastSet {
     }
 
     #[inline]
-    fn hfoldintervalrestrictedsignedsumset(&self, hs: (u32, u32), n: u32) -> FastSet {
+    fn hfold_interval_restricted_signed_sumset(&self, hs: (u32, u32), n: u32) -> FastSet {
         FastSet {
             contents: _hfirss(self.contents, 1u64, hs.1, hs, n, empty_set(), n + 1),
         }

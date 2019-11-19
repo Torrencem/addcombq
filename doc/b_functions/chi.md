@@ -1,9 +1,9 @@
-The _chi_ function is defined so that _chi(G, h)_ is the smallest _m_ for which every _m_ size subset of _G_ spans _G_.
+The chi function is defined so that chi(G, h) is the smallest m for which every m size subset of G spans G.
 
 ARGUMENTS:
 
-* G - Either an integer _n_ (representing G = Z\_n) or a tuple _(n1, n2, ..., nm)_ (representing G = Z\_n1 * Z\_n2 * ... * Z\_nm)
+* G - Either an integer n (representing G = Z_n) or a tuple (n1, n2, ..., nm) (representing G = Z_n1 * Z_n2 * ... * Z_nm)
 
 * h - An integer
 
-* (optional) verbose \[default: False\] - Print extra computational information
+* (optional) verbose [default: False] - Print extra computational information
