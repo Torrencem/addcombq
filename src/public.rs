@@ -1,15 +1,9 @@
 use std::convert::TryInto;
 
-use crate::comb::chapter_a;
-use crate::comb::chapter_b;
-use crate::comb::chapter_c;
-use crate::comb::chapter_d;
-use crate::comb::chapter_e;
-use crate::comb::chapter_f;
-use crate::comb::chapter_g;
+use addcomb_comp::comb::*;
 
-use crate::exactset::GElem;
-use crate::fastset::FastSet;
+use addcomb_comp::exactset::GElem;
+use addcomb_comp::fastset::FastSet;
 
 use paste;
 

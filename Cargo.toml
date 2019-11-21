@@ -9,20 +9,10 @@ name = "addcombq"
 crate-type = ["rlib", "dylib"]
 
 [dependencies]
-itertools = "0.8.0"
-array_tool = "1.0.3"
-specialize = "0.0.3"
 paste = "0.1.6"
-
-[dev-dependencies]
-rand = "0.6.5"
-criterion = "0.3"
+addcomb_comp = { path = "addcomb-comp" }
 
 [dependencies.cpython]
 version = "0.3.0"
 default-features = false
 features = ["python27-sys"]
-
-[[bench]]
-name = "fastset_benches"
-harness = false
