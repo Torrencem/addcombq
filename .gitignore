@@ -2,6 +2,9 @@ target
 **/*.rs.bk
 **/*.swp
 build
+addcomb-comp/build
+addcomb-comp/dist
+addcomb-comp/target
 addcomb.egg-info
 dist
 doc/compiled
