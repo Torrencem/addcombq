@@ -205,10 +205,10 @@ impl fmt::Display for FastSet {
     }
 }
 
-impl<'a> From<&'a [u32]> for FastSet {
-    fn from(vals: &[u32]) -> Self {
+impl<'a, T: AsRef<[u32]>> From<T> for FastSet {
+    fn from(vals: T) -> Self {
         let mut me = empty_set();
-        for val in vals {
+        for val in vals.as_ref() {
             me.add(*val);
         }
         me
