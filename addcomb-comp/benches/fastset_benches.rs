@@ -3,16 +3,16 @@ extern crate criterion;
 
 use criterion::*;
 
-extern crate addcombq;
+extern crate addcomb_comp;
 
 use std::rc::Rc;
 
-use addcombq::comb::chapter_a::*;
+use addcomb_comp::comb::chapter_a::*;
 
-use addcombq::exactset::GElem;
-use addcombq::fastset::FastSet;
+use addcomb_comp::exactset::GElem;
+use addcomb_comp::fastset::FastSet;
 
-use addcombq::setlike::HFolds;
+use addcomb_comp::setlike::HFolds;
 
 fn bench_nus(c: &mut Criterion) {
     let plot_config = PlotConfiguration::default().summary_scale(AxisScale::Logarithmic);
