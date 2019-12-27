@@ -3,6 +3,7 @@ name = "addcombq"
 version = "0.1.0"
 authors = ["Matt Torrence <gh-Torrencem>"]
 edition = "2018"
+build = "build.rs"
 
 [lib]
 name = "addcombq"

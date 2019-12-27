@@ -13,3 +13,4 @@ doc/compiled
 **/__pycache__
 **/*.DS_Store
 **/*.session.vim
+src/doc
