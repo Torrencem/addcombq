@@ -20,7 +20,7 @@ pub trait Group: Clone {
     /// # Example
     ///
     /// ```
-    /// use addcombq::setlike::Group;
+    /// use addcomb_comp::setlike::Group;
     /// let g = 15u32;       // Z_15
     /// let zero = g.zero(); // 0u32
     ///
@@ -35,7 +35,7 @@ pub trait Group: Clone {
     /// # Example
     ///
     /// ```
-    /// use addcombq::setlike::Group;
+    /// use addcomb_comp::setlike::Group;
     /// let g = 15u32;     // Z_15
     /// let s = g.gsize(); // 15u32
     ///
