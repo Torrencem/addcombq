@@ -157,7 +157,7 @@ def handle_stream(stream):
     let capt_cout = py.eval("capture_c_stdout(handle_stream)", None, None)?;
 
     #[cfg(feature = "python2")]
-    { capt_cout }
+    { Ok(capt_cout) }
     #[cfg(feature = "python3")]
     {
         capt_cout.getattr(py, "gen")
