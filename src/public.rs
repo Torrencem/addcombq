@@ -1,5 +1,3 @@
-use std::convert::TryInto;
-
 use addcomb_comp::comb::*;
 
 use addcomb_comp::exactset::GElem;
@@ -13,8 +11,8 @@ use std::rc::Rc;
 
 use cpython::exc;
 use cpython::{
-    NoArgs, ObjectProtocol, PyDict, PyErr, PyInt, PyIterator, PyObject, PyResult, PyTuple, Python,
-    PythonObject, ToPyObject,
+    NoArgs, ObjectProtocol, PyDict, PyErr, PyIterator, PyObject, PyResult, PyTuple, Python,
+    PythonObject, ToPyObject, PyInt, FromPyObject
 };
 
 pub fn wrap_binding(py: Python, ob: PyObject, s: &str) -> PyResult<PyObject> {
@@ -95,8 +93,12 @@ def signalling_f():
     let types = py.import("types")?;
     let mt = types.get(py, "MethodType")?;
     let cll = inst.getattr(py, "__call__")?;
-
+    
+    // https://stackoverflow.com/questions/48857612/types-methodtype-third-argument-in-python2
+    #[cfg(feature = "python2")]
     let bound_func = mt.call(py, (cll, &inst, &class), None)?;
+    #[cfg(feature = "python3")]
+    let bound_func = mt.call(py, (cll, &inst), None)?;
 
     // Assign the bound func to the module (important!) and class
     class.setattr(py, "__call__", &bound_func)?;
@@ -124,6 +126,7 @@ fn into_pyiter<'p>(py: Python<'p>, x: &PyObject) -> PyResult<PyIterator<'p>> {
 // Run the code from capture_c_out.py to setup
 // the capturing functionality
 fn setup_capt_c_out(py: Python) -> PyResult<PyObject> {
+    #[cfg(feature = "python2")]
     py.run(
         r#"
 def handle_stream(stream):
@@ -133,10 +136,32 @@ def handle_stream(stream):
         None,
         None,
     )?;
+    #[cfg(feature = "python3")]
+    py.run(
+        r#"
+def handle_stream(stream):
+    if stream:
+        print(stream, end="")
+        "#,
+        None,
+        None,
+    )?;
 
+    
+    #[cfg(feature = "python2")]
     py.run(include_str!("capture_c_out.py"), None, None)?;
+    
+    #[cfg(feature = "python3")]
+    py.run(include_str!("capture_c_out_3.py"), None, None)?;
 
-    py.eval("capture_c_stdout(handle_stream)", None, None)
+    let capt_cout = py.eval("capture_c_stdout(handle_stream)", None, None)?;
+
+    #[cfg(feature = "python2")]
+    { capt_cout }
+    #[cfg(feature = "python3")]
+    {
+        capt_cout.getattr(py, "gen")
+    }
 }
 
 fn is_int<P: ToPyObject>(py: Python, x: &P) -> bool {
@@ -174,7 +199,7 @@ fn format_arg<T: Any>(py: Python, arg: &T) -> PyResult<ArgEither> {
         Some(pobj) => {
             let asint = into_pyint(py, pobj);
             if let Ok(x) = asint {
-                Ok(ArgEither::Val(x.value(py) as u32))
+                Ok(ArgEither::Val(u32::extract(py, &x.as_object()).unwrap() as u32))
             } else {
                 let err_message = "expected h argument to be either integer h value or iterable interval [i.e. (0, 3)]";
                 let type_err = || Err(PyErr::new::<exc::TypeError, _>(py, err_message));
@@ -182,7 +207,7 @@ fn format_arg<T: Any>(py: Python, arg: &T) -> PyResult<ArgEither> {
                 if let Ok(mut piter) = piter {
                     let a: PyInt = into_pyint(py, &piter.next().unwrap_or_else(type_err)?)?;
                     let b: PyInt = into_pyint(py, &piter.next().unwrap_or_else(type_err)?)?;
-                    Ok(ArgEither::Tpl(a.value(py) as u32, b.value(py) as u32))
+                    Ok(ArgEither::Tpl(u32::extract(py, &a.as_object()).unwrap() as u32, u32::extract(py, &b.as_object()).unwrap() as u32))
                 } else {
                     Err(PyErr::new::<exc::TypeError, _>(py, err_message))
                 }
@@ -212,10 +237,16 @@ macro_rules! py_binding {
         pub fn $bound_name(py: Python, n: PyObject, $($ex_args : $ex_arg_type),+ , verbose: bool) -> PyResult<u32> {
             // Setup c_out capturing
             let capt_c_out = setup_capt_c_out(py)?;
-            capt_c_out.call_method(py, "next", NoArgs, None)?;
+            
+            #[cfg(feature = "python2")]
+            let gen_next = "next";
+            #[cfg(feature = "python3")]
+            let gen_next = "__next__";
+
+            capt_c_out.call_method(py, gen_next, NoArgs, None)?;
             let numb = into_pyint(py, &n);
             if let Ok(n) = numb {
-                let n: u32 = n.value(py).try_into().unwrap(); // Will panic here if negative
+                let n: u32 = u32::extract(py, &n.as_object()).unwrap(); // Will panic here if negative
                 if n <= 63 {
                     let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
                     let val = if !icall {
@@ -224,7 +255,7 @@ macro_rules! py_binding {
                         $fs_int_version(n, $(format_arg(py, &$ex_args)?.into()),+, verbose)
                     };
                     // Stop c_out capturing
-                    capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+                    capt_c_out.call_method(py, gen_next, NoArgs, None).expect_err("fatal capture error");
                     Ok(val)
                 } else {
                     let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
@@ -233,7 +264,7 @@ macro_rules! py_binding {
                     } else {
                         $ex_int_version(Rc::new(vec![n]), $(format_arg(py, &$ex_args)?.into()),+, verbose)
                     };
-                    capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+                    capt_c_out.call_method(py, gen_next, NoArgs, None).expect_err("fatal capture error");
                     Ok(val)
                 }
             } else {
@@ -241,7 +272,7 @@ macro_rules! py_binding {
                 let mut tmp = vec![];
                 for pyob in list {
                     let numb = into_pyint(py, &pyob?)?;
-                    let val = numb.value(py).try_into().unwrap();
+                    let val = u32::extract(py, &numb.as_object()).unwrap();
                     tmp.push(val);
                 }
                 let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
@@ -250,7 +281,7 @@ macro_rules! py_binding {
                 } else {
                     $ex_int_version(Rc::new(tmp), $(format_arg(py, &$ex_args)?.into()),+, verbose)
                 };
-                capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+                capt_c_out.call_method(py, gen_next, NoArgs, None).expect_err("fatal capture error");
                 Ok(val)
             }
         }
@@ -267,7 +298,7 @@ macro_rules! py_binding_mu {
             capt_c_out.call_method(py, "next", NoArgs, None)?;
             let numb = into_pyint(py, &n);
             if let Ok(n) = numb {
-                let n: u32 = n.value(py).try_into().unwrap(); // Will panic here if negative
+                let n: u32 = u32::extract(py, &n.as_object()).unwrap(); // Will panic here if negative
                 if n <= 63 {
                     let val = $fs_version(n, $($ex_args),+, verbose);
                     // Stop c_out capturing
@@ -283,7 +314,7 @@ macro_rules! py_binding_mu {
                 let mut tmp = vec![];
                 for pyob in list {
                     let numb = into_pyint(py, &pyob?)?;
-                    let val = numb.value(py).try_into().unwrap();
+                    let val = u32::extract(py, &numb.as_object()).unwrap();
                     tmp.push(val);
                 }
                 let val = $ex_version(Rc::new(tmp), $($ex_args),+, verbose);

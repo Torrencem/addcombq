@@ -9,6 +9,11 @@ build = "build.rs"
 name = "addcombq"
 crate-type = ["rlib", "dylib"]
 
+[features]
+default = ["python2"]
+python3 = ["cpython/python3-sys"]
+python2 = ["cpython/python27-sys"]
+
 [dependencies]
 paste = "0.1.6"
 addcomb_comp = { path = "addcomb-comp" }
@@ -16,4 +21,4 @@ addcomb_comp = { path = "addcomb-comp" }
 [dependencies.cpython]
 version = "0.3.0"
 default-features = false
-features = ["python27-sys"]
+

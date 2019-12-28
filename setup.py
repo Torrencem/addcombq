@@ -1,4 +1,4 @@
-
+import sys
 import os, errno
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
@@ -16,8 +16,10 @@ class cp_build_ext(build_ext):
        def build_extension(self, ext):
               # run build commands
               import subprocess
-              subprocess.check_call("python3 doc/build.py", shell=True)
-              subprocess.check_call("cargo +nightly build --release", shell=True)
+              if sys.version_info >= (3, 0):
+                  subprocess.check_call("cargo +nightly build --release --no-default-features --features \"python3\"", shell=True)
+              else:
+                  subprocess.check_call("cargo +nightly build --release", shell=True)
 
               import shutil
               from os import path
