@@ -5,7 +5,7 @@ use std::iter::IntoIterator;
 use itertools::Combinations;
 use itertools::Itertools;
 
-use std::rc::Rc;
+use std::sync::Arc;
 
 use std::iter;
 
@@ -61,7 +61,7 @@ pub fn combinations_with_replacement(n: u32, r: u32) -> CombWithReplacement {
 
 pub struct EachElement {
     pub curr: Vec<u32>,
-    pub mod_v: Rc<Vec<u32>>,
+    pub mod_v: Arc<Vec<u32>>,
     pub first: bool,
 }
 
@@ -89,7 +89,7 @@ impl Iterator for EachElement {
 #[derive(Hash, Eq, PartialEq, Clone)]
 pub struct GElem(pub Vec<u32>);
 
-pub fn each_set_exact(size: u32, mod_v: Rc<Vec<u32>>) -> EachSetExact {
+pub fn each_set_exact(size: u32, mod_v: Arc<Vec<u32>>) -> EachSetExact {
     EachSetExact {
         c: (EachElement {
             curr: vec![0; mod_v.len()],
@@ -113,7 +113,7 @@ impl Iterator for EachSetExact {
     }
 }
 
-pub fn each_set_exact_no_zero(size: u32, mod_v: Rc<Vec<u32>>) -> EachSetExact {
+pub fn each_set_exact_no_zero(size: u32, mod_v: Arc<Vec<u32>>) -> EachSetExact {
     EachSetExact {
         c: (EachElement {
             curr: vec![0; mod_v.len()],
@@ -125,7 +125,7 @@ pub fn each_set_exact_no_zero(size: u32, mod_v: Rc<Vec<u32>>) -> EachSetExact {
 }
 
 #[inline]
-pub fn mod_sum(x: &GElem, y: &GElem, mod_v: Rc<Vec<u32>>) -> GElem {
+pub fn mod_sum(x: &GElem, y: &GElem, mod_v: Arc<Vec<u32>>) -> GElem {
     let GElem(xc) = x;
     let GElem(yc) = y;
     debug_assert!(xc.len() == yc.len());
@@ -171,7 +171,7 @@ impl fmt::Debug for GElem {
     }
 }
 
-pub fn hfold_sumset(set: &Vec<GElem>, h: u32, mod_v: Rc<Vec<u32>>) -> HashSet<GElem> {
+pub fn hfold_sumset(set: &Vec<GElem>, h: u32, mod_v: Arc<Vec<u32>>) -> HashSet<GElem> {
     let mut res: HashSet<GElem> = HashSet::new();
     let as_vec: Vec<GElem> = set.clone();
     let n: usize = mod_v.len();
@@ -196,7 +196,7 @@ pub fn hfold_sumset(set: &Vec<GElem>, h: u32, mod_v: Rc<Vec<u32>>) -> HashSet<GE
 pub fn hfold_interval_sumset(
     set: &Vec<GElem>,
     intv: (u32, u32),
-    mod_v: Rc<Vec<u32>>,
+    mod_v: Arc<Vec<u32>>,
 ) -> HashSet<GElem> {
     let mut res: HashSet<_> = HashSet::new();
     let (ia, ib) = intv;
@@ -207,7 +207,7 @@ pub fn hfold_interval_sumset(
     res
 }
 
-pub fn hfold_signed_sumset(set: &Vec<GElem>, h: u32, mod_v: Rc<Vec<u32>>) -> HashSet<GElem> {
+pub fn hfold_signed_sumset(set: &Vec<GElem>, h: u32, mod_v: Arc<Vec<u32>>) -> HashSet<GElem> {
     let mut res: HashSet<GElem> = HashSet::new();
     let as_vec: Vec<GElem> = set.clone();
     let n: usize = mod_v.len();
@@ -272,7 +272,7 @@ pub fn hfold_signed_sumset(set: &Vec<GElem>, h: u32, mod_v: Rc<Vec<u32>>) -> Has
 pub fn hfold_interval_signed_sumset(
     set: &Vec<GElem>,
     intv: (u32, u32),
-    mod_v: Rc<Vec<u32>>,
+    mod_v: Arc<Vec<u32>>,
 ) -> HashSet<GElem> {
     let mut res: HashSet<_> = HashSet::new();
     let (ia, ib) = intv;
@@ -287,7 +287,7 @@ pub fn hfold_interval_signed_sumset(
     res
 }
 
-pub fn hfold_restricted_sumset(set: &Vec<GElem>, h: u32, mod_v: Rc<Vec<u32>>) -> HashSet<GElem> {
+pub fn hfold_restricted_sumset(set: &Vec<GElem>, h: u32, mod_v: Arc<Vec<u32>>) -> HashSet<GElem> {
     let mut res: HashSet<GElem> = HashSet::new();
     let as_vec: Vec<GElem> = set.clone();
     let n: usize = mod_v.len();
@@ -312,7 +312,7 @@ pub fn hfold_restricted_sumset(set: &Vec<GElem>, h: u32, mod_v: Rc<Vec<u32>>) ->
 pub fn hfold_interval_restricted_sumset(
     set: &Vec<GElem>,
     intv: (u32, u32),
-    mod_v: Rc<Vec<u32>>,
+    mod_v: Arc<Vec<u32>>,
 ) -> HashSet<GElem> {
     let mut res: HashSet<_> = HashSet::new();
     let (ia, ib) = intv;
@@ -326,7 +326,7 @@ pub fn hfold_interval_restricted_sumset(
 pub fn hfold_restricted_signed_sumset(
     set: &Vec<GElem>,
     h: u32,
-    mod_v: Rc<Vec<u32>>,
+    mod_v: Arc<Vec<u32>>,
 ) -> HashSet<GElem> {
     let mut res: HashSet<GElem> = HashSet::new();
     let as_vec: Vec<GElem> = set.clone();
@@ -386,7 +386,7 @@ pub fn hfold_restricted_signed_sumset(
 pub fn hfold_interval_restricted_signed_sumset(
     set: &Vec<GElem>,
     intv: (u32, u32),
-    mod_v: Rc<Vec<u32>>,
+    mod_v: Arc<Vec<u32>>,
 ) -> HashSet<GElem> {
     let mut res: HashSet<_> = HashSet::new();
     let (ia, ib) = intv;

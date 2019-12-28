@@ -3,6 +3,8 @@
 #[macro_use]
 extern crate specialize;
 
+extern crate rayon;
+
 pub mod comb;
 pub mod exactset;
 pub mod fastset;
@@ -26,14 +28,14 @@ mod tests {
 
     use rand::{thread_rng, Rng};
 
-    use std::rc::Rc;
+    use std::sync::Arc;
 
     // Setup some simple harnesses for tests
     macro_rules! assert_consistency {
         ($f1:expr, $f2:expr, $a1:expr, $($args:expr),+) => {
             println!("Running test on: {} {:?}", stringify!($f1), ($a1, $($args),+));
             let a = $f1($a1, $($args),+);
-            let b = $f2(Rc::new(vec![$a1]), $($args),+);
+            let b = $f2(Arc::new(vec![$a1]), $($args),+);
             assert_eq!(a, b,
                        concat!("Consistency error: ",
                                stringify!($f1),
@@ -162,7 +164,7 @@ mod tests {
         comp_fs!(sigma_signed, 11, 2);
 
         let s = vec![GElem(vec![1]), GElem(vec![0])];
-        assert!(!s.zero_free(Rc::new(vec![7])));
+        assert!(!s.zero_free(Arc::new(vec![7])));
         comp_fs!(tau, 7, 3);
     }
 }

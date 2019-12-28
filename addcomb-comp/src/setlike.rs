@@ -6,12 +6,12 @@ use crate::fastset::FastSet;
 
 use crate::exactset::GElem;
 
-use std::rc::Rc;
+use std::sync::Arc;
 
 use array_tool::vec::Intersect;
 
 /// A trait for representations of abelian groups (i.e. Z_5 as "5")
-pub trait Group: Clone {
+pub trait Group: Clone + Send + Sync {
     /// The type of elements of the group (i.e. u32)
     type Element;
 
@@ -24,8 +24,8 @@ pub trait Group: Clone {
     /// let g = 15u32;       // Z_15
     /// let zero = g.zero(); // 0u32
     ///
-    /// use std::rc::Rc;
-    /// let g = Rc::new(vec![50, 30, 20]);  // Z_50 x Z_30 x Z_20
+    /// use std::sync::Arc;
+    /// let g = Arc::new(vec![50, 30, 20]);  // Z_50 x Z_30 x Z_20
     /// let zero = g.zero();  // GElem(vec![0u32, 0u32, 0u32])
     /// ```
     fn zero(&self) -> Self::Element;
@@ -39,8 +39,8 @@ pub trait Group: Clone {
     /// let g = 15u32;     // Z_15
     /// let s = g.gsize(); // 15u32
     ///
-    /// use std::rc::Rc;
-    /// let g = Rc::new(vec![50, 30, 20]);  // Z_50 x Z_30 x Z_20
+    /// use std::sync::Arc;
+    /// let g = Arc::new(vec![50, 30, 20]);  // Z_50 x Z_30 x Z_20
     /// let s = g.gsize();  // 50 * 30 * 20
     /// ```
     fn gsize(&self) -> u32;
@@ -142,17 +142,17 @@ pub trait HFolds {
 }
 
 /// A trait for sets which can be used internally for b-functions
-pub trait SetLike: Debug + Clone + HFolds {
+pub trait SetLike: Debug + Clone + HFolds + Send + Sync {
     /// An iterator type which gives each `Self` in a given group
-    type EachSetExact: Iterator<Item = Self>;
+    type EachSetExact: Iterator<Item = Self> + Send;
 
     /// An iterator type which gives each `Self` in a given group, where each
     /// element is required to contain the zero element
-    type EachSetExactZero: Iterator<Item = Self>;
+    type EachSetExactZero: Iterator<Item = Self> + Send;
 
     /// An iterator type which gives each `Self` in a given group, where each
     /// element does not contain the zero element
-    type EachSetExactNoZero: Iterator<Item = Self>;
+    type EachSetExactNoZero: Iterator<Item = Self> + Send;
 
     /// Returns the empty set
     fn empty() -> Self;
@@ -233,7 +233,7 @@ impl Group for u32 {
     }
 }
 
-impl Group for Rc<Vec<u32>> {
+impl Group for Arc<Vec<u32>> {
     type Element = GElem;
     fn zero(&self) -> GElem {
         GElem(vec![0u32; (**self).len()])
@@ -249,7 +249,7 @@ impl Group for Rc<Vec<u32>> {
 }
 
 impl HFolds for Vec<GElem> {
-    type Group = Rc<Vec<u32>>;
+    type Group = Arc<Vec<u32>>;
     type Element = GElem;
 
     fn hfold_sumset(&self, h: u32, n: Self::Group) -> Self {

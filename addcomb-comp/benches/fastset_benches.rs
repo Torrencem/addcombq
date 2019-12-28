@@ -5,7 +5,7 @@ use criterion::*;
 
 extern crate addcomb_comp;
 
-use std::rc::Rc;
+use std::sync::Arc;
 
 use addcomb_comp::comb::chapter_a::*;
 
@@ -28,7 +28,7 @@ fn bench_nus(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("Exact", n), n, |b, n| {
             b.iter(|| {
                 nu::<Vec<GElem>>(
-                    black_box(Rc::new(vec![*n])),
+                    black_box(Arc::new(vec![*n])),
                     black_box(5),
                     black_box(2),
                     false,
@@ -53,7 +53,7 @@ fn bench_nus(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("Exact", n), n, |b, n| {
             b.iter(|| {
                 nu_signed_restricted::<Vec<GElem>>(
-                    black_box(Rc::new(vec![*n])),
+                    black_box(Arc::new(vec![*n])),
                     black_box(5),
                     black_box(2),
                     false,
@@ -68,8 +68,8 @@ fn bench_nus(c: &mut Criterion) {
     let a_exact1: Vec<GElem> = vec![GElem(vec![1]), GElem(vec![3]), GElem(vec![10]), GElem(vec![11]), GElem(vec![25])];
     let a_fast2: FastSet = (&[1u32, 3, 10, 11, 25, 30, 50, 55, 58, 60]).into();
     let a_exact2: Vec<GElem> = vec![GElem(vec![1]), GElem(vec![3]), GElem(vec![10]), GElem(vec![11]), GElem(vec![25]), GElem(vec![30]), GElem(vec![50]), GElem(vec![55]), GElem(vec![58]), GElem(vec![60])];
-    let g_exact1 = Rc::new(vec![30]);
-    let g_exact2 = Rc::new(vec![62]);
+    let g_exact1 = Arc::new(vec![30]);
+    let g_exact2 = Arc::new(vec![62]);
     group.sample_size(2000);
     group.bench_function("5-fold sumset of A, |A| = 5, fastset", |b| b.iter(|| black_box(a_fast1.hfold_sumset(black_box(5), 35))));
     group.sample_size(200);
