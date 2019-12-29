@@ -15,7 +15,7 @@ use cpython::{
     PythonObject, ToPyObject, PyInt, FromPyObject
 };
 
-pub fn wrap_binding(py: Python, ob: PyObject, s: &str) -> PyResult<PyObject> {
+pub fn wrap_binding(py: Python, ob: PyObject, numargs: u32, s: &str) -> PyResult<PyObject> {
     let type_fn = py.eval("type", None, None)?;
     let obj_t = py.eval("(object,)", None, None)?;
 
@@ -26,11 +26,16 @@ pub fn wrap_binding(py: Python, ob: PyObject, s: &str) -> PyResult<PyObject> {
     d.set_item(py, "__call__", py_fn!(py, __call__(slf: PyObject, arga: Option<PyObject> = None, argb: Option<PyObject> = None,
                         argc: Option<PyObject> = None, argd: Option<PyObject> = None,
                         arge: Option<PyObject> = None, argf: Option<PyObject> = None, verbose: bool = false) -> PyResult<PyObject> {
+        let numargs = slf.getattr(py, "_numargs")?;
+        let numargs = usize::extract(py, &numargs).unwrap();
         let mut all_args: Vec<PyObject> = vec![];
         for maybe_arg in vec![arga, argb, argc, argd, arge, argf].into_iter() {
             if let Some(arg) = maybe_arg {
                 all_args.push(arg);
             }
+        }
+        if all_args.len() != numargs {
+            return Err(PyErr::new::<exc::TypeError, _>(py, format!("Incorrect number of args given to {:?}: expected {}, got {}", &slf, all_args.len(), numargs)));
         }
         let args = PyTuple::new(py, &all_args.as_slice());
         // Based from https://stackoverflow.com/questions/21550418/how-to-interrupt-native-extension-code-without-killing-the-interpreter/33525470#33525470
@@ -103,6 +108,8 @@ def signalling_f():
     // Assign the bound func to the module (important!) and class
     class.setattr(py, "__call__", &bound_func)?;
     inst.setattr(py, "__call__", bound_func)?;
+
+    inst.setattr(py, "_numargs", numargs)?;
 
     Ok(inst)
 }

@@ -14,12 +14,19 @@ use cpython::PyObject;
 
 mod public;
 
+// A macro that evaluates to the number of arguments passed to it
+macro_rules! num_args {
+    () => { 0 };
+    ($_e: expr $(, $rest: expr)*) => { 1 + num_args!($($rest),*) }
+}
+
 macro_rules! add_bindings_to_mod {
     ($py:ident, $pymod:ident, $fn_name:ident, $fn_var_name:ident, $($ex_args:ident | $ex_arg_type:ident),+) => {
         let docstring = include_str!(concat!("../doc/compiled/", stringify!($fn_name), ".md"));
         let $fn_var_name = py_fn!($py, $fn_name(n: PyObject, $($ex_args : $ex_arg_type),+ , verbose: bool = false));
         $pymod.add($py, concat!("_", stringify!($fn_name)), &$fn_var_name)?;
-        let $fn_var_name = wrap_binding($py, $fn_var_name, docstring)?;
+        let numargs = num_args!($($ex_args),+) + 1; // Plus one for group
+        let $fn_var_name = wrap_binding($py, $fn_var_name, numargs, docstring)?;
         $pymod.add($py, stringify!($fn_name), &$fn_var_name)?;
     };
 }
