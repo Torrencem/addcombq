@@ -149,15 +149,3 @@ def capture_c_stdout(on_output, on_error=None, encoding='utf8'):
                 on_error(temp_err.read())
                 temp_err.close()
 
-
-
-def on_capture_output(input_stream):
-    if input_stream:
-        print "Here is captured stdout: \n", input_stream
-
-
-def on_capture_err(input_stream):
-    if input_stream:
-        print "Here is captured stderr: \n", input_stream
-
-
