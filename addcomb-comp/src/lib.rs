@@ -3,10 +3,18 @@
 #[macro_use]
 extern crate specialize;
 
+#[macro_use]
+extern crate lazy_static;
+
+#[macro_use]
+extern crate cached;
+
 pub mod comb;
 pub mod exactset;
 pub mod fastset;
 pub mod setlike;
+
+pub mod cache;
 
 #[cfg(test)]
 mod tests {
