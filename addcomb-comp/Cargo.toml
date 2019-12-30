@@ -14,7 +14,6 @@ array_tool = "1.0.3"
 specialize = "0.0.3"
 paste = "0.1.6"
 lazy_static = "1.4.0"
-cached = "0.11.0"
 serde = { version = "1.0", features = ["derive"] }
 
 [dependencies.rustbreak]

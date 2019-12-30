@@ -14,7 +14,6 @@ lazy_static! {
 
 use std::collections::HashMap;
 use rustbreak::{FileDatabase, deser::Bincode};
-use cached::Cached;
 use serde::Serialize;
 use serde::Deserialize;
 
@@ -22,9 +21,9 @@ use std::sync::Mutex;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct CacheEntry {
-    fname: String,
-    group: Vec<u32>,
-    other_args: Vec<u32>,
+    pub fname: String,
+    pub group: Vec<u32>,
+    pub other_args: Vec<u32>,
 }
 
 lazy_static! {
@@ -34,60 +33,22 @@ lazy_static! {
     };
 }
 
-struct BFCache {
-    fname: String,
-    cbuf: Vec<u32>,
+pub fn cache_get(cache_entry: &CacheEntry) -> Option<&u32> {
+    let mut result: Option<u32> = None;
+    let db = DATABASE.lock().unwrap();
+    db.read(|db| {
+        let r = db.get(cache_entry);
+        if let Some(&val) = r {
+            result = Some(val);
+        }
+    }).unwrap();
+    result
 }
 
-impl Cached<(u32, u32, u32), u32> for BFCache {
-    fn cache_get(&mut self, k: &(u32, u32, u32)) -> Option<&u32> {
-        let cache_entry = CacheEntry {
-            fname: self.fname.clone(),
-            group: vec![k.0],
-            other_args: vec![k.1, k.2],
-        };
-        let mut result: Option<u32> = None;
-        let db = DATABASE.lock().unwrap();
-        db.read(|db| {
-            let r = db.get(&cache_entry);
-            if let Some(&val) = r {
-                result = Some(val);
-            }
-        }).unwrap();
-        if let Some(val) = result {
-            self.cbuf.push(val);
-            Some(&self.cbuf[0])
-        } else {
-            None
-        }
-    }
-
-    fn cache_set(&mut self, k: (u32, u32, u32), v: u32) {
-        let cache_entry = CacheEntry {
-            fname: self.fname.clone(),
-            group: vec![k.0],
-            other_args: vec![k.1, k.2],
-        };
-        let db = DATABASE.lock().unwrap();
-        db.write(|db| {
-            db.insert(cache_entry, v);
-        }).expect("Error writing to cache database file!");
-        db.save().expect("Error saving to cache database file!");
-    }
-
-    fn cache_remove(&mut self, _k: &(u32, u32, u32)) -> Option<u32> {
-        unimplemented!()
-    }
-
-    fn cache_clear(&mut self) {
-        unimplemented!()
-    }
-
-    fn cache_reset(&mut self) {
-        unimplemented!()
-    }
-
-    fn cache_size(&self) -> usize {
-        unimplemented!()
-    }
+pub fn cache_set(cache_entry: &CacheEntry, v: u32) {
+    let db = DATABASE.lock().unwrap();
+    db.write(|db| {
+        db.insert(cache_entry, v);
+    }).expect("Error writing to cache database file!");
+    db.save().expect("Error saving to cache database file!");
 }
