@@ -33,7 +33,7 @@ lazy_static! {
     };
 }
 
-pub fn cache_get(cache_entry: &CacheEntry) -> Option<&u32> {
+pub fn cache_get(cache_entry: &CacheEntry) -> Option<u32> {
     let mut result: Option<u32> = None;
     let db = DATABASE.lock().unwrap();
     db.read(|db| {
@@ -45,7 +45,7 @@ pub fn cache_get(cache_entry: &CacheEntry) -> Option<&u32> {
     result
 }
 
-pub fn cache_set(cache_entry: &CacheEntry, v: u32) {
+pub fn cache_set(cache_entry: CacheEntry, v: u32) {
     let db = DATABASE.lock().unwrap();
     db.write(|db| {
         db.insert(cache_entry, v);

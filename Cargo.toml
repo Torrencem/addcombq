@@ -16,7 +16,14 @@ python2 = ["cpython/python27-sys"]
 
 [dependencies]
 paste = "0.1.6"
+lazy_static = "1.4.0"
+serde = { version = "1.0", features = ["derive"] }
 addcomb_comp = { path = "addcomb-comp" }
+
+[dependencies.rustbreak]
+path = "rustbreak"
+version = "2.0.0"
+features = ["bin_enc"]
 
 [dependencies.cpython]
 version = "0.3.0"

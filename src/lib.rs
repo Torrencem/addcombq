@@ -14,6 +14,12 @@ use cpython::PyObject;
 
 mod public;
 
+pub mod cache;
+
+#[macro_use]
+extern crate lazy_static;
+extern crate rustbreak;
+
 // A macro that evaluates to the number of arguments passed to it
 macro_rules! num_args {
     () => { 0 };

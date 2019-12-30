@@ -1,0 +1,51 @@
+[package]
+authors = ["Marcel Müller <neikos@neikos.email>"]
+description = "A modular and configurable database"
+documentation = "https://docs.rs/rustbreak"
+homepage = "https://github.com/TheNeikos/rustbreak"
+keywords = ["database", "simple", "fast", "rustbreak"]
+license = "MPL-2.0"
+name = "rustbreak"
+readme = "README.md"
+repository = "https://github.com/TheNeikos/rustbreak"
+version = "2.0.0"
+
+[package.metadata.docs.rs]
+all-features = true
+
+[dependencies]
+failure = "0.1.1"
+serde = "1"
+
+[dependencies.ron]
+optional = true
+version = "0.2.0"
+
+[dependencies.base64]
+optional = true
+version = "0.9.0"
+
+[dependencies.bincode]
+optional = true
+version = "1"
+
+[dependencies.serde_yaml]
+optional = true
+version = "0.7"
+
+[dependencies.memmap]
+optional = true
+version = "0.6"
+
+[dev-dependencies]
+lazy_static = "1"
+serde_derive = "1"
+tempfile = "3"
+
+[features]
+default = []
+ron_enc = ["ron"]
+bin_enc = ["bincode", "base64"]
+yaml_enc = ["serde_yaml"]
+mmap = ["memmap"]
+
