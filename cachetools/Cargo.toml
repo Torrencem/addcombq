@@ -1,0 +1,27 @@
+[package]
+name = "cachetools"
+version = "0.1.0"
+authors = ["= <=>"]
+edition = "2018"
+build = "build.rs"
+
+[lib]
+name = "cachetools"
+path = "src/lib.rs"
+
+[[bin]]
+name = "ac_cachetools"
+path = "src/bin.rs"
+required-features = ["build-binary"]
+
+[features]
+build-binary = ["clap"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+lazy_static = "1.4.0"
+clap = { version = "2.33.0", optional = true }
+
+[dependencies.rustbreak]
+version = "2.0.0-rc3"
+features = ["bin_enc"]

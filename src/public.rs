@@ -17,7 +17,7 @@ use cpython::{
     PythonObject, ToPyObject, PyInt, FromPyObject
 };
 
-use super::cache;
+use cachetools as cache;
 
 pub fn wrap_binding(py: Python, ob: PyObject, numargs: u32, fnid: u8, s: &str) -> PyResult<PyObject> {
     let type_fn = py.eval("type", None, None)?;
