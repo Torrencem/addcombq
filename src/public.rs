@@ -9,17 +9,22 @@ use std::any::Any;
 
 use std::rc::Rc;
 
+use std::u8;
+
 use cpython::exc;
 use cpython::{
     NoArgs, ObjectProtocol, PyDict, PyErr, PyIterator, PyObject, PyResult, PyTuple, Python,
     PythonObject, ToPyObject, PyInt, FromPyObject
 };
 
-pub fn wrap_binding(py: Python, ob: PyObject, numargs: u32, s: &str) -> PyResult<PyObject> {
+use super::cache;
+
+pub fn wrap_binding(py: Python, ob: PyObject, numargs: u32, fnid: u8, s: &str) -> PyResult<PyObject> {
     let type_fn = py.eval("type", None, None)?;
     let obj_t = py.eval("(object,)", None, None)?;
 
     let name = "InterruptableBinding".into_py_object(py);
+    let fnid = fnid.into_py_object(py);
 
     let d = PyDict::new(py);
     d.set_item(py, "_wrapped", ob)?;
@@ -37,6 +42,63 @@ pub fn wrap_binding(py: Python, ob: PyObject, numargs: u32, s: &str) -> PyResult
         if all_args.len() != numargs {
             return Err(PyErr::new::<exc::TypeError, _>(py, format!("Incorrect number of args given to {:?}: expected {}, got {}", &slf, all_args.len(), numargs)));
         }
+        let fnid = slf.getattr(py, "_fnid")?;
+        let fnid = u8::extract(py, &fnid).unwrap();
+        // Parse the argument types to get a cache entry
+        let group: Vec<u32>;
+        let mut other_args: Vec<u32> = vec![];
+        let n = &all_args[0];
+        let numb = into_pyint(py, n);
+        if let Ok(n) = numb {
+            group = vec![u32::extract(py, &n.as_object()).unwrap()];
+        } else {
+            let list = into_pyiter(py, n)?; // Will return here if something awful is given
+            let mut tmp = vec![];
+            for pyob in list {
+                let numb = into_pyint(py, &pyob?)?;
+                let val = u32::extract(py, &numb.as_object()).unwrap();
+                tmp.push(val);
+            }
+            group = tmp;
+        }
+        for indx in 1..all_args.len() {
+            match format_arg(py, &all_args[indx])? {
+                ArgEither::Val(x) => {
+                    other_args.push(x);
+                },
+                ArgEither::Tpl(x, y) => {
+                    other_args.push(x);
+                    other_args.push(y);
+                },
+            }
+        }
+        // Check if all the entries fit into a u8
+        let valid_cache = group.iter()
+            .all(|&x| {
+                x < u8::MAX as u32
+            }) && other_args.iter()
+            .all(|&x| {
+                x < u8::MAX as u32
+            });
+
+        let cache_entry = if !valid_cache {
+            None
+        } else {
+            let ce = cache::CacheEntry {
+                fid: fnid,
+                group: group.into_iter()
+                    .map(|x| x as u8)
+                    .collect(),
+                other_args: other_args.into_iter()
+                    .map(|x| x as u8)
+                    .collect(),
+            };
+            if let Some(val) = cache::cache_get(&ce) {
+                return Ok(val.to_py_object(py).into_object());
+            }
+            Some(ce)
+        };
+        
         let args = PyTuple::new(py, &all_args.as_slice());
         // Based from https://stackoverflow.com/questions/21550418/how-to-interrupt-native-extension-code-without-killing-the-interpreter/33525470#33525470
         let mpr = py.import("multiprocessing")?;
@@ -86,6 +148,11 @@ def signalling_f():
         }
 
         let res = q.call_method(py, "get", NoArgs, None)?;
+        
+        if let Some(cache_entry) = cache_entry {
+            cache::cache_set(cache_entry, u8::extract(py, &res.as_object()).unwrap());
+        }
+
         Ok(res)
     }))?;
     d.set_item(py, "__doc__", s.into_py_object(py))?;
@@ -110,6 +177,7 @@ def signalling_f():
     inst.setattr(py, "__call__", bound_func)?;
 
     inst.setattr(py, "_numargs", numargs)?;
+    inst.setattr(py, "_fnid", fnid)?;
 
     Ok(inst)
 }

@@ -2,6 +2,7 @@ import sys
 import os, errno
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
+import os
 
 class PreCompExtension(Extension):
        def __init__(self, name, source=''):
