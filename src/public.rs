@@ -75,10 +75,10 @@ pub fn wrap_binding(py: Python, ob: PyObject, numargs: u32, fnid: u8, s: &str) -
         // Check if all the entries fit into a u8
         let valid_cache = group.iter()
             .all(|&x| {
-                x < u8::MAX as u32
+                x < u32::from(u8::MAX)
             }) && other_args.iter()
             .all(|&x| {
-                x < u8::MAX as u32
+                x < u32::from(u8::MAX)
             });
 
         let cache_entry = if !valid_cache {
@@ -468,3 +468,23 @@ py_binding_mu!(
     k,
     l
 );
+
+pub fn comb_a(_py: Python, h: u32, m: u32) -> PyResult<u32> {
+    Ok(a(h, m))
+}
+
+pub fn comb_c(_py: Python, h: u32, m: u32) -> PyResult<u32> {
+    Ok(c(h, m))
+}
+
+pub fn comb_choose(_py: Python, n: u32, k: u32) -> PyResult<u32> {
+    Ok(choose(n, k))
+}
+
+pub fn comb_v(_py: Python, g: u32, n: u32, h: u32) -> PyResult<u32> {
+    Ok(v(g, n, h))
+}
+
+pub fn comb_v_signed(_py: Python, n: u32, h: u32) -> PyResult<u32> {
+    Ok(v_signed(n, h))
+}

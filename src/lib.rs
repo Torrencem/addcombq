@@ -22,7 +22,7 @@ macro_rules! num_args {
     ($_e: expr $(, $rest: expr)*) => { 1 + num_args!($($rest),*) }
 }
 
-macro_rules! add_bindings_to_mod {
+macro_rules! add_bfunc_bindings_to_mod {
     ($py:ident, $pymod:ident, $fn_name:ident, $fn_id:ident, $fn_var_name:ident, $($ex_args:ident | $ex_arg_type:ident),+) => {
         let docstring = include_str!(concat!("../doc/compiled/", stringify!($fn_name), ".md"));
         let $fn_var_name = py_fn!($py, $fn_name(n: PyObject, $($ex_args : $ex_arg_type),+ , verbose: bool = false));
@@ -36,16 +36,17 @@ macro_rules! add_bindings_to_mod {
 macro_rules! add_variations_to_mod {
     ($py:ident, $pymod:ident, $name:tt, $fn_id:ident, $($ex_args:ident | $ex_arg_type:ident),+) => {
         paste::item! {
-            add_bindings_to_mod!($py, $pymod, $name, $fn_id, a_, $($ex_args | $ex_arg_type),+);
-            add_bindings_to_mod!($py, $pymod, [<$name _signed>], $fn_id, a_, $($ex_args | $ex_arg_type),+);
-            add_bindings_to_mod!($py, $pymod, [<$name _restricted>], $fn_id, a_, $($ex_args | $ex_arg_type),+);
-            add_bindings_to_mod!($py, $pymod, [<$name _signed_restricted>], $fn_id, a_, $($ex_args | $ex_arg_type),+);
+            add_bfunc_bindings_to_mod!($py, $pymod, $name, $fn_id, tmp_, $($ex_args | $ex_arg_type),+);
+            add_bfunc_bindings_to_mod!($py, $pymod, [<$name _signed>], $fn_id, tmp_, $($ex_args | $ex_arg_type),+);
+            add_bfunc_bindings_to_mod!($py, $pymod, [<$name _restricted>], $fn_id, tmp_, $($ex_args | $ex_arg_type),+);
+            add_bfunc_bindings_to_mod!($py, $pymod, [<$name _signed_restricted>], $fn_id, tmp_, $($ex_args | $ex_arg_type),+);
         }
     }
 }
 
 py_module_initializer!(addcomb, initaddcomb, PyInit_addcomb, |py, m| {
     m.add(py, "__name__", "addcomb")?;
+    m.add(py, "__package__", "addcomb")?;
     m.add(py, "__doc__", include_str!("../doc/blurb.txt"))?;
 
     use public::*;
@@ -66,6 +67,14 @@ py_module_initializer!(addcomb, initaddcomb, PyInit_addcomb, |py, m| {
     add_variations_to_mod!(py, m, tau, fn_id, h | PyObject);
 
     add_variations_to_mod!(py, m, mu, fn_id, k | u32, l | u32);
+
+    // Add extra combinatorics functions
+    
+    m.add(py, "a", py_fn!(py, comb_a(h: u32, m: u32)))?;
+    m.add(py, "c", py_fn!(py, comb_c(h: u32, m: u32)))?;
+    m.add(py, "choose", py_fn!(py, comb_choose(n: u32, k: u32)))?;
+    m.add(py, "v", py_fn!(py, comb_v(g: u32, n: u32, h: u32)))?;
+    m.add(py, "v_signed", py_fn!(py, comb_v_signed(n: u32, h: u32)))?;
 
     Ok(())
 });

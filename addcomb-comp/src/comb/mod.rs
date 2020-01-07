@@ -40,7 +40,6 @@ pub fn a(h: u32, m: u32) -> u32 {
         .sum()
 }
 
-#[inline]
 pub fn factorial(x: u32) -> u32 {
     let mut prod = 1;
     for val in 1..=x {
@@ -49,57 +48,128 @@ pub fn factorial(x: u32) -> u32 {
     prod
 }
 
-// Somewhat slow, as it includes n/2 .. n when
-// it doesn't have to, but concise
-#[inline]
-pub fn divisors(n: u32) -> Vec<u32> {
-    (1..=n).filter(|x| n % x == 0).collect()
-}
-
 pub fn gcd(a: u32, b: u32) -> u32 {
-    if a == b {
-        a
-    } else if a % b == 0 {
-        b
-    } else if b % a == 0 {
-        a
-    } else if a == 1 {
-        1
-    } else if b == 1 {
-        1
-    } else {
-        if a > b {
-            gcd(a % b, b)
-        } else {
-            gcd(b % a, b)
-        }
+    let mut x = a;
+    let mut y = b;
+    while y != 0 {
+        let t = y;
+        y = x % y;
+        x = t;
     }
+    x
 }
 
 pub fn v(g: u32, n: u32, h: u32) -> u32 {
-    max(divisors(n).iter().map(|d| {
-        if *d == 1 || gcd(*d, g) > (d - 1) {
-            0
-        } else {
-            (((d - 1 - gcd(*d, g)) / h) + 1) * (n / d)
-        }
-    }))
+    max((1..=n/2)
+        .chain([n].into_iter().map(|&x| x))
+        .filter(|x| n % x == 0)
+        .map(|d| {
+            if d == 1 || gcd(d, g) > (d - 1) {
+                0
+            } else {
+                (((d - 1 - gcd(d, g)) / h) + 1) * (n / d)
+            }
+        })
+    )
     .unwrap()
 }
 
-/// Check if a given vector is the invariant representation of an abelian group
-pub fn is_invariant(v: &[u32]) -> bool {
-    for i in 1..v.len() {
-        if v[i - 1] % v[i] != 0 {
-            return false;
-        }
-    }
-    true
+pub fn v_signed(n: u32, h: u32) -> u32 {
+    max((1..=n/2)
+        .chain([n].into_iter().map(|&x| x))
+        .filter(|x| n % x == 0)
+        .map(|d| {
+            if d == 1 {
+                0
+            } else {
+                (2 * ((d - 2) / (2 * h)) + 1) * (n / d)
+            }
+        })
+    ).unwrap()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    // Compare with the 4.3 table
+    #[test]
+    pub fn test_v() {
+        let correct_table = vec![
+            1,  1,  1,  0,  0,  1,  1,  1,
+            1,  0,  1,  1,  1,  1,  0,  1,
+            2,  2,  2,  1,  0,  2,  2,  2,
+            2,  2,  1,  1,  1,  1,  1,  0,
+            3,  3,  3,  2,  2,  3,  3,  3,
+            2,  2,  2,  2,  2,  2,  2,  2,
+            4,  4,  4,  2,  1,  4,  4,  4,
+            3,  2,  3,  3,  3,  3,  2,  3,
+            5,  5,  5,  2,  2,  5,  5,  5,
+            4,  4,  3,  3,  3,  2,  2,  2,
+            6,  6,  6,  4,  4,  6,  6,  6,
+            4,  4,  3,  3,  3,  3,  3,  3,
+            7,  7,  7,  4,  4,  7,  7,  7,
+            6,  6,  5,  5,  5,  5,  3,  5,
+            8,  8,  8,  4,  3,  8,  8,  8,
+            6,  6,  4,  4,  4,  4,  4,  4,
+            9,  9,  9,  6,  6,  9,  9,  9,
+            6,  6,  5,  5,  5,  4,  4,  4,
+            10, 10, 10, 5,  4,  10, 10, 10,
+            7,  6,  7,  7,  7,  7,  6,  7,
+            11, 11, 11, 6,  6,  11, 11, 11,
+            8,  8,  6,  6,  6,  5,  5,  5,
+            12, 12, 12, 8,  8,  12, 12, 12,
+            10, 10, 6,  6,  6,  5,  5,  4,
+            13, 13, 13, 6,  6,  13, 13, 13,
+            9,  8,  9,  9,  9,  9,  6,  9,
+            14, 14, 14, 8,  8,  14, 14, 14,
+            10, 10, 7,  7,  7,  6,  6,  6,
+            15, 15, 15, 10, 10, 15, 15, 15,
+            10, 10, 8,  8,  8,  6,  6,  6,
+            16, 16, 16, 8,  7,  16, 16, 16,
+            12, 12, 11, 11, 11, 11, 6,  11,
+            17, 17, 17, 8,  8,  17, 17, 17,
+            14, 14, 10, 10, 10, 10, 10, 10,
+            18, 18, 18, 12, 12, 18, 18, 18,
+            12, 12, 9,  9,  9,  8,  8,  8,
+            19, 19, 19, 10, 10, 19, 19, 19,
+            13, 12, 13, 13, 13, 13, 9,  13,
+            20, 20, 20, 10, 9,  20, 20, 20,
+        ];
+        
+        let mut indx = 0;
+        for n in 2..=40 {
+            for (g, h) in &[(1, 3), (3, 3),
+                            (1, 4), (2, 4), (4, 4),
+                            (1, 5), (3, 5), (5, 5)] {
+                assert_eq!(v(*g, n, *h), correct_table[indx], "v{:?}", (*g, n, *h));
+                indx += 1;
+            }
+        }
+        
+        // Right before problem 4.6
+        assert_eq!(v(5, 437, 5), 95);
+    }
+
+    #[test]
+    pub fn test_v_signed() {
+        // Proposition 4.9
+        assert_eq!(v_signed(2, 1), 1);
+        assert_eq!(v_signed(3, 1), 1);
+        assert_eq!(v_signed(10, 1), 9);
+        assert_eq!(v_signed(15, 1), 13);
+
+        assert_eq!(v_signed(10, 2), 5);
+        assert_eq!(v_signed(8, 2), 4);
+        assert_eq!(v_signed(9, 2), 3);
+        assert_eq!(v_signed(11, 2), 5);
+
+        assert_eq!(v_signed(10, 3), 5);
+        assert_eq!(v_signed(8, 3), 4);
+        assert_eq!(v_signed(15, 3), 5);
+        assert_eq!(v_signed(35, 3), 11);
+        assert_eq!(v_signed(37, 3), 11);
+    }
 
     // Compare with the 2.4 tables
     #[test]
