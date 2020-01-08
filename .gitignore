@@ -14,3 +14,4 @@ doc/compiled
 **/*.DS_Store
 **/*.session.vim
 src/doc
+_env

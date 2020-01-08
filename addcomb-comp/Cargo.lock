@@ -2,7 +2,7 @@
 # It is not intended for manual editing.
 [[package]]
 name = "addcomb_comp"
-version = "0.1.0"
+version = "0.1.4"
 dependencies = [
  "array_tool 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "criterion 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
