@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use crate::exactset;
 use crate::fastset;
-use crate::fastset::FastSet;
+use crate::fastset::{FastSet, BitSetContents};
 
 use crate::exactset::GElem;
 
@@ -292,23 +292,23 @@ impl HFolds for Vec<GElem> {
     }
 }
 
-impl SetLike for fastset::FastSet {
-    type EachSetExact = fastset::EachSetExact;
-    type EachSetExactZero = fastset::EachSetExactZero;
-    type EachSetExactNoZero = fastset::EachSetExactNoZero;
+impl<B: BitSetContents> SetLike for fastset::FastSet<B> {
+    type EachSetExact = fastset::EachSetExact<B>;
+    type EachSetExactZero = fastset::EachSetExactZero<B>;
+    type EachSetExactNoZero = fastset::EachSetExactNoZero<B>;
     fn empty() -> Self {
         fastset::empty_set()
     }
     fn singleton(i: u32) -> Self {
         fastset::singleton(i)
     }
-    fn each_set_exact(max_size: u32, set_size: u32) -> fastset::EachSetExact {
+    fn each_set_exact(max_size: u32, set_size: u32) -> fastset::EachSetExact<B> {
         fastset::each_set_exact(max_size, set_size)
     }
-    fn each_set_exact_zero(max_size: u32, set_size: u32) -> fastset::EachSetExactZero {
+    fn each_set_exact_zero(max_size: u32, set_size: u32) -> fastset::EachSetExactZero<B> {
         fastset::each_set_exact_zero(max_size, set_size)
     }
-    fn each_set_exact_no_zero(max_size: u32, set_size: u32) -> fastset::EachSetExactNoZero {
+    fn each_set_exact_no_zero(max_size: u32, set_size: u32) -> fastset::EachSetExactNoZero<B> {
         fastset::each_set_exact_no_zero(max_size, set_size)
     }
 
@@ -332,7 +332,7 @@ impl SetLike for fastset::FastSet {
         self.access(*i)
     }
 
-    fn intersect(&mut self, other: FastSet) {
+    fn intersect(&mut self, other: Self) {
         FastSet::intersect(self, &other)
     }
 }

@@ -308,7 +308,7 @@ macro_rules! interval_call {
 }
 
 macro_rules! py_binding {
-    ($bound_name:ident, $fs_version:expr, $ex_version:expr, $fs_int_version:expr, $ex_int_version:expr, $($ex_args:ident | $ex_arg_type:ident),+) => {
+    ($bound_name:ident, $fs_version:expr, $fs2_version:expr, $ex_version:expr, $fs_int_version:expr, $fs2_int_version:expr, $ex_int_version:expr, $($ex_args:ident | $ex_arg_type:ident),+) => {
         pub fn $bound_name(py: Python, n: PyObject, $($ex_args : $ex_arg_type),+ , verbose: bool) -> PyResult<u32> {
             // Setup c_out capturing
             let capt_c_out = &(
@@ -327,7 +327,18 @@ macro_rules! py_binding {
             let numb = into_pyint(py, &n);
             if let Ok(n) = numb {
                 let n: u32 = u32::extract(py, &n.as_object()).unwrap(); // Will panic here if negative
-                if n <= 63 {
+                if n <= 127 {
+                    let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
+                    let val = if !icall {
+                        $fs2_version(n, $(format_arg(py, &$ex_args)?.into()),+, verbose)
+                    } else {
+                        $fs2_int_version(n, $(format_arg(py, &$ex_args)?.into()),+, verbose)
+                    };
+                    if verbose {
+                        capt_c_out.as_ref().unwrap().call_method(py, gen_next, NoArgs, None).expect_err("fatal capture error");
+                    }
+                    Ok(val)
+                } else if n <= 63 {
                     let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
                     let val = if !icall {
                         $fs_version(n, $(format_arg(py, &$ex_args)?.into()),+, verbose)
@@ -377,7 +388,7 @@ macro_rules! py_binding {
 // Ignore interval stuff
 // only for mu
 macro_rules! py_binding_mu {
-    ($bound_name:ident, $fs_version:expr, $ex_version:expr, $($ex_args:ident),+) => {
+    ($bound_name:ident, $fs_version:expr, $fs2_version:expr, $ex_version:expr, $($ex_args:ident),+) => {
         pub fn $bound_name(py: Python, n: PyObject, $($ex_args : u32),+ , verbose: bool) -> PyResult<u32> {
             // Setup c_out capturing
             let capt_c_out = &(if verbose {
@@ -392,10 +403,16 @@ macro_rules! py_binding_mu {
             let numb = into_pyint(py, &n);
             if let Ok(n) = numb {
                 let n: u32 = u32::extract(py, &n.as_object()).unwrap(); // Will panic here if negative
-                if n <= 63 {
-                    let val = $fs_version(n, $($ex_args),+, verbose);
+                if n <= 127 {
+                    let val = $fs2_version(n, $($ex_args),+, verbose);
                     if verbose {
                         // Stop c_out capturing
+                        capt_c_out.as_ref().unwrap().call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+                    }
+                    Ok(val)
+                } else if n <= 63 {
+                    let val = $fs_version(n, $($ex_args),+, verbose);
+                    if verbose {
                         capt_c_out.as_ref().unwrap().call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
                     }
                     Ok(val)
@@ -429,9 +446,11 @@ macro_rules! bind_all {
         paste::item! {
             py_binding! (
                 $to,
-                $md::$to::<FastSet>,
+                $md::$to::<FastSet<u64>>,
+                $md::$to::<FastSet<u128>>,
                 $md::$to::<Vec<GElem>>,
-                $md::[<$to _interval>]::<FastSet>,
+                $md::[<$to _interval>]::<FastSet<u64>>,
+                $md::[<$to _interval>]::<FastSet<u128>>,
                 $md::[<$to _interval>]::<Vec<GElem>>,
                 $($ex_args | $ex_arg_type),+
             );
@@ -466,28 +485,32 @@ bind_variants!(tau, chapter_f, h | PyObject);
 
 py_binding_mu!(
     mu,
-    chapter_g::mu::<FastSet>,
+    chapter_g::mu::<FastSet<u64>>,
+    chapter_g::mu::<FastSet<u128>>,
     chapter_g::mu::<Vec<GElem>>,
     k,
     l
 );
 py_binding_mu!(
     mu_signed,
-    chapter_g::mu_signed::<FastSet>,
+    chapter_g::mu_signed::<FastSet<u64>>,
+    chapter_g::mu_signed::<FastSet<u128>>,
     chapter_g::mu_signed::<Vec<GElem>>,
     k,
     l
 );
 py_binding_mu!(
     mu_restricted,
-    chapter_g::mu_restricted::<FastSet>,
+    chapter_g::mu_restricted::<FastSet<u64>>,
+    chapter_g::mu_restricted::<FastSet<u128>>,
     chapter_g::mu_restricted::<Vec<GElem>>,
     k,
     l
 );
 py_binding_mu!(
     mu_signed_restricted,
-    chapter_g::mu_signed_restricted::<FastSet>,
+    chapter_g::mu_signed_restricted::<FastSet<u64>>,
+    chapter_g::mu_signed_restricted::<FastSet<u128>>,
     chapter_g::mu_signed_restricted::<Vec<GElem>>,
     k,
     l
