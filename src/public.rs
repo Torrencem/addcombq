@@ -311,14 +311,19 @@ macro_rules! py_binding {
     ($bound_name:ident, $fs_version:expr, $ex_version:expr, $fs_int_version:expr, $ex_int_version:expr, $($ex_args:ident | $ex_arg_type:ident),+) => {
         pub fn $bound_name(py: Python, n: PyObject, $($ex_args : $ex_arg_type),+ , verbose: bool) -> PyResult<u32> {
             // Setup c_out capturing
-            let capt_c_out = setup_capt_c_out(py)?;
+            let capt_c_out = &(
+                if verbose {
+                    Some(setup_capt_c_out(py)?)
+                } else { None });
             
             #[cfg(feature = "python2")]
             let gen_next = "next";
             #[cfg(feature = "python3")]
             let gen_next = "__next__";
-
-            capt_c_out.call_method(py, gen_next, NoArgs, None)?;
+            
+            if verbose {
+                capt_c_out.as_ref().unwrap().call_method(py, gen_next, NoArgs, None)?;
+            }
             let numb = into_pyint(py, &n);
             if let Ok(n) = numb {
                 let n: u32 = u32::extract(py, &n.as_object()).unwrap(); // Will panic here if negative
@@ -329,8 +334,10 @@ macro_rules! py_binding {
                     } else {
                         $fs_int_version(n, $(format_arg(py, &$ex_args)?.into()),+, verbose)
                     };
-                    // Stop c_out capturing
-                    capt_c_out.call_method(py, gen_next, NoArgs, None).expect_err("fatal capture error");
+                    if verbose {
+                        // Stop c_out capturing
+                        capt_c_out.as_ref().unwrap().call_method(py, gen_next, NoArgs, None).expect_err("fatal capture error");
+                    }
                     Ok(val)
                 } else {
                     let icall: bool = interval_call!(py, $($ex_args | $ex_arg_type),+);
@@ -339,7 +346,9 @@ macro_rules! py_binding {
                     } else {
                         $ex_int_version(Rc::new(vec![n]), $(format_arg(py, &$ex_args)?.into()),+, verbose)
                     };
-                    capt_c_out.call_method(py, gen_next, NoArgs, None).expect_err("fatal capture error");
+                    if verbose {
+                        capt_c_out.as_ref().unwrap().call_method(py, gen_next, NoArgs, None).expect_err("fatal capture error");
+                    }
                     Ok(val)
                 }
             } else {
@@ -356,7 +365,9 @@ macro_rules! py_binding {
                 } else {
                     $ex_int_version(Rc::new(tmp), $(format_arg(py, &$ex_args)?.into()),+, verbose)
                 };
-                capt_c_out.call_method(py, gen_next, NoArgs, None).expect_err("fatal capture error");
+                if verbose {
+                    capt_c_out.as_ref().unwrap().call_method(py, gen_next, NoArgs, None).expect_err("fatal capture error");
+                }
                 Ok(val)
             }
         }
@@ -369,19 +380,30 @@ macro_rules! py_binding_mu {
     ($bound_name:ident, $fs_version:expr, $ex_version:expr, $($ex_args:ident),+) => {
         pub fn $bound_name(py: Python, n: PyObject, $($ex_args : u32),+ , verbose: bool) -> PyResult<u32> {
             // Setup c_out capturing
-            let capt_c_out = setup_capt_c_out(py)?;
-            capt_c_out.call_method(py, "next", NoArgs, None)?;
+            let capt_c_out = &(if verbose {
+                Some(setup_capt_c_out(py)?)
+            } else {
+                None
+            });
+
+            if verbose {
+                capt_c_out.as_ref().unwrap().call_method(py, "next", NoArgs, None)?;
+            }
             let numb = into_pyint(py, &n);
             if let Ok(n) = numb {
                 let n: u32 = u32::extract(py, &n.as_object()).unwrap(); // Will panic here if negative
                 if n <= 63 {
                     let val = $fs_version(n, $($ex_args),+, verbose);
-                    // Stop c_out capturing
-                    capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+                    if verbose {
+                        // Stop c_out capturing
+                        capt_c_out.as_ref().unwrap().call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+                    }
                     Ok(val)
                 } else {
                     let val = $ex_version(Rc::new(vec![n]), $($ex_args),+, verbose);
-                    capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+                    if verbose {
+                        capt_c_out.as_ref().unwrap().call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+                    }
                     Ok(val)
                 }
             } else {
@@ -393,7 +415,9 @@ macro_rules! py_binding_mu {
                     tmp.push(val);
                 }
                 let val = $ex_version(Rc::new(tmp), $($ex_args),+, verbose);
-                capt_c_out.call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+                if verbose {
+                    capt_c_out.as_ref().unwrap().call_method(py, "next", NoArgs, None).expect_err("fatal capture error");
+                }
                 Ok(val)
             }
         }
