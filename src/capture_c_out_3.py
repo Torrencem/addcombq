@@ -3,6 +3,7 @@
 
 import ctypes
 from ctypes import util
+import platform
 
 # use_errno parameter is optional, because I'm not checking errno anyway.
 libc = ctypes.CDLL(util.find_library('c'), use_errno=True)
@@ -16,9 +17,18 @@ FILE_p = ctypes.POINTER(FILE)
 # FILE_p = ctypes.c_void_p
 
 # These variables, defined inside the C library, are readonly.
-cstdin = FILE_p.in_dll(libc, 'stdin')
-cstdout = FILE_p.in_dll(libc, 'stdout')
-cstderr = FILE_p.in_dll(libc, 'stderr')
+if platform.system() == 'Darwin':
+    stdin = '__stdinp'
+    stdout = '__stdoutp'
+    stderr = '__stderrp'
+else:
+    stdin = 'stdin'
+    stdout = 'stdout'
+    stderr = 'stderr'
+
+cstdin = FILE_p.in_dll(libc, stdin)
+cstdout = FILE_p.in_dll(libc, stdout)
+cstderr = FILE_p.in_dll(libc, stderr)
 
 # C function to disable buffering.
 csetbuf = libc.setbuf

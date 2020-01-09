@@ -61,7 +61,7 @@ pub fn gcd(a: u32, b: u32) -> u32 {
 
 pub fn v(g: u32, n: u32, h: u32) -> u32 {
     max((1..=n/2)
-        .chain([n].into_iter().map(|&x| x))
+        .chain([n].iter().map(|&x| x))
         .filter(|x| n % x == 0)
         .map(|d| {
             if d == 1 || gcd(d, g) > (d - 1) {
@@ -76,7 +76,7 @@ pub fn v(g: u32, n: u32, h: u32) -> u32 {
 
 pub fn v_signed(n: u32, h: u32) -> u32 {
     max((1..=n/2)
-        .chain([n].into_iter().map(|&x| x))
+        .chain([n].iter().map(|&x| x))
         .filter(|x| n % x == 0)
         .map(|d| {
             if d == 1 {
