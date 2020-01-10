@@ -2,7 +2,7 @@
 # It is not intended for manual editing.
 [[package]]
 name = "addcomb_comp"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "array_tool 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "itertools 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -12,9 +12,9 @@ dependencies = [
 
 [[package]]
 name = "addcombq"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
- "addcomb_comp 0.1.4",
+ "addcomb_comp 0.1.5",
  "cachetools 0.1.0",
  "cpython 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "paste 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",

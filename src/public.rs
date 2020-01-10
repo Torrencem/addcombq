@@ -93,8 +93,10 @@ pub fn wrap_binding(py: Python, ob: PyObject, numargs: u32, fnid: u8, s: &str) -
                     .map(|x| x as u8)
                     .collect(),
             };
-            if let Some(val) = cache::cache_get(&ce) {
-                return Ok(val.to_py_object(py).into_object());
+            if !verbose {
+                if let Some(val) = cache::cache_get(&ce) {
+                    return Ok(val.to_py_object(py).into_object());
+                }
             }
             Some(ce)
         };
