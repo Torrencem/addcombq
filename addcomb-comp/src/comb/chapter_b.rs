@@ -18,6 +18,8 @@ pub fn phi<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
     if h == 1 {
         return n.gsize();
     }
+    info!(verbose, "Using relation between phi and phi_interval to compute value");
+    info!(verbose, "Computing phi(G, (0, {})) + 1...", h);
     let res = _phi_interval::<S>(n, (0, h), verbose);
     res + 1
 }
