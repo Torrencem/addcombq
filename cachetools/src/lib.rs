@@ -6,11 +6,28 @@ extern crate rustbreak;
 use std::path::PathBuf;
 use std::path::Path;
 use std::fmt::Debug;
+use std::env;
+use std::fs;
+use std::io;
 
 lazy_static! {
     pub static ref CACHE_DATA_PATH: PathBuf = {
-        let loc: PathBuf = PathBuf::from(env!("AC_DATABASE"));
-        loc
+        if let Ok(home) = env::var("HOME") {
+            let mut acpath = PathBuf::from(&home);
+            acpath.push(".addcomb");
+            fs::create_dir(&acpath)
+                .unwrap_or_else(|err| {
+                    match err.kind() {
+                        io::ErrorKind::AlreadyExists => (),
+                        e => panic!("error creating .addcomb directory in HOME: {:?}", e)
+                    }
+                });
+            acpath.push("cache");
+            acpath.set_extension("bincode");
+            acpath
+        } else {
+            panic!("Unable to find $HOME to find cache database");
+        }
     };
 }
 

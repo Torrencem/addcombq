@@ -3,7 +3,6 @@ name = "cachetools"
 version = "0.1.0"
 authors = ["= <=>"]
 edition = "2018"
-build = "build.rs"
 
 [lib]
 name = "cachetools"
