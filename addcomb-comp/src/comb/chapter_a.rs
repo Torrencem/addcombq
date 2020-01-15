@@ -1,12 +1,6 @@
-macro_rules! info {
-    ($verb_cond:ident, $( $arg:tt )+) => {
-        if $verb_cond {
-            println!($($arg)+);
-        }
-    };
-}
-
 use crate::setlike::{Group, SetLike};
+
+use crate::VERBOSE_SEND;
 
 pub fn nu<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bool) -> u32 {
     let mut greatest_set = S::empty();

@@ -1,6 +1,22 @@
 use itertools::max;
 use std::cmp;
 
+macro_rules! info {
+    ($verb_cond:ident, $( $arg:tt )+) => {
+        if $verb_cond {
+            match VERBOSE_SEND.get() {
+                Some(sender) => {
+                    let s = format!($($arg)+).to_string();
+                    sender(s);
+                },
+                None => {
+                    println!($($arg)+);
+                }
+            }
+        }
+    };
+}
+
 pub mod chapter_a;
 pub mod chapter_b;
 pub mod chapter_c;

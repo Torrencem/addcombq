@@ -2,14 +2,7 @@ use crate::comb::*;
 use std::cmp;
 
 use crate::setlike::{Group, SetLike};
-
-macro_rules! info {
-    ($verb_cond:ident, $( $arg:tt )+) => {
-        if $verb_cond {
-            println!($($arg)+);
-        }
-    };
-}
+use crate::VERBOSE_SEND;
 
 pub fn phi<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
     if n.gsize() == 1 {

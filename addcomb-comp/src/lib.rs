@@ -8,6 +8,12 @@ pub mod exactset;
 pub mod fastset;
 pub mod setlike;
 
+extern crate once_cell;
+use once_cell::sync::OnceCell;
+// Setup printing function
+
+pub static VERBOSE_SEND: OnceCell<Box<dyn Fn(String) -> () + Send + Sync>> = OnceCell::new();
+
 #[cfg(test)]
 mod tests {
     use crate::comb::chapter_a::*;

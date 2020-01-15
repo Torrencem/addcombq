@@ -14,6 +14,8 @@ extern crate cachetools;
 
 use cpython::PyObject;
 
+use addcomb_comp::VERBOSE_SEND;
+
 mod public;
 
 // A macro that evaluates to the number of arguments passed to it
@@ -75,6 +77,17 @@ py_module_initializer!(addcomb, initaddcomb, PyInit_addcomb, |py, m| {
     m.add(py, "choose", py_fn!(py, comb_choose(n: u32, k: u32)))?;
     m.add(py, "v", py_fn!(py, comb_v(g: u32, n: u32, h: u32)))?;
     m.add(py, "v_signed", py_fn!(py, comb_v_signed(n: u32, h: u32)))?;
+    
+    VERBOSE_SEND.set(Box::new(|s| {
+            let gil = cpython::Python::acquire_gil();
+            let py = gil.python();
+            py.run(
+                format!("print('verbose:', '{}')", s).as_ref(),
+                None,
+                None,
+            ).unwrap();
+    })).unwrap_or_else(|_| panic!("Error setting up verbose printer"));
+
 
     Ok(())
 });

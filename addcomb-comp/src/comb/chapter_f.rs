@@ -1,12 +1,5 @@
 use crate::setlike::{Group, SetLike};
-
-macro_rules! info {
-    ($verb_cond:ident, $( $arg:tt )+) => {
-        if $verb_cond {
-            println!($($arg)+);
-        }
-    };
-}
+use crate::VERBOSE_SEND;
 
 pub fn tau<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
     for m in (1..=n.gsize()).rev() {

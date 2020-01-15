@@ -1,12 +1,5 @@
 use crate::setlike::{Group, SetLike};
-
-macro_rules! info {
-    ($verb_cond:ident, $( $arg:tt )+) => {
-        if $verb_cond {
-            println!($($arg)+);
-        }
-    };
-}
+use crate::VERBOSE_SEND;
 
 pub fn rho<S: SetLike>(n: S::Group, m: u32, h: u32, verbose: bool) -> u32 {
     let mut smallest_set = S::empty();
