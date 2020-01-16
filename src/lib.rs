@@ -3,9 +3,6 @@
 // Necessary for py_module_initializer! to disable unsafe warnings
 #![allow(clippy::missing_safety_doc)]
 
-#[macro_use]
-extern crate cpython;
-
 extern crate paste;
 
 extern crate addcomb_comp;

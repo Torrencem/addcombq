@@ -11,13 +11,26 @@ use std::rc::Rc;
 
 use std::u8;
 
-use cpython::exc;
-use cpython::{
-    NoArgs, ObjectProtocol, PyDict, PyErr, PyIterator, PyObject, PyResult, PyTuple, Python,
-    PythonObject, ToPyObject, PyInt, FromPyObject
-};
+use pyo3::prelude::*;
 
 use cachetools as cache;
+
+macro_rules! create_bf_pybinding {
+    ($struct_ident:ident, $num_args:expr, $fn_id:expr, $($arg : $argtype),+) => {
+        #[pyclass]
+        struct $struct_ident {}
+
+        #[pymethods]
+        impl $struct_ident {
+            #[call]
+            #[args(verbose="true")]
+            fn __call__(&self, $($arg: $argtype),+, verbose: bool) -> PyResult<u32> {
+                let fn_id = $fn_id;
+
+            }
+        }
+    }
+}
 
 pub fn wrap_binding(py: Python, ob: PyObject, numargs: u32, fnid: u8, s: &str) -> PyResult<PyObject> {
     let type_fn = py.eval("type", None, None)?;
