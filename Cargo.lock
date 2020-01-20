@@ -13,7 +13,7 @@ dependencies = [
 
 [[package]]
 name = "addcombq"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "addcomb_comp 0.1.5",
  "cachetools 0.1.0",

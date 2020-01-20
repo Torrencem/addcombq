@@ -79,6 +79,7 @@ py_module_initializer!(addcomb, initaddcomb, PyInit_addcomb, |py, m| {
     m.add(py, "v_signed", py_fn!(py, comb_v_signed(n: u32, h: u32)))?;
     
     VERBOSE_SEND.set(Box::new(|s| {
+            let s = s.replace("'", "\\'");
             let gil = cpython::Python::acquire_gil();
             let py = gil.python();
             py.run(
