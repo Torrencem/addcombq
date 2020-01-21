@@ -41,7 +41,7 @@ class cp_build_ext(build_ext):
               
 
 setup (name = 'addcomb',
-       version = '0.2.3',
+       version = '0.2.4',
        author = "Matt Torrence <gh-Torrencem>",
        description = """Fast Additive Combinatorics for use in Sage""",
        cmdclass = {
