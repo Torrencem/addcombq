@@ -189,7 +189,6 @@ impl<B: BitSetContents> Iterator for EachSetExact<B> {
         }
         // Find the greatest number which can be moved to the left
         let can_be_moved_left = self.state & !(self.state >> 1u32) & !(self.setmask >> 1u32);
-        // NOTE NOTE NOTE maybe should be bit_scan_high?
         let first_moveable = B::bit_size() - can_be_moved_left.bit_scan_high();
         if first_moveable == 0 {
             self.doneflag = true;

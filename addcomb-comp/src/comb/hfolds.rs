@@ -384,6 +384,10 @@ fn _hfirs<B: BitSetContents>(
 
             let rec_call = _hfirs(stat, cycled, h - 1, hs, n, newrestr, shift);
             total |= rec_call;
+            // Check if total is full
+            if (!(total & ((B::one() << (n + 1)) - B::one())) << (B::bit_size() - n)) == B::zero() {
+                return total;
+            }
         }
 
         toadd &= toadd - B::one();
