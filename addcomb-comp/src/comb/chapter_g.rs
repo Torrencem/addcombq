@@ -75,6 +75,11 @@ pub fn mu_restricted<S: SetLike>(n: S::Group, k: u32, l: u32, verbose: bool) -> 
             info!(verbose, "Using lower bound: {:?}", lower_bound);
         }
     }
+    // TEMP TODO TEMP TODO
+    // DELETE DON'T ALLOW IN MASTER
+    // DONT COMMIT
+    lower_bound = 27;
+    info!(verbose, "Using super special lower bound of 27. This is allowed because peter said so");
     for m in lower_bound..n.gsize() {
         let mut found = false;
         for a in S::each_set_exact(n.clone(), m) {
@@ -90,7 +95,6 @@ pub fn mu_restricted<S: SetLike>(n: S::Group, k: u32, l: u32, verbose: bool) -> 
                     l_a
                 );
                 found = true;
-                break;
             }
         }
         if !found {
@@ -136,6 +140,8 @@ pub fn mu_signed_restricted<S: SetLike>(n: S::Group, k: u32, l: u32, verbose: bo
 mod tests {
     use super::*;
     use crate::fastset::FastSet;
+    use std::rc::Rc;
+    use crate::exactset::*;
 
     // Based on page 358, 359
     #[test]
