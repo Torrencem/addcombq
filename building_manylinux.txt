@@ -1,0 +1,25 @@
+First of all, godspeed.
+
+do:
+sudo docker run --name manylinux_builder2 -i -t --rm quay.io/pypa/manylinux2014_x86_64 bash
+
+with the appropriate vm from here: https://github.com/pypa/manylinux
+
+install rust with:
+curl https://sh.rustup.rs -sSf | sh
+
+install the development libraries of python:
+sudo yum install python-devel
+and
+sudo yum install python3-devel
+
+then
+/opt/python/<each thing>/bin/python setup.py build
+
+if docs fail to build, add python to path randomly or change "python3" in build.rs to something else until it stops doing that
+
+for python3, you might need a little bit of:
+RUSTFLAGS='-L /usr/lib64/libpython3.6m.so'
+in your life (this was a nightmare to figure out).
+
+If anything else breaks, have fun!
