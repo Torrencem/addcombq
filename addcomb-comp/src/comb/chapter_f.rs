@@ -21,7 +21,21 @@ pub fn tau<S: SetLike>(n: S::Group, h: u32, verbose: bool) -> u32 {
 }
 
 pub fn tau_interval<S: SetLike>(n: S::Group, (ia, ib): (u32, u32), verbose: bool) -> u32 {
-    for m in (1..=n.gsize()).rev() {
+    let val = n.clone();
+    let gsize = n.gsize();
+    let mut upper_bound = n.gsize();
+    let mut lower_bound = 1;
+    if let Some(g) = constrain!(val as Vec<u32>) {
+        if ia == 1 {
+            let k = g[g.len() - 1];
+            let g_1_size = gsize / k;
+            upper_bound = (gsize - 1) / ib;
+            lower_bound = g_1_size * (k - 1) / gsize;
+            info!(verbose, "Applying Ben's bounds: lower = {:?}, upper = {:?}", lower_bound, upper_bound);
+        }
+    }
+
+    for m in (lower_bound..=upper_bound).rev() {
         let mut found = false;
         for a in S::each_set_exact_no_zero(n.clone(), m) {
             if a.hfold_interval_sumset((ia, ib), n.clone())

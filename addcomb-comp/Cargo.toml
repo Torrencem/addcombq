@@ -1,6 +1,6 @@
 [package]
 name = "addcomb_comp"
-version = "0.1.5"
+version = "0.1.6"
 authors = ["Matt Torrence <gh-Torrencem>"]
 edition = "2018"
 
